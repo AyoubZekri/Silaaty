@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 class DoctorController extends Controller
 {
 
-    
+    // doctor
     public function index($id)
     {
         if (!Clinic::where('id', $id)->exists()) {
