@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Clinic\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\confermemail;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Clinic;
@@ -32,7 +33,7 @@ class Register extends Controller
             "phone" => "required|String|min:10|max:12",
         ]);
 
-        
+
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
@@ -72,6 +73,12 @@ class Register extends Controller
                 "phone" => $request->phone,
                 'type' => 'عيادة'
             ]);
+
+            $ClinicRole = Role::where('role_name', 'Clinic')->first();
+
+            if ($ClinicRole) {
+                $user->user_roles()->attach($ClinicRole->id);
+            }
 
 
             Mail::to($user->email)->send(new confermemail($user));

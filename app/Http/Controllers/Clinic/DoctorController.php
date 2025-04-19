@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Clinic;
 use App\Http\Controllers\Controller;
 use App\Models\Clinic;
 use App\Models\Doctor;
+use App\Models\Role;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -90,6 +91,13 @@ class DoctorController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
         ]);
+
+
+        $DoctorRole = Role::where('role_name', 'Doctor')->first();
+
+        if ($DoctorRole) {
+            $user->user_roles()->attach($DoctorRole->id);
+        }
 
         return response()->json([
             'message' => 'تم إنشاء الطبيب والمستخدم بنجاح',

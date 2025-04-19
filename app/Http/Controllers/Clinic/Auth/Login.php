@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class Login extends Controller
 {
-   
+
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -53,21 +53,27 @@ class Login extends Controller
                 ], 404);
             }
 
-            if (!$clinic->Statue == 0) {
+            if ($clinic->Statue == 0) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'انتضر حتى يتم الموافقة على العيادة',
-                ], 404);
+                    'message' => 'انتظر حتى يتم الموافقة على العيادة.',
+                ], 403);
             }
 
             if ($clinic->Statue == 2) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => "لم يتم الموافقة على العيادة ",
-                    'content' => "هناك خطا في السجل او العيادة غير معترف بها",
-                ], 404);
+                    'message' => "لم يتم الموافقة على العيادة.",
+                    'content' => "هناك خطأ في السجل أو العيادة غير معترف بها.",
+                ], 403);
             }
 
+            if ($clinic->Statue != 1) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'لا يمكنك تسجيل الدخول حالياً، حالة العيادة غير صالحة.',
+                ], 403);
+            }
             $token = $user->createToken('API Token')->plainTextToken;
 
             return response()->json([
