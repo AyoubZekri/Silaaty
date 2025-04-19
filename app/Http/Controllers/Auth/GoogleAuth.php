@@ -40,7 +40,7 @@ class GoogleAuth extends Controller
 
 
         $auth = (new Factory)
-            ->withServiceAccount(env('FIREBASE_CREDENTIALS'))
+            ->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')))
             ->createAuth();
 
 
@@ -94,11 +94,11 @@ class GoogleAuth extends Controller
 
             DB::table('roles_user')->insert([
                 'user_id' => $user->id,
-                'role_id' => $roleId,
+                'roles_id' => $roleId,
             ]);
             Mail::to($user['email'])->send(new WelcomeMail($user));
 
-            $token = PersonalAccessToken::updateOrCreateForUser($user, ['name' => 'API Token'])->plainTextToken;
+            $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
                 'access_token' => $token,
