@@ -62,6 +62,28 @@ class ClinicConfermController extends Controller
     }
 
 
+    public function RefusalClinic(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => 'required|integer|exists:clinics,id',
+        ]);
+
+        try {
+            $clinic = Clinic::findOrFail($validated['id']);
+
+
+            $clinic->Statue = 2;
+            $clinic->save();
+
+            return response()->json(['message' => 'تم رفض العيادة بنجاح'], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'حدث خطأ أثناء معالجة الطلب',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function searchClinicsNotConferm(Request $request)
     {
         try {
