@@ -9,6 +9,7 @@ use App\Http\Controllers\Clinic\Auth\Login;
 use App\Http\Controllers\Clinic\Auth\Register;
 use App\Http\Controllers\Clinic\SchedulesController;
 use App\Http\Controllers\Doctor\Auth\LogouteController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\showSpecialtyController;
 use App\Http\Controllers\admin\SpecialtyController;
 use App\Http\Controllers\user_nurmal\ClinicController;
@@ -73,6 +74,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('delet_user/google', [GoogleAuth::class, 'destroy']);
     Route::post('/user/logout', [GoogleAuth::class, 'logout']);
+
+    Route::get('/reports/show', [ReportController::class, 'show']);
+    Route::get('/reports/all', [ReportController::class, 'index']);
+    Route::post('/reports/add', [ReportController::class, 'store']);
+    Route::post('/reports/delete', [ReportController::class, 'destroy']);
 
     // doctor
     Route::post('Schedules_doctor/add', [\App\Http\Controllers\Doctor\SchedulesController::class, 'addSchedules']);

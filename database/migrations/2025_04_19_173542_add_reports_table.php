@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('reporter_id');
             $table->unsignedBigInteger('reported_id')->nullable();
-            $table->text('reason');
+            // $table->text('reason');
             $table->timestamps();
 
             $table->foreign('reporter_id')->references('id')->on('users')->onDelete('cascade');
