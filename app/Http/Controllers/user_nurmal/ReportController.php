@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\user_nurmal;
 
+use App\Http\Controllers\Controller;
 use App\Models\Report;
 use Illuminate\Http\Request;
 
