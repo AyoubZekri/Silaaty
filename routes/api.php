@@ -9,7 +9,7 @@ use App\Http\Controllers\Clinic\Auth\Login;
 use App\Http\Controllers\Clinic\Auth\Register;
 use App\Http\Controllers\Clinic\SchedulesController;
 use App\Http\Controllers\Doctor\Auth\LogouteController;
-use App\Http\Controllers\ReportController;
+use App\Http\Controllers\user_nurmal\ReportController;
 use App\Http\Controllers\showSpecialtyController;
 use App\Http\Controllers\admin\SpecialtyController;
 use App\Http\Controllers\user_nurmal\ClinicController;
