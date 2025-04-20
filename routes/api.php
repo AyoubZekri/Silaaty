@@ -47,7 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     // admin
-    Route::post('/clinics/{id}/approve', [ClinicConfermController::class, 'approveClinic']);
+    Route::post('/clinics/approve', [ClinicConfermController::class, 'approveClinic']);
 
 
     Route::post('Specialty/add', [SpecialtyController::class, 'store']);

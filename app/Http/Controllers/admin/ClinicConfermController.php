@@ -36,10 +36,14 @@ class ClinicConfermController extends Controller
 
 
 
-    public function approveClinic($id)
+    public function approveClinic(Request $request)
     {
+        $validated = $request->validate([
+            'id' => 'required|integer|exists:clinics,id',
+        ]);
+
         try {
-            $clinic = Clinic::findOrFail($id);
+            $clinic = Clinic::findOrFail($validated['id']);
 
             if ($clinic->Statue == 1) {
                 return response()->json(['message' => 'العيادة معتمدة بالفعل'], 200);
@@ -49,10 +53,11 @@ class ClinicConfermController extends Controller
             $clinic->save();
 
             return response()->json(['message' => 'تمت الموافقة على العيادة بنجاح'], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json(['message' => 'العيادة غير موجودة'], 404);
         } catch (Exception $e) {
-            return response()->json(['message' => 'حدث خطأ أثناء معالجة الطلب', 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'حدث خطأ أثناء معالجة الطلب',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
