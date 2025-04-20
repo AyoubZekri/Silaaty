@@ -70,9 +70,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('User/update', [GoogleAuth::class, 'update']);
 
 
-    Route::post('/update_user/google', [GoogleAuth::class, 'Update']);
+    Route::post('delet_user/google', [GoogleAuth::class, 'destroy']);
     Route::post('/user/logout', [GoogleAuth::class, 'logout']);
-    
+
     // doctor
     Route::post('Schedules_doctor/add', [\App\Http\Controllers\Doctor\SchedulesController::class, 'addSchedules']);
     Route::post('Schedules_doctor/update/{id}', [\App\Http\Controllers\Doctor\SchedulesController::class, 'UpdataSchedules']);
