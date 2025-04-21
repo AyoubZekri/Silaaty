@@ -34,7 +34,7 @@ class ClinicController extends Controller
                 ->orderBy('distance', 'asc')
                 ->with('municipality')
                 ->with('schedules')
-                ->paginate(10); 
+                ->paginate(10);
 
             $clinics->getCollection()->transform(function ($clinic) {
                 $clinic->cover_image = $clinic->cover_image ? asset('storage/' . $clinic->cover_image) : null;
@@ -62,7 +62,7 @@ class ClinicController extends Controller
     public function allClinics(Request $request)
     {
         try {
-            $clinics = Clinic::with('schedules', 'municipality', 'specialty')
+            $clinics = Clinic::with('schedules', 'municipality',)
                 ->where('Statue', 1)
                 ->paginate(10);
 
@@ -132,7 +132,7 @@ class ClinicController extends Controller
                         $query->where('specialties_id', $id);
                     }
                 ])
-                ->get();
+                ->paginate(10);
 
             return response()->json([
                 'status' => 'success',

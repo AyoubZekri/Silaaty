@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Clinic\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\confermemail;
+use App\Models\clinic_schedules;
+use App\Models\DoctorSchedule;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -33,6 +35,15 @@ class Register extends Controller
             "phone" => "required|String|min:10|max:12",
         ]);
 
+        $days = collect([
+            ['day' => 'الإثنين', 'opening_time' => '08:30', 'closing_time' => '12:30'],
+            ['day' => 'الثلاثاء', 'opening_time' => '08:30', 'closing_time' => '12:30'],
+            ['day' => 'الأربعاء', 'opening_time' => '08:30', 'closing_time' => '12:30'],
+            ['day' => 'الخميس', 'opening_time' => '08:30', 'closing_time' => '12:30'],
+            ['day' => 'الجمعة', 'opening_time' => '08:30', 'closing_time' => '12:30'],
+            ['day' => 'السبت', 'opening_time' => '08:30', 'closing_time' => '12:30'],
+            ['day' => 'الأحد', 'opening_time' => '08:30', 'closing_time' => '12:30'],
+        ]);
 
         if ($validator->fails()) {
             return response()->json([
@@ -55,8 +66,9 @@ class Register extends Controller
                 'password' => Hash::make($request->password),
                 'email_verified' => $email_verified_at,
                 'user_role' => 3,
-                "phone"=>$request->phone,
+                "phone" => $request->phone,
             ]);
+
 
             $clinic = Clinic::create([
                 'user_id' => $user->id,
@@ -73,6 +85,16 @@ class Register extends Controller
                 "phone" => $request->phone,
                 'type' => 'عيادة'
             ]);
+
+
+            foreach ($days as $day) {
+                clinic_schedules::create([
+                    'clinic_id' => $clinic->id,
+                    'day' => $day['day'],
+                    'opening_time' => $day['opening_time'],
+                    'closing_time' => $day['closing_time'],
+                ]);
+            }
 
             $ClinicRole = Role::where('role_name', 'Clinic')->first();
 
