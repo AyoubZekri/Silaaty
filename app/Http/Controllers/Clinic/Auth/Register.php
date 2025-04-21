@@ -36,13 +36,13 @@ class Register extends Controller
         ]);
 
         $days = collect([
+            ['day' => 'السبت', 'opening_time' => '08:30', 'closing_time' => '12:30'],
+            ['day' => 'الأحد', 'opening_time' => '08:30', 'closing_time' => '12:30'],
             ['day' => 'الإثنين', 'opening_time' => '08:30', 'closing_time' => '12:30'],
             ['day' => 'الثلاثاء', 'opening_time' => '08:30', 'closing_time' => '12:30'],
             ['day' => 'الأربعاء', 'opening_time' => '08:30', 'closing_time' => '12:30'],
             ['day' => 'الخميس', 'opening_time' => '08:30', 'closing_time' => '12:30'],
             ['day' => 'الجمعة', 'opening_time' => '08:30', 'closing_time' => '12:30'],
-            ['day' => 'السبت', 'opening_time' => '08:30', 'closing_time' => '12:30'],
-            ['day' => 'الأحد', 'opening_time' => '08:30', 'closing_time' => '12:30'],
         ]);
 
         if ($validator->fails()) {
