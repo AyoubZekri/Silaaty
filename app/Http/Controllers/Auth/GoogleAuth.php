@@ -25,7 +25,6 @@ class GoogleAuth extends Controller
     {
         $validator = Validator::make($request->all(), [
             'uid' => 'required|string',
-            'email' => 'required|email',
             'fcm_token' => 'sometimes|string',
         ]);
 
@@ -54,18 +53,10 @@ class GoogleAuth extends Controller
         }
 
 
-        if ($firebase->email !== $request->email) {
-            return response()->json([
-                'message' => 'Email mismatch'
-            ], 400);
-        }
+
 
         $roleId = 2;
         $user = User::where('email', $firebase->email)->first();
-
-
-
-
 
         if ($user) {
 

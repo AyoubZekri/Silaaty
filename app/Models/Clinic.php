@@ -46,7 +46,7 @@ class Clinic extends Model
 
     public function municipality()
     {
-        return $this->belongsTo(Municipality::class, 'municipalitie_id');
+        return $this->belongsTo(Municipality::class, 'municipalities_id');
     }
 
     public function users()

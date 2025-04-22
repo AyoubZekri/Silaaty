@@ -62,7 +62,7 @@ class ClinicController extends Controller
     public function allClinics(Request $request)
     {
         try {
-            $clinics = Clinic::with('schedules', 'municipality',)
+            $clinics = Clinic::with('schedules', 'municipality')
                 ->where('Statue', 1)
                 ->paginate(10);
 
@@ -145,9 +145,7 @@ class ClinicController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-
     }
-
 
 
     public function searchClinics(Request $request)
