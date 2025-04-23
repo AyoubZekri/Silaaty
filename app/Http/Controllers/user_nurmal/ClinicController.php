@@ -41,7 +41,7 @@ class ClinicController extends Controller
     public function searchClinicMap(Request $request)
     {
         try {
-            $search = $request->input('query');
+            $search = $request->input('name');
 
             $clinics = Clinic::select(
                 'id',
