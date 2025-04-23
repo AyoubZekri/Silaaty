@@ -69,6 +69,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // user_normal
     Route::get('/clinics/by-specialty/{id}', [ClinicController::class, 'getBySpecialty']);
+    Route::get('/clinics/search/Map', [ClinicController::class, 'searchClinicMap']);
+
     Route::put('User/update', [GoogleAuth::class, 'update']);
 
 
@@ -97,6 +99,7 @@ Route::get('Clinics/nearby', [ClinicController::class, 'nearbyClinics']);
 Route::get("Clinics/all", [ClinicController::class, "allClinics"]);
 Route::get('/clinics/search', [ClinicController::class, 'searchClinics']);
 Route::get('clinics/{id}', [ClinicController::class, 'showClinic']);
+Route::get("Clinics/map", [ClinicController::class, "ClinicMap"]);
 
 Route::get("Clinics/all/conferm", [ClinicConfermController::class, "allClinicsNotConferm"]);
 Route::get('/Clinics/search/conferm', [ClinicConfermController::class, 'searchClinicsNotConferm']);

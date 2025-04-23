@@ -9,6 +9,64 @@ use Illuminate\Http\Request;
 
 class ClinicController extends Controller
 {
+
+
+
+
+    public function ClinicMap()
+    {
+        try {
+            $clinics = Clinic::select(
+                'id',
+                'name',
+                'latitude',
+                'longitude',
+                'Statue'
+            )->where('Statue', 1)
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'clinics' => $clinics
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'حدث خطأ أثناء جلب البيانات',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function searchClinicMap(Request $request)
+    {
+        try {
+            $search = $request->input('query');
+
+            $clinics = Clinic::select(
+                'id',
+                'name',
+                'latitude',
+                'longitude',
+                'Statue'
+            )
+                ->where('Statue', 1)
+                ->where('name', 'LIKE', '%' . $search . '%')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'clinics' => $clinics
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'حدث خطأ أثناء البحث',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function nearbyClinics(Request $request)
     {
         try {
