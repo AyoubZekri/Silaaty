@@ -120,24 +120,39 @@ class ClinicController extends Controller
     public function allClinics(Request $request)
     {
         try {
-            $clinics = Clinic::with('schedules', 'municipality')
+            $clinics = Clinic::with(['schedules', 'municipality', 'specialty'])
                 ->where('Statue', 1)
-                ->paginate(10);
+                ->paginate(10); // يمكنك استخدام ->get() إن أردت بدون pagination
 
-
-            $clinics->getCollection()->transform(function ($clinic) {
-                $clinic->cover_image = $clinic->cover_image ? asset('storage/' . $clinic->cover_image) : null;
-                $clinic->profile_image = $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null;
-                $clinic->specialty_name = $clinic->specialty ? $clinic->specialty->name : null;
-                unset($clinic->specialty);
-                return $clinic;
+            $data = $clinics->map(function ($clinic) {
+                return [
+                    'id' => $clinic->id,
+                    'name' => $clinic->name,
+                    'address' => $clinic->address,
+                    'phone' => $clinic->phone,
+                    'email' => $clinic->email,
+                    'latitude' => $clinic->latitude,
+                    'longitude' => $clinic->longitude,
+                    'type' => $clinic->type,
+                    'pharm_name_fr' => $clinic->pharm_name_fr,
+                    'cover_image' => $clinic->cover_image ? asset('storage/' . $clinic->cover_image) : null,
+                    'profile_image' => $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null,
+                    'municipality' => $clinic->municipality->name ?? null,
+                    'schedules' => $clinic->schedules->map(function ($schedule) {
+                        return [
+                            'day' => $schedule->day,
+                            'start_time' => $schedule->start_time,
+                            'end_time' => $schedule->end_time,
+                        ];
+                    }),
+                ];
             });
 
             return response()->json([
                 'status' => 1,
                 'message' => 'Success',
                 'data' => [
-                    'data' => $clinics,
+                    'data' => $data,
                     'meta' => [
                         'current_page' => $clinics->currentPage(),
                         'last_page' => $clinics->lastPage(),
@@ -149,7 +164,7 @@ class ClinicController extends Controller
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء جلب البيانات',
                 'error' => $e->getMessage()
             ], 500);
