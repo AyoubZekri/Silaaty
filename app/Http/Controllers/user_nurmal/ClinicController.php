@@ -134,8 +134,18 @@ class ClinicController extends Controller
             });
 
             return response()->json([
-                'status' => 'success',
-                'clinics' => $clinics
+                'status' => 1,
+                'message' => 'Success',
+                'data' => [
+                    'data' => $clinics,
+                    'meta' => [
+                        'current_page' => $clinics->currentPage(),
+                        'last_page' => $clinics->lastPage(),
+                        'per_page' => $clinics->perPage(),
+                        'total' => $clinics->total(),
+                        'count' => $clinics->count(),
+                    ]
+                ]
             ]);
         } catch (Exception $e) {
             return response()->json([
