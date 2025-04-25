@@ -86,35 +86,62 @@ class ClinicController extends Controller
                 * cos(radians(longitude) - radians(?))
                 + sin(radians(?)) * sin(radians(latitude))
             )) AS distance
-              ", [$latitude, $longitude, $latitude])
+        ", [$latitude, $longitude, $latitude])
                 ->where('Statue', 1)
-                ->having('distance', '<=', 2)
+                ->having('distance', '<=', $radius)
                 ->orderBy('distance', 'asc')
-                ->with('municipality')
-                ->with('schedules')
+                ->with(['municipality', 'schedules'])
                 ->paginate(10);
 
-            $clinics->getCollection()->transform(function ($clinic) {
-                $clinic->cover_image = $clinic->cover_image ? asset('storage/' . $clinic->cover_image) : null;
-                $clinic->profile_image = $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null;
-                $clinic->specialty_name = $clinic->specialty ? $clinic->specialty->name : null;
-                unset($clinic->specialty);
-                return $clinic;
+            $data = $clinics->map(function ($clinic) {
+                return [
+                    'id' => $clinic->id,
+                    'name' => $clinic->name,
+                    'address' => $clinic->address,
+                    'phone' => $clinic->phone,
+                    'email' => $clinic->email,
+                    'latitude' => $clinic->latitude,
+                    'longitude' => $clinic->longitude,
+                    'type' => $clinic->type,
+                    'pharm_name_fr' => $clinic->pharm_name_fr,
+                    'cover_image' => $clinic->cover_image ? asset('storage/' . $clinic->cover_image) : null,
+                    'profile_image' => $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null,
+                    'municipality' => $clinic->municipality->name ?? null,
+                    'distance' => round($clinic->distance, 2),
+                    'schedules' => $clinic->schedules->map(function ($schedule) {
+                        return [
+                            'day' => $schedule->day,
+                            'start_time' => $schedule->start_time,
+                            'end_time' => $schedule->end_time,
+                        ];
+                    }),
+                ];
             });
 
             return response()->json([
-                'status' => 'success',
-                'count' => $clinics->count(),
-                'clinics' => $clinics->toArray()
+                'status' => 1,
+                'message' => 'Success',
+                'data' => [
+                    'data' => $data,
+                    'meta' => [
+                        'current_page' => $clinics->currentPage(),
+                        'last_page' => $clinics->lastPage(),
+                        'per_page' => $clinics->perPage(),
+                        'total' => $clinics->total(),
+                        'count' => $clinics->count(),
+                    ]
+                ]
             ]);
+
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء جلب البيانات',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
+
 
 
     public function allClinics(Request $request)
@@ -211,24 +238,71 @@ class ClinicController extends Controller
                 $query->where('specialties_id', $id);
             })
                 ->with([
+                    'municipality',
                     'doctors' => function ($query) use ($id) {
                         $query->where('specialties_id', $id);
-                    }
+                    },
+                    'schedules',
+                    'specialty'
                 ])
                 ->paginate(10);
 
+            $data = $clinics->map(function ($clinic) {
+                return [
+                    'id' => $clinic->id,
+                    'name' => $clinic->name,
+                    'address' => $clinic->address,
+                    'phone' => $clinic->phone,
+                    'email' => $clinic->email,
+                    'latitude' => $clinic->latitude,
+                    'longitude' => $clinic->longitude,
+                    'type' => $clinic->type,
+                    'pharm_name_fr' => $clinic->pharm_name_fr,
+                    'cover_image' => $clinic->cover_image ? asset('storage/' . $clinic->cover_image) : null,
+                    'profile_image' => $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null,
+                    'municipality' => $clinic->municipality->name ?? null,
+                    'schedules' => $clinic->schedules->map(function ($schedule) {
+                        return [
+                            'day' => $schedule->day,
+                            'start_time' => $schedule->start_time,
+                            'end_time' => $schedule->end_time,
+                        ];
+                    }),
+                    'doctors' => $clinic->doctors->map(function ($doctor) {
+                        return [
+                            'id' => $doctor->id,
+                            'specialty_name' => $clinic->specialty->name ?? null,
+                            'name' => $doctor->name,
+                            'email' => $doctor->email,
+                            'phone' => $doctor->phone,
+                        ];
+                    }),
+                ];
+            });
+
             return response()->json([
-                'status' => 'success',
-                'clinics' => $clinics
+                'status' => 1,
+                'message' => 'Success',
+                'data' => [
+                    'data' => $data,
+                    'meta' => [
+                        'current_page' => $clinics->currentPage(),
+                        'last_page' => $clinics->lastPage(),
+                        'per_page' => $clinics->perPage(),
+                        'total' => $clinics->total(),
+                        'count' => $clinics->count(),
+                    ]
+                ]
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء جلب البيانات',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
+
 
 
     public function searchClinics(Request $request)
@@ -249,7 +323,7 @@ class ClinicController extends Controller
 
             $clinics = $query->paginate(10);
 
-            $clinics->getCollection()->transform(function ($clinic) {
+            $data = $clinics->map(function ($clinic) {
                 return [
                     'id' => $clinic->id,
                     'name' => $clinic->name,
@@ -274,21 +348,22 @@ class ClinicController extends Controller
             });
 
             return response()->json([
-                'status' => 'success',
-                'pagination' => [
-                    'total' => $clinics->total(),
-                    'per_page' => $clinics->perPage(),
-                    'current_page' => $clinics->currentPage(),
-                    'last_page' => $clinics->lastPage(),
-                    'from' => $clinics->firstItem(),
-                    'to' => $clinics->lastItem(),
-                ],
-                'clinics' => $clinics->items()
+                'status' => 1,
+                'message' => 'Success',
+                'data' => [
+                    'data' => $data,
+                    'meta' => [
+                        'current_page' => $clinics->currentPage(),
+                        'last_page' => $clinics->lastPage(),
+                        'per_page' => $clinics->perPage(),
+                        'total' => $clinics->total(),
+                        'count' => $clinics->count(),
+                    ]
+                ]
             ]);
-
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء البحث',
                 'error' => $e->getMessage()
             ], 500);
