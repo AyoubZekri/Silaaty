@@ -88,7 +88,7 @@ class Register extends Controller
 
 
             foreach ($days as $day) {
-                clinic_schedules::create([
+                $schedules=clinic_schedules::create([
                     'clinic_id' => $clinic->id,
                     'day' => $day['day'],
                     'opening_time' => $day['opening_time'],

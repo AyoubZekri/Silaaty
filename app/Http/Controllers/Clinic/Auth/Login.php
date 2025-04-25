@@ -44,7 +44,9 @@ class Login extends Controller
             //     ], 403);
             // }
 
-            $clinic = Clinic::where('user_id', $user->id)->first();
+            $clinic = Clinic::where('user_id', $user->id)
+            ->with(['schedules'])
+            ->first();
 
             if (!$clinic) {
                 return response()->json([
