@@ -209,25 +209,18 @@ class ClinicController extends Controller
     public function searchClinics(Request $request)
     {
         try {
-            $query = Clinic::with(['schedules', 'municipality'])->where('Statue', 1);
+            $search = $request->input('query');
 
-            if ($request->has('name')) {
-                $query->where('name', 'LIKE', '%' . $request->name . '%');
-            }
-
-            if ($request->has('address')) {
-                $query->where('address', 'LIKE', '%' . $request->address . '%');
-            }
-
-            if ($request->has('pharm_name_fr')) {
-                $query->where('pharm_name_fr', 'LIKE', '%' . $request->pharm_name_fr . '%');
-            }
-
-            if ($request->has('municipality')) {
-                $query->whereHas('municipality', function ($q) use ($request) {
-                    $q->where('name', 'LIKE', '%' . $request->municipality . '%');
+            $query = Clinic::with(['schedules', 'municipality'])
+                ->where('Statue', 1)
+                ->where(function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%$search%")
+                        ->orWhere('address', 'LIKE', "%$search%")
+                        ->orWhere('pharm_name_fr', 'LIKE', "%$search%")
+                        ->orWhereHas('municipality', function ($mq) use ($search) {
+                            $mq->where('name', 'LIKE', "%$search%");
+                        });
                 });
-            }
 
             $clinics = $query->paginate(10);
 
