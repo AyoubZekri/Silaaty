@@ -111,8 +111,8 @@ class ClinicController extends Controller
                     'schedules' => $clinic->schedules->map(function ($schedule) {
                         return [
                             'day' => $schedule->day,
-                            'start_time' => $schedule->start_time,
-                            'end_time' => $schedule->end_time,
+                            'start_time' => $schedule->opening_time,
+                            'end_time' => $schedule->closing_time,
                         ];
                     }),
                 ];
@@ -168,8 +168,8 @@ class ClinicController extends Controller
                     'schedules' => $clinic->schedules->map(function ($schedule) {
                         return [
                             'day' => $schedule->day,
-                            'start_time' => $schedule->start_time,
-                            'end_time' => $schedule->end_time,
+                            'start_time' => $schedule->opening_time,
+                            'end_time' => $schedule->closing_time,
                         ];
                     }),
                 ];
@@ -275,8 +275,8 @@ class ClinicController extends Controller
                             'schedules'=>$doctor->schedules->map(function($schedule){
                                 return[
                                     'day' => $schedule->day,
-                                    'start_time' => $schedule->start_time,
-                                    'end_time' => $schedule->end_time,
+                                    'start_time' => $schedule->opening_time,
+                                    'end_time' => $schedule->closing_time,
                                 ];
                             })
 
@@ -345,8 +345,8 @@ class ClinicController extends Controller
                     'schedules' => $clinic->schedules->map(function ($schedule) {
                         return [
                             'day' => $schedule->day,
-                            'start_time' => $schedule->start_time,
-                            'end_time' => $schedule->end_time,
+                            'start_time' => $schedule->opening_time,
+                            'end_time' => $schedule->closing_time,
                         ];
                     }),
                 ];

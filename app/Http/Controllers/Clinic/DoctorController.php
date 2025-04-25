@@ -39,7 +39,7 @@ class DoctorController extends Controller
     public function showdoctor($id)
     {
         try {
-            $doctor = Doctor::find($id)->with("schedules");
+            $doctor = Doctor::with('schedules')->find($id);
 
             if (!$doctor) {
                 return response()->json([
