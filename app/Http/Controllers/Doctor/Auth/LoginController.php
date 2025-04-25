@@ -43,7 +43,10 @@ class LoginController extends Controller
             //     ], 403);
             // }
 
-            $Doctor = Doctor::where('user_id', $user->id)->first();
+            $Doctor = Doctor::where('user_id', $user->id)
+                ->with(['schedules'])
+                ->with(['clinic:id,name', 'specialty:id,name'])
+                ->first();
 
             if (!$Doctor) {
                 return response()->json([
