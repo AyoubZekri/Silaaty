@@ -235,7 +235,7 @@ class ClinicController extends Controller
     {
         try {
             $clinics = Clinic::whereHas('doctors', function ($query) use ($id) {
-                $query->where('specialties_id', $id);
+                $query->where('specialties_id', $id)->with('schedules');
             })
                 ->with([
                     'doctors' => function ($query) use ($id) {
@@ -272,6 +272,14 @@ class ClinicController extends Controller
                             'name' => $doctor->name,
                             'email' => $doctor->email,
                             'phone' => $doctor->phone,
+                            'schedules'=>$doctor->schedules->map(function($schedule){
+                                return[
+                                    'day' => $schedule->day,
+                                    'start_time' => $schedule->start_time,
+                                    'end_time' => $schedule->end_time,
+                                ];
+                            })
+
                         ];
                     }),
                 ];
