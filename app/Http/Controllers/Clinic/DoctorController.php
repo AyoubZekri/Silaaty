@@ -105,7 +105,7 @@ class DoctorController extends Controller
 
         foreach ($days as $day) {
             DoctorSchedule::create([
-                'clinic_id' => $doctor->id,
+                'doctor_id' => $doctor->id,
                 'day' => $day['day'],
                 'opening_time' => $day['opening_time'],
                 'closing_time' => $day['closing_time'],
