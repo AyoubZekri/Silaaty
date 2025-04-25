@@ -87,26 +87,18 @@ class ClinicConfermController extends Controller
     public function searchClinicsNotConferm(Request $request)
     {
         try {
+            $search = $request->input('query');
+
             $query = Clinic::with(['schedules', 'municipality'])
-                ->where('Statue', 0);
-
-            if ($request->filled('name')) {
-                $query->where('name', 'LIKE', '%' . $request->name . '%');
-            }
-
-            if ($request->filled('address')) {
-                $query->where('address', 'LIKE', '%' . $request->address . '%');
-            }
-
-            if ($request->filled('pharm_name_fr')) {
-                $query->where('pharm_name_fr', 'LIKE', '%' . $request->pharm_name_fr . '%');
-            }
-
-            if ($request->filled('municipality')) {
-                $query->whereHas('municipality', function ($q) use ($request) {
-                    $q->where('name', 'LIKE', '%' . $request->municipality . '%');
+                ->where('Statue', 0)
+                ->where(function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%$search%")
+                        ->orWhere('address', 'LIKE', "%$search%")
+                        ->orWhere('pharm_name_fr', 'LIKE', "%$search%")
+                        ->orWhereHas('municipality', function ($mq) use ($search) {
+                            $mq->where('name', 'LIKE', "%$search%");
+                        });
                 });
-            }
 
             $clinics = $query->get();
 
@@ -148,5 +140,6 @@ class ClinicConfermController extends Controller
             ], 500);
         }
     }
+
 
 }
