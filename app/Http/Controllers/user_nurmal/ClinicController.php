@@ -120,7 +120,7 @@ class ClinicController extends Controller
     public function allClinics(Request $request)
     {
         try {
-            $clinics = Clinic::with(['schedules', 'municipality', 'specialty'])
+            $clinics = Clinic::with(['schedules', 'municipality'])
                 ->where('Statue', 1)
                 ->paginate(10); // يمكنك استخدام ->get() إن أردت بدون pagination
 
