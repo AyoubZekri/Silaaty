@@ -271,7 +271,7 @@ class ClinicController extends Controller
                     'doctors' => $clinic->doctors->map(function ($doctor) {
                         return [
                             'id' => $doctor->id,
-                            'specialty_name' => $clinic->doctor->specialty->name ?? null,
+                            'specialty_name' => $doctor->specialty->name ?? null,
                             'name' => $doctor->name,
                             'email' => $doctor->email,
                             'phone' => $doctor->phone,
