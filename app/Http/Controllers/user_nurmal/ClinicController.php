@@ -238,12 +238,9 @@ class ClinicController extends Controller
                 $query->where('specialties_id', $id);
             })
                 ->with([
-                    'municipality',
                     'doctors' => function ($query) use ($id) {
                         $query->where('specialties_id', $id);
-                    },
-                    'schedules',
-                    'specialty'
+                    }
                 ])
                 ->paginate(10);
 
