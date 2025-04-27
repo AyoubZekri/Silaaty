@@ -37,12 +37,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('User/logout', [GoogleAuth::class, 'logout']);
 
     // clinic
-    Route::put('Clinics/update/{id}', [register::class, 'update']);
+    Route::post('Clinics/update/{id}', [register::class, 'update']);
     Route::delete('Clinics/delete/{id}', [register::class, 'destroy']);
 
     Route::get('show/doctor/{id}', [DoctorController::class, 'index']);
     Route::post('add/doctor', [DoctorController::class, 'store']);
-    Route::put('updata/doctor/{id}', [DoctorController::class, 'update']);
+    Route::post('updata/doctor/{id}', [DoctorController::class, 'update']);
     Route::delete('delete/doctor/{id}', [DoctorController::class, 'destroy']);
     Route::get('doctor/{id}', [DoctorController::class, 'showdoctor']);
 
@@ -53,7 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::post('Specialty/add', [SpecialtyController::class, 'store']);
-    Route::put('Specialty/update/{id}', [SpecialtyController::class, 'update']);
+    Route::post('Specialty/update/{id}', [SpecialtyController::class, 'update']);
     Route::delete('Specialty/delete/{id}', [SpecialtyController::class, 'destroy']);
 
     Route::post('Schedules/add', [SchedulesController::class, 'addSchedules']);
@@ -62,7 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('Schedules/show/{clinic_id}', [SchedulesController::class, 'getSchedulesByClinicId']);
 
 
-    Route::put('Municipality/update/{id}', [MunicipalityController::class, 'update']);
+    Route::post('Municipality/update/{id}', [MunicipalityController::class, 'update']);
     Route::delete('Municipality/delete/{id}', [MunicipalityController::class, 'destroy']);
     Route::post('Municipality/add', [MunicipalityController::class, 'store']);
 
@@ -73,7 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('User/update', [GoogleAuth::class, 'update']);
 
-    Route::get("Clinic_and_doctor",[ClinicOrDoctorController::class,"ClinicAndDoctor" ]);
+    Route::post("Clinic_and_doctor",[ClinicOrDoctorController::class,"ClinicAndDoctor" ]);
     Route::post('all/doctor', [\App\Http\Controllers\user_nurmal\DoctorController::class, 'Doctorall']);
     Route::post('delet_user/google', [GoogleAuth::class, 'destroy']);
     Route::post('/user/logout', [GoogleAuth::class, 'logout']);
