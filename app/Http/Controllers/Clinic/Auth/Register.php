@@ -159,7 +159,7 @@ class Register extends Controller
 
         try {
             $clinic = Clinic::findOrFail($request->id);
-            $user = $clinic->user;
+            $user = $clinic->users;
 
             $clinicData = [];
             $userData = [];
