@@ -16,6 +16,8 @@ class Doctor extends Model
         'name',
         'email',
         'phone',
+        'profile_image',
+        'Presence'
     ];
 
     /**
