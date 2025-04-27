@@ -14,7 +14,7 @@ class ClinicOrDoctorController extends Controller
     public function ClinicAndDoctor(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "id" => "required"
+            "id" => "required|integer|exists:clinics,id"
         ]);
 
         if ($validator->fails()) {
@@ -25,7 +25,7 @@ class ClinicOrDoctorController extends Controller
             ], 422);
         }
 
-        $clinic = Clinic::with('doctors.specialty')->find($request->id);
+        $clinic = Clinic::with('doctors.specialty')->find($request->input('id'));
 
         if (!$clinic) {
             return response()->json([
