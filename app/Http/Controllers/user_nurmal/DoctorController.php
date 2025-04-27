@@ -14,11 +14,11 @@ class DoctorController extends Controller
         $validator = validator::make($request->all(), [
             'pagination' => "required"
         ]);
+
         if ($validator->fails()) {
             return response()->json([
                 'status' => 0,
-                'message' => 'خطأ في البيانات المدخلة',
-                'errors' => $validator->errors()->first()
+                'message' => $validator->errors()->first(),
             ], 422);
         }
         try {
@@ -27,7 +27,7 @@ class DoctorController extends Controller
                     'specialty',
                     'clinic'
                 ])
-                    ->select('id', 'name', 'email', 'phone', 'specialty_id', 'clinic_id')
+                    ->select('id', 'name', 'email', 'phone', 'specialties_id', 'clinic_id')
                     ->paginate(10);
 
                 $data = $doctors->getCollection()->map(function ($doctor) {
