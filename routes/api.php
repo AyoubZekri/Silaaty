@@ -74,7 +74,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('User/update', [GoogleAuth::class, 'update']);
 
     Route::get("Clinic_and_doctor",[ClinicOrDoctorController::class,"ClinicAndDoctor" ]);
-    Route::get('all/doctor', [\App\Http\Controllers\user_nurmal\DoctorController::class, 'Doctorall']);
+    Route::post('all/doctor', [\App\Http\Controllers\user_nurmal\DoctorController::class, 'Doctorall']);
     Route::post('delet_user/google', [GoogleAuth::class, 'destroy']);
     Route::post('/user/logout', [GoogleAuth::class, 'logout']);
 
