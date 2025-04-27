@@ -29,19 +29,20 @@ class LoginController extends Controller
             $token = $user->createToken('api_token')->plainTextToken;
 
             return response()->json([
-                'status' => 'success',
+                'status' => 1,
+                'message' => 'Success',
                 'user' => $user,
                 'token' => $token,
             ]);
         } catch (ValidationException $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'بيانات الدخول غير صحيحة',
                 'errors' => $e->errors(),
             ], 422);
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء محاولة تسجيل الدخول',
                 'error' => $e->getMessage(),
             ], 500);

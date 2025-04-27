@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Role;
@@ -22,11 +23,11 @@ class RegisterController extends Controller
 
             if ($validator->fails()) {
                 return response()->json([
-                    'status' => 'error',
-                    'errors' => $validator->errors(),
+                    'status' => 0,
+                    'message' => $validator->errors(),
                 ], 422);
             }
-
+            DB::beginTransaction();
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -41,17 +42,18 @@ class RegisterController extends Controller
             }
 
             $token = $user->createToken('admin-token')->plainTextToken;
-
+            DB::commit();
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'تم إنشاء حساب الأدمن بنجاح',
+                'status' => 1,
+                'message' => 'Success',
                 'admin' => $user,
                 "token"=>$token
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء إنشاء حساب الأدمن',
                 'error' => $e->getMessage(),
             ], 500);

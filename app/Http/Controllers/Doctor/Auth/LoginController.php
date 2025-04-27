@@ -20,7 +20,8 @@ class LoginController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
+                "message" => "البيانات فارغة",
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -31,7 +32,7 @@ class LoginController extends Controller
 
             if (!$user || !Hash::check($request->password, $user->password) || $user->user_role != 4) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => 0,
                     'message' => 'البريد الإلكتروني أو كلمة المرور غير صحيحة أو ليس لديك صلاحية الدخول.',
                 ], 401);
             }
@@ -50,7 +51,7 @@ class LoginController extends Controller
 
             if (!$Doctor) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => 0,
                     'message' => 'لم يتم العثور على بيانات الطبيب.',
                 ], 404);
             }
@@ -59,8 +60,8 @@ class LoginController extends Controller
             $token = $user->createToken('API Token')->plainTextToken;
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'تم تسجيل الدخول بنجاح.',
+                'status' => 1,
+                'message' => 'Success',
                 'user' => $user,
                 'Doctor' => $Doctor,
                 'token' => $token,
@@ -68,7 +69,7 @@ class LoginController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء محاولة تسجيل الدخول.',
                 'error' => $e->getMessage(),
             ], 500);

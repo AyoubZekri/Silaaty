@@ -10,10 +10,10 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $reports = Report::all();
-
+        $reports = Report::latest()->get();
         return response()->json([
-            'status' => 'success',
+            'status' => 1,
+            'message' => 'Success',
             'reports' => $reports
         ]);
     }
@@ -21,13 +21,14 @@ class ReportController extends Controller
     public function show(Request $request)
     {
         $request->validate([
-            "id"=>"required"
+            "id" => "required"
         ]);
 
         $reports = Report::where("id", $request->id)->with(['reporter', 'reported'])->get();
 
         return response()->json([
-            'status' => 'success',
+            'status' => 1,
+            'message' => 'Success',
             'reports' => $reports
         ]);
     }
@@ -45,8 +46,8 @@ class ReportController extends Controller
         ]);
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'تم إرسال البلاغ بنجاح',
+            'status' => 1,
+            'message' => 'Success',
             'report' => $report
         ]);
     }
@@ -55,13 +56,13 @@ class ReportController extends Controller
     {
 
         $request->validate([
-            "id"=>"required"
+            "id" => "required"
         ]);
         $report = Report::find($request->id);
 
         if (!$report) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'البلاغ غير موجود'
             ], 404);
         }
@@ -69,8 +70,8 @@ class ReportController extends Controller
         $report->delete();
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'تم حذف البلاغ'
+            'status' => 1,
+            'message' => 'Success',
         ]);
     }
 }

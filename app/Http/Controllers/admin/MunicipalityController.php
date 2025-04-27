@@ -25,10 +25,17 @@ class MunicipalityController extends Controller
 
             $municipality = Municipality::create($request->only(['name', 'name_fr']));
 
-            return response()->json(['status' => 'success', 'message' => 'تمت إضافة البلدية بنجاح', 'municipality' => $municipality]);
+            return response()->json([
+                'status' => 1,
+                'message' => 'Success',
+                'municipality' => $municipality
+            ]);
         } catch (Exception $e) {
             Log::error('خطأ في إضافة البلدية: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'حدث خطأ أثناء إضافة البلدية.'], 500);
+            return response()->json([
+                'status' => 0,
+                'message' => 'حدث خطأ أثناء إضافة البلدية.'
+            ], 500);
         }
     }
 
@@ -37,11 +44,18 @@ class MunicipalityController extends Controller
     {
         try {
             $municipalities = Municipality::all();
-            return response()->json(['status' => 'success', 'municipalities' => $municipalities]);
+            return response()->json([
+                'status' => 1,
+                'message' => 'Success',
+                'municipalities' => $municipalities
+            ]);
 
         } catch (Exception $e) {
             Log::error('خطأ في عرض البلدية: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'حدث خطأ أثناء عرض بيانات البلدية.'], 500);
+            return response()->json([
+                'status' => 0,
+                'message' => 'حدث خطأ أثناء عرض بيانات البلدية.'
+            ], 500);
         }
     }
 
@@ -52,7 +66,10 @@ class MunicipalityController extends Controller
             $municipality = Municipality::find($id);
 
             if (!$municipality) {
-                return response()->json(['status' => 'error', 'message' => 'البلدية غير موجودة'], 404);
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'البلدية غير موجودة'
+                ], 404);
             }
 
             $validator = Validator::make($request->all(), [
@@ -61,15 +78,25 @@ class MunicipalityController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['status' => 'error', 'errors' => $validator->errors()], 422);
+                return response()->json([
+                    'status' => 0,
+                    'message' => $validator->errors()
+                ], 422);
             }
 
             $municipality->update($request->only(['name', 'name_fr']));
 
-            return response()->json(['status' => 'success', 'message' => 'تم تحديث البلدية بنجاح', 'municipality' => $municipality]);
+            return response()->json([
+                'status' => 1,
+                'message' => 'Success',
+                'municipality' => $municipality
+            ]);
         } catch (Exception $e) {
             Log::error('خطأ في تحديث البلدية: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'حدث خطأ أثناء تحديث البلدية.'], 500);
+            return response()->json([
+                'status' => 0,
+                'message' => 'حدث خطأ أثناء تحديث البلدية.'
+            ], 500);
         }
     }
 
@@ -80,15 +107,24 @@ class MunicipalityController extends Controller
             $municipality = Municipality::find($id);
 
             if (!$municipality) {
-                return response()->json(['status' => 'error', 'message' => 'البلدية غير موجودة'], 404);
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'البلدية غير موجودة'
+                ], 404);
             }
 
             $municipality->delete();
 
-            return response()->json(['status' => 'success', 'message' => 'تم حذف البلدية بنجاح']);
+            return response()->json([
+                'status' => 1,
+                'message' => 'Success',
+            ]);
         } catch (Exception $e) {
             Log::error('خطأ في حذف البلدية: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'حدث خطأ أثناء حذف البلدية.'], 500);
+            return response()->json([
+                'status' => 0,
+                'message' => 'حدث خطأ أثناء حذف البلدية.'
+            ], 500);
         }
     }
 }

@@ -21,13 +21,14 @@ class ClinicConfermController extends Controller
             });
 
             return response()->json([
-                'status' => 'success',
+                'status' => 1,
+                'message' => 'Success',
                 'count' => $clinics->count(),
                 'clinics' => $clinics->toArray()
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء جلب البيانات',
                 'error' => $e->getMessage()
             ], 500);
@@ -52,9 +53,13 @@ class ClinicConfermController extends Controller
             $clinic->Statue = 1;
             $clinic->save();
 
-            return response()->json(['message' => 'تمت الموافقة على العيادة بنجاح'], 200);
+            return response()->json([
+                'status' => 1,
+                'message' => 'Success',
+            ], 200);
         } catch (Exception $e) {
             return response()->json([
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء معالجة الطلب',
                 'error' => $e->getMessage()
             ], 500);
@@ -75,9 +80,13 @@ class ClinicConfermController extends Controller
             $clinic->Statue = 2;
             $clinic->save();
 
-            return response()->json(['message' => 'تم رفض العيادة بنجاح'], 200);
+            return response()->json([
+                'status' => 1,
+                'message' => 'تم رفض العيادة بنجاح',
+            ], 200);
         } catch (Exception $e) {
             return response()->json([
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء معالجة الطلب',
                 'error' => $e->getMessage()
             ], 500);
@@ -127,14 +136,15 @@ class ClinicConfermController extends Controller
             });
 
             return response()->json([
-                'status' => 'success',
+                'status' => 1,
+                'message' => 'Success',
                 'count' => $clinics->count(),
                 'clinics' => $clinics
             ]);
 
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء البحث',
                 'error' => $e->getMessage(),
             ], 500);

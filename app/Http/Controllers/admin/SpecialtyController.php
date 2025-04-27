@@ -20,8 +20,8 @@ class SpecialtyController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => 'error',
-                'errors' => $validator->errors(),
+                'status' => 0,
+                'message' => $validator->errors(),
             ], 422);
         }
 
@@ -41,13 +41,13 @@ class SpecialtyController extends Controller
             ]);
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'تم إضافة التخصص بنجاح',
+                'status' => 1,
+                'message' => 'Success',
                 'specialty' => $specialty,
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء إضافة التخصص',
                 'error' => $e->getMessage(),
             ], 500);
@@ -60,7 +60,10 @@ class SpecialtyController extends Controller
         $specialty = specialties::find($id);
 
         if (!$specialty) {
-            return response()->json(['message' => 'التخصص غير موجود'], 404);
+            return response()->json([
+                'status' => 0,
+                'message' => 'التخصص غير موجود'
+            ], 404);
         }
 
         $validator = Validator::make($request->all(), [
@@ -71,8 +74,8 @@ class SpecialtyController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => 'error',
-                'errors' => $validator->errors(),
+                'status' => 0,
+                'message' => $validator->errors(),
             ], 422);
         }
 
@@ -94,13 +97,13 @@ class SpecialtyController extends Controller
 
             $specialty->save();
             return response()->json([
-                'status' => 'success',
-                'message' => 'تم تحديث التخصص بنجاح',
+                'status' => 1,
+                'message' => 'Success',
                 'specialty' => $specialty,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء تحديث التخصص',
                 'error' => $e->getMessage(),
             ], 500);
@@ -113,7 +116,9 @@ class SpecialtyController extends Controller
         $specialty = specialties::find($id);
 
         if (!$specialty) {
-            return response()->json(['message' => 'التخصص غير موجود'], 404);
+            return response()->json([
+                'status' => 0,
+                'message' => 'التخصص غير موجود'], 404);
         }
 
         try {
@@ -124,12 +129,12 @@ class SpecialtyController extends Controller
             $specialty->delete();
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'تم حذف التخصص بنجاح',
+                'status' => 1,
+                'message' => 'Success',
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء حذف التخصص',
                 'error' => $e->getMessage(),
             ], 500);

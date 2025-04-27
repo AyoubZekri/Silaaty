@@ -31,12 +31,12 @@ class GoogleAuth extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()->first()
+                'status' => 0,
+                'message' => $validator->errors()->first(),
             ], 400);
         }
 
-
+        DB::beginTransaction();
 
         $auth = (new Factory)
             ->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')))
@@ -62,15 +62,19 @@ class GoogleAuth extends Controller
 
             if ($user->isUser()) {
                 $token = $user->createToken('auth_token')->plainTextToken;
-
+                DB::commit();
                 return response()->json([
+                    'status' => 1,
+                    'message' => 'Success',
                     'access_token' => $token,
                     'role_id' => $roleId,
                     'user' => $user,
                 ]);
             } else {
+                DB::rollBack();
                 return response()->json([
-                    'error' => ' ليس لديك صلاحيات '
+                    'status' => 0,
+                    'message' => ' ليس لديك صلاحيات '
                 ], 403);
             }
         } else {
@@ -90,8 +94,10 @@ class GoogleAuth extends Controller
             Mail::to($user['email'])->send(new WelcomeMail($user));
 
             $token = $user->createToken('auth_token')->plainTextToken;
-
+            DB::commit();
             return response()->json([
+                'status' => 1,
+                'message' => 'Success',
                 'access_token' => $token,
                 'role_id' => $roleId,
                 'user' => $user,
@@ -138,7 +144,8 @@ class GoogleAuth extends Controller
         $user->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Logged out successfully'
+            'status' => 1,
+            'message' => 'Success',
         ]);
     }
 
@@ -150,7 +157,8 @@ class GoogleAuth extends Controller
         // $user->tokens()->delete();
 
         return response()->json([
-            'message' => 'Destroyed successfully'
+            'status' => 1,
+            'message' => 'Success',
         ]);
     }
 

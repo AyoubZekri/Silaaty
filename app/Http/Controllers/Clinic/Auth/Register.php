@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Contracts\Service\Attribute\Required;
-
+use Illuminate\Support\Facades\DB;
 class Register extends Controller
 {
     public function register(Request $request)
@@ -52,6 +52,7 @@ class Register extends Controller
             ], 422);
         }
 
+        DB::beginTransaction();
         try {
             $registerPath = $request->file('register')->store('clinic_registers', 'public');
 
@@ -88,7 +89,7 @@ class Register extends Controller
 
 
             foreach ($days as $day) {
-                $schedules=clinic_schedules::create([
+                $schedules = clinic_schedules::create([
                     'clinic_id' => $clinic->id,
                     'day' => $day['day'],
                     'opening_time' => $day['opening_time'],
@@ -107,17 +108,20 @@ class Register extends Controller
 
             $token = $user->createToken('API Token')->plainTextToken;
 
+            DB::commit();
+
             return response()->json([
-                'status' => 'success',
-                'message' => 'تم إنشاء الحساب والعيادة بنجاح',
+                'status' => 1,
+                'message' => 'Success',
                 'user' => $user,
                 'clinic' => $clinic,
                 'token' => $token,
             ], 201);
 
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء إنشاء الحساب أو العيادة',
                 'error' => $e->getMessage(),
             ], 500);
@@ -129,7 +133,10 @@ class Register extends Controller
     {
         $clinic = Clinic::find($id);
         if (!$clinic) {
-            return response()->json(['status' => 'error', 'message' => 'العيادة غير موجودة'], 404);
+            return response()->json([
+                'status' => 0,
+                'message' => 'العيادة غير موجودة'
+            ], 404);
         }
 
         $clinic->update($request->only(['name', 'pharm_name_fr', 'address', 'latitude', 'longitude']));
@@ -146,19 +153,29 @@ class Register extends Controller
 
         $clinic->save();
 
-        return response()->json(['status' => 'success', 'message' => 'تم تحديث بيانات العيادة بنجاح', 'clinic' => $clinic]);
+        return response()->json([
+            'status' => 1,
+            'message' => 'Success',
+            'clinic' => $clinic
+        ]);
     }
 
     public function destroy($id)
     {
         $clinic = Clinic::find($id);
         if (!$clinic) {
-            return response()->json(['status' => 'error', 'message' => 'العيادة غير موجودة'], 404);
+            return response()->json([
+                'status' => 0,
+                'message' => 'العيادة غير موجودة'
+            ], 404);
         }
 
         Storage::delete(['public/' . $clinic->profile_image, 'public/' . $clinic->cover_image, 'public/' . $clinic->register]);
         $clinic->delete();
 
-        return response()->json(['status' => 'success', 'message' => 'تم حذف العيادة بنجاح']);
+        return response()->json([
+            'status' => 1,
+            'message' => 'Success',
+        ]);
     }
 }

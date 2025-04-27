@@ -13,12 +13,12 @@ class LogoutController extends Controller
             $request->user()->currentAccessToken()->delete();
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'تم تسجيل الخروج بنجاح',
+                'status' => 1,
+                'message' => 'Success',
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء تسجيل الخروج',
                 'error' => $e->getMessage(),
             ], 500);

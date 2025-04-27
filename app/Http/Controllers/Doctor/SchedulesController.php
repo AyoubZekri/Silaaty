@@ -14,13 +14,14 @@ class SchedulesController extends Controller
             $schedule = DoctorSchedule::where('doctor_id', $doctor_id)->get();
 
             return response()->json([
-                'status' => 'success',
+                'status' => 0,
+                'message' => 'حدث خطأ',
                 'data' => $schedule,
             ], 200);
 
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -39,11 +40,12 @@ class SchedulesController extends Controller
 
             $Schedules = DoctorSchedule::create($data);
             return response()->json([
-                'status' => 'success',
+                'status' => 1,
+                'message' => 'Success',
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -58,7 +60,7 @@ class SchedulesController extends Controller
 
             if (!$schedule) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => 0,
                     'message' => 'الجدول غير موجود',
                 ], 404);
             }
@@ -72,11 +74,13 @@ class SchedulesController extends Controller
 
             $schedule->update($data);
             return response()->json([
-                'status' => 'success',
+                'status' => 1,
+                'message' => 'Success',
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
+                'message' => 'حدث خطأ',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -89,7 +93,8 @@ class SchedulesController extends Controller
         $schedule->delete();
 
         return response()->json([
-            'status' => "success",
+            'status' => 1,
+            'message' => 'Success',
         ]);
     }
 

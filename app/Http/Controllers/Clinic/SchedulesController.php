@@ -17,13 +17,15 @@ class SchedulesController extends Controller
             $schedule = clinic_schedules::where('clinic_id', $clinic_id)->get();
 
             return response()->json([
-                'status' => 'success',
+                'status' => 1,
+                'message' => 'Success',
                 'data' => $schedule,
             ], 200);
 
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
+                'message' => 'حدث خطأ',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -40,13 +42,14 @@ class SchedulesController extends Controller
                 'closing_time' => 'required|date_format:H:i|after:opening_time'
             ]);
 
-            $Schedules = clinic_schedules ::create($data);
+            $Schedules = clinic_schedules::create($data);
             return response()->json([
-                'status' => 'success',
+                'status' => 1,
+                'message' => 'Success',
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -61,7 +64,7 @@ class SchedulesController extends Controller
 
             if (!$schedule) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => 0,
                     'message' => 'الجدول غير موجود',
                 ], 404);
             }
@@ -75,11 +78,12 @@ class SchedulesController extends Controller
 
             $schedule->update($data);
             return response()->json([
-                'status' => 'success',
+                'status' => 1,
+                'message' => 'Success',
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -92,7 +96,8 @@ class SchedulesController extends Controller
         $schedule->delete();
 
         return response()->json([
-            'status' => "success",
+            'status' => 1,
+            'message' => 'Success',
         ]);
     }
 }

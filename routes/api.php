@@ -9,6 +9,7 @@ use App\Http\Controllers\Clinic\Auth\Login;
 use App\Http\Controllers\Clinic\Auth\Register;
 use App\Http\Controllers\Clinic\SchedulesController;
 use App\Http\Controllers\Doctor\Auth\LogouteController;
+use App\Http\Controllers\user_nurmal\ClinicOrDoctorController;
 use App\Http\Controllers\user_nurmal\ReportController;
 use App\Http\Controllers\showSpecialtyController;
 use App\Http\Controllers\admin\SpecialtyController;
@@ -38,7 +39,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // clinic
     Route::put('Clinics/update/{id}', [register::class, 'update']);
     Route::delete('Clinics/delete/{id}', [register::class, 'destroy']);
-
 
     Route::get('show/doctor/{id}', [DoctorController::class, 'index']);
     Route::post('add/doctor', [DoctorController::class, 'store']);
@@ -73,7 +73,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('User/update', [GoogleAuth::class, 'update']);
 
-
+    Route::get("Clinic_and_doctor",[ClinicOrDoctorController::class,"ClinicAndDoctor" ]);
+    Route::get('doctor/all', [DoctorController::class, 'allDoctor']);
     Route::post('delet_user/google', [GoogleAuth::class, 'destroy']);
     Route::post('/user/logout', [GoogleAuth::class, 'logout']);
 

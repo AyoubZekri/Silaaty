@@ -26,12 +26,13 @@ class ClinicController extends Controller
                 ->get();
 
             return response()->json([
-                'status' => 'success',
+                'status' => 1,
+                'message' => 'Success',
                 'clinics' => $clinics
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء جلب البيانات',
                 'error' => $e->getMessage()
             ], 500);
@@ -55,12 +56,13 @@ class ClinicController extends Controller
                 ->get();
 
             return response()->json([
-                'status' => 'success',
+                'status' => 1,
+                'message' => 'Success',
                 'clinics' => $clinics
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء البحث',
                 'error' => $e->getMessage()
             ], 500);
@@ -206,7 +208,7 @@ class ClinicController extends Controller
 
             if (!$clinic) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => 0,
                     'message' => 'العيادة غير موجودة'
                 ], 404);
             }
@@ -217,12 +219,13 @@ class ClinicController extends Controller
             unset($clinic->specialty);
 
             return response()->json([
-                'status' => 'success',
+                'status' => 1,
+                'message' => 'Success',
                 'clinic' => $clinic
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء جلب البيانات',
                 'error' => $e->getMessage()
             ], 500);
@@ -272,8 +275,8 @@ class ClinicController extends Controller
                             'name' => $doctor->name,
                             'email' => $doctor->email,
                             'phone' => $doctor->phone,
-                            'schedules'=>$doctor->schedules->map(function($schedule){
-                                return[
+                            'schedules' => $doctor->schedules->map(function ($schedule) {
+                                return [
                                     'day' => $schedule->day,
                                     'start_time' => $schedule->opening_time,
                                     'end_time' => $schedule->closing_time,

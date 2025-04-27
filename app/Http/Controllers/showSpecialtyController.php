@@ -19,7 +19,8 @@ class showSpecialtyController extends Controller
         });
 
         return response()->json([
-            'status' => 'success',
+            'status' => 1,
+            'message' => 'Success',
             'specialties' => $specialties,
         ]);
     }

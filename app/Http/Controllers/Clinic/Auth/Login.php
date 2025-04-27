@@ -21,7 +21,7 @@ class Login extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -32,7 +32,7 @@ class Login extends Controller
 
             if (!$user || !Hash::check($request->password, $user->password) || $user->user_role != 3) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => 0,
                     'message' => 'البريد الإلكتروني أو كلمة المرور غير صحيحة أو ليس لديك صلاحية الدخول.',
                 ], 401);
             }
@@ -50,21 +50,21 @@ class Login extends Controller
 
             if (!$clinic) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => 0,
                     'message' => 'لم يتم العثور على بيانات العيادة.',
                 ], 404);
             }
 
             if ($clinic->Statue == 0) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => 0,
                     'message' => 'انتظر حتى يتم الموافقة على العيادة.',
                 ], 403);
             }
 
             if ($clinic->Statue == 2) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => 0,
                     'message' => "لم يتم الموافقة على العيادة.",
                     'content' => "هناك خطأ في السجل أو العيادة غير معترف بها.",
                 ], 403);
@@ -72,15 +72,15 @@ class Login extends Controller
 
             if ($clinic->Statue != 1) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => 0,
                     'message' => 'لا يمكنك تسجيل الدخول حالياً، حالة العيادة غير صالحة.',
                 ], 403);
             }
             $token = $user->createToken('API Token')->plainTextToken;
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'تم تسجيل الدخول بنجاح.',
+                'status' => 1,
+                'message' => 'Success',
                 'user' => $user,
                 'clinic' => $clinic,
                 'token' => $token,
@@ -88,7 +88,7 @@ class Login extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء محاولة تسجيل الدخول.',
                 'error' => $e->getMessage(),
             ], 500);
@@ -102,12 +102,12 @@ class Login extends Controller
             $request->user()->currentAccessToken()->delete();
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'تم تسجيل الخروج بنجاح.',
+                'status' => 1,
+                'message' => 'Success',
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status' => 0,
                 'message' => 'حدث خطأ أثناء تسجيل الخروج.',
                 'error' => $e->getMessage(),
             ], 500);
