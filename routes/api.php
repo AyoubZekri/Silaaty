@@ -37,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('User/logout', [GoogleAuth::class, 'logout']);
 
     // clinic
-    Route::post('Clinics/update/{id}', [register::class, 'update']);
+    Route::post('Clinics/update', [register::class, 'update']);
     Route::post('Clinics/delete/{id}', [register::class, 'destroy']);
 
     Route::get('show/doctor/{id}', [DoctorController::class, 'index']);
