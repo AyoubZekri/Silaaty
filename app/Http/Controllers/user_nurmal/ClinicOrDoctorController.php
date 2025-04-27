@@ -6,14 +6,24 @@ use App\Http\Controllers\Controller;
 use App\Models\Clinic;
 use App\Models\clinic_schedules;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 
 class ClinicOrDoctorController extends Controller
 {
     public function ClinicAndDoctor(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             "id" => "required"
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'خطأ في البيانات المدخلة',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
         $clinic = Clinic::with('doctors.specialty')->find($request->id);
 
