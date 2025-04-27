@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class DoctorController extends Controller
 {
@@ -40,10 +41,16 @@ class DoctorController extends Controller
 
     public function allDoctor(Request $request)
     {
-        $request->validate([
+        $validator = validator::make($request->all(), [
             'pagination' => "required"
         ]);
-
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'خطأ في البيانات المدخلة',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         try {
             if ($request->pagination == true) {
                 $doctors = Doctor::with([
@@ -115,8 +122,6 @@ class DoctorController extends Controller
                 ], 200);
 
             }
-
-
         } catch (Exception $e) {
             return response()->json([
                 'status' => 0,

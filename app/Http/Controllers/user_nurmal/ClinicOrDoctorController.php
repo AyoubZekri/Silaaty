@@ -19,7 +19,7 @@ class ClinicOrDoctorController extends Controller
 
         if (!$clinic) {
             return response()->json([
-                'status' => "false",
+                'status' => 0,
                 'message' => 'العيادة غير موجودة',
             ]);
         }
@@ -44,7 +44,7 @@ class ClinicOrDoctorController extends Controller
         ];
 
         return response()->json([
-            'status' => 'true',
+            'status' => 1,
             'message' => 'Success',
             'data' => $data
         ]);
