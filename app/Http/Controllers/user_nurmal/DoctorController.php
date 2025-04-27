@@ -21,12 +21,10 @@ class DoctorController extends Controller
                 'message' => $validator->errors()->first(),
             ], 422);
         }
+
         try {
             if ($request->pagination == true) {
-                $doctors = Doctor::with([
-                    'specialty',
-                    'clinic'
-                ])
+                $doctors = Doctor::with(['specialty', 'clinic'])
                     ->select('id', 'name', 'email', 'phone', 'specialties_id', 'clinic_id')
                     ->paginate(10);
 
@@ -57,14 +55,13 @@ class DoctorController extends Controller
                         'last_page' => $doctors->lastPage(),
                         'per_page' => $doctors->perPage(),
                         'total' => $doctors->total(),
+                        'count' => $doctors->count(),
                     ]
                 ], 200);
+
             } else {
-                $doctors = Doctor::with([
-                    'specialty',
-                    'clinic'
-                ])
-                    ->select('id', 'name', 'email', 'phone', 'specialty_id', 'clinic_id')
+                $doctors = Doctor::with(['specialty', 'clinic'])
+                    ->select('id', 'name', 'email', 'phone', 'specialties_id', 'clinic_id')
                     ->get();
 
                 $data = $doctors->map(function ($doctor) {
@@ -90,8 +87,8 @@ class DoctorController extends Controller
                     'message' => 'Success',
                     'data' => $data,
                 ], 200);
-
             }
+
         } catch (Exception $e) {
             return response()->json([
                 'status' => 0,
@@ -100,5 +97,6 @@ class DoctorController extends Controller
             ], 500);
         }
     }
+
 
 }
