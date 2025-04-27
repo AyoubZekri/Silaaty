@@ -38,7 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // clinic
     Route::post('Clinics/update/{id}', [register::class, 'update']);
-    Route::delete('Clinics/delete/{id}', [register::class, 'destroy']);
+    Route::post('Clinics/delete/{id}', [register::class, 'destroy']);
 
     Route::get('show/doctor/{id}', [DoctorController::class, 'index']);
     Route::post('add/doctor', [DoctorController::class, 'store']);
