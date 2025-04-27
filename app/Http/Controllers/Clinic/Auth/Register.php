@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Contracts\Service\Attribute\Required;
 use Illuminate\Support\Facades\DB;
+
 class Register extends Controller
 {
     public function register(Request $request)
@@ -129,35 +130,109 @@ class Register extends Controller
     }
 
 
-    public function update(Request $request, $id)
+
+    public function update(Request $request)
     {
-        $clinic = Clinic::find($id);
-        if (!$clinic) {
+        $validator = Validator::make($request->all(), [
+            'id' => "required",
+            'name' => 'sometimes|required|string|max:255',
+            'name_fr' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|unique:users,email,' . $request->id,
+            'address' => 'sometimes|required|string',
+            'register' => 'sometimes|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'municipalitie_id' => 'sometimes|required|exists:municipalities,id',
+            'latitude' => 'sometimes|required|numeric',
+            'longitude' => 'sometimes|required|numeric',
+            'clinic_image' => 'sometimes|image|mimes:jpg,jpeg,png|max:2048',
+            'cover_image' => 'sometimes|image|mimes:jpg,jpeg,png|max:2048',
+            "phone" => "sometimes|required|string|min:10|max:12",
+        ]);
+
+        if ($validator->fails()) {
             return response()->json([
                 'status' => 0,
-                'message' => 'العيادة غير موجودة'
-            ], 404);
+                'message' => $validator->errors()
+            ], 422);
         }
 
-        $clinic->update($request->only(['name', 'pharm_name_fr', 'address', 'latitude', 'longitude']));
+        DB::beginTransaction();
 
-        if ($request->hasFile('clinic_image')) {
-            Storage::delete('public/' . $clinic->profile_image);
-            $clinic->profile_image = $request->file('clinic_image')->store('clinic_images', 'public');
+        try {
+            $clinic = Clinic::findOrFail($request->id);
+            $user = $clinic->user;
+
+            $clinicData = [];
+            $userData = [];
+
+            if ($request->has('name')) {
+                $clinicData['name'] = $request->name;
+                $userData['name'] = $request->name;
+            }
+            if ($request->has('name_fr')) {
+                $clinicData['pharm_name_fr'] = $request->name_fr;
+            }
+            if ($request->has('email')) {
+                $clinicData['email'] = $request->email;
+                $userData['email'] = $request->email;
+            }
+            if ($request->has('address')) {
+                $clinicData['address'] = $request->address;
+            }
+            if ($request->has('municipalitie_id')) {
+                $clinicData['municipalities_id'] = $request->municipalitie_id;
+            }
+            if ($request->has('latitude')) {
+                $clinicData['latitude'] = $request->latitude;
+            }
+            if ($request->has('longitude')) {
+                $clinicData['longitude'] = $request->longitude;
+            }
+            if ($request->has('phone')) {
+                $clinicData['phone'] = $request->phone;
+                $userData['phone'] = $request->phone;
+            }
+
+            if ($request->hasFile('register')) {
+                if ($clinic->register && Storage::disk('public')->exists($clinic->register)) {
+                    Storage::disk('public')->delete($clinic->register);
+                }
+                $clinicData['register'] = $request->file('register')->store('clinic_registers', 'public');
+            }
+
+            if ($request->hasFile('clinic_image')) {
+                if ($clinic->profile_image && Storage::disk('public')->exists($clinic->profile_image)) {
+                    Storage::disk('public')->delete($clinic->profile_image);
+                }
+                $clinicData['profile_image'] = $request->file('clinic_image')->store('clinic_images', 'public');
+            }
+
+            if ($request->hasFile('cover_image')) {
+                if ($clinic->cover_image && Storage::disk('public')->exists($clinic->cover_image)) {
+                    Storage::disk('public')->delete($clinic->cover_image);
+                }
+                $clinicData['cover_image'] = $request->file('cover_image')->store('clinic_images', 'public');
+            }
+
+            $clinic->update($clinicData);
+            $user->update($userData);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'تم تحديث بيانات العيادة بنجاح',
+                'clinic' => $clinic,
+                'user' => $user,
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 0,
+                'message' => 'حدث خطأ أثناء تحديث بيانات العيادة',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        if ($request->hasFile('cover_image')) {
-            Storage::delete('public/' . $clinic->cover_image);
-            $clinic->cover_image = $request->file('cover_image')->store('clinic_images', 'public');
-        }
-
-        $clinic->save();
-
-        return response()->json([
-            'status' => 1,
-            'message' => 'Success',
-            'clinic' => $clinic
-        ]);
     }
 
     public function destroy($id)
