@@ -14,16 +14,17 @@ class ClinicOrDoctorController extends Controller
     public function ClinicAndDoctor(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "id" => "required|integer|exists:clinics,id"
+            "id" => "required|integer|exists:clinics,id",
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 0,
-                'message' => 'خطأ في البيانات المدخلة',
-                'errors' => $validator->errors()
-            ], 422);
+                'message' => $validator->errors()->first(),
+            ], 400);
         }
+
+
 
         $clinic = Clinic::with('doctors.specialty')->find($request->input('id'));
 
