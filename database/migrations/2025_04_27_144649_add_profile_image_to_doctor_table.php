@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('doctors', function (Blueprint $table) {
-            $table->string('profile_image')->nullable()->after('cover_image');
+            $table->string('profile_image')->nullable();
             $table->boolean("Presence")->default(false);
         });
     }
