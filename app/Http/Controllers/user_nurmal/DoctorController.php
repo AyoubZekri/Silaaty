@@ -25,7 +25,7 @@ class DoctorController extends Controller
         try {
             if ($request->pagination == true) {
                 $doctors = Doctor::with(['specialty', 'clinic'])
-                    ->select('id', 'name', 'email', 'phone', 'specialties_id', 'clinic_id')
+                    ->select('id', 'name', 'email', 'phone','profile_image','Presence', 'specialties_id', 'clinic_id')
                     ->paginate(10);
 
                 $data = $doctors->getCollection()->map(function ($doctor) {
@@ -59,7 +59,7 @@ class DoctorController extends Controller
 
             } else {
                 $doctors = Doctor::with(['specialty', 'clinic'])
-                    ->select('id', 'name', 'email', 'phone', 'specialties_id', 'clinic_id')
+                    ->select('id', 'name', 'email', 'phone', 'profile_image', 'Presence', 'specialties_id', 'clinic_id')
                     ->get();
 
                 $data = $doctors->map(function ($doctor) {

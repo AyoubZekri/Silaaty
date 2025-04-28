@@ -37,7 +37,16 @@ class DoctorController extends Controller
             $doctor->profile_image = $doctor->profile_image
                 ? asset('storage/' . $doctor->profile_image)
                 : null;
+            $doctor->clinic->cover_image = $doctor->clinic->cover_image
+                ? asset('storage/' . $doctor->clinic->cover_image)
+                : null;
+
+            $doctor->clinic->profile_image = $doctor->clinic->profile_image
+                ? asset('storage/' . $doctor->clinic->profile_image)
+                : null;
         }
+
+
         // $doctors->profile_image = $doctors->profile_image ? asset('storage/' . $doctors->profile_image) : null;
 
 
@@ -72,7 +81,7 @@ class DoctorController extends Controller
             return response()->json([
                 'status' => 1,
                 'message' => 'Success',
-                'clinic' => $doctor
+                'doctor' => $doctor
             ]);
         } catch (Exception $e) {
             return response()->json([
