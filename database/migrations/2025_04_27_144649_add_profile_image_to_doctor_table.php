@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('doctor', function (Blueprint $table) {
+        Schema::table('doctors', function (Blueprint $table) {
             $table->string('profile_image')->nullable()->after('cover_image');
             $table->boolean("Presence")->default(false);
         });
@@ -22,7 +22,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('doctor', function (Blueprint $table) {
+        Schema::table('doctors', function (Blueprint $table) {
             $table->dropColumn(['profile_image', 'Presence']);
         });
     }
