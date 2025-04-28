@@ -34,29 +34,27 @@ class DoctorController extends Controller
                         'name' => $doctor->name,
                         'email' => $doctor->email,
                         'phone' => $doctor->phone,
+                        'profile_image' => $doctor->profile_image ? asset('storage/' . $doctor->profile_image) : null,
+                        'Presence'=> $doctor->Presence,
                         'specialty_name' => $doctor->specialty ? $doctor->specialty->name : null,
-                        'clinic' => $doctor->clinic ? [
-                            'id' => $doctor->clinic->id,
-                            'name' => $doctor->clinic->name,
-                            'address' => $doctor->clinic->address,
-                            'phone' => $doctor->clinic->phone,
-                            'email' => $doctor->clinic->email,
-                            'pharm_name_fr' => $doctor->clinic->pharm_name_fr,
-                        ] : null,
+                        'name_clinic' => $doctor->clinic->name,
                     ];
                 });
 
                 return response()->json([
                     'status' => 1,
                     'message' => 'Success',
-                    'data' => $data,
-                    'meta' => [
-                        'current_page' => $doctors->currentPage(),
-                        'last_page' => $doctors->lastPage(),
-                        'per_page' => $doctors->perPage(),
-                        'total' => $doctors->total(),
-                        'count' => $doctors->count(),
-                    ]
+                    'data'=>[
+                        'data' => $data,
+                        'meta' => [
+                            'current_page' => $doctors->currentPage(),
+                            'last_page' => $doctors->lastPage(),
+                            'per_page' => $doctors->perPage(),
+                            'total' => $doctors->total(),
+                            'count' => $doctors->count(),
+                        ]
+                    ],
+
                 ], 200);
 
             } else {
@@ -71,14 +69,7 @@ class DoctorController extends Controller
                         'email' => $doctor->email,
                         'phone' => $doctor->phone,
                         'specialty_name' => $doctor->specialty ? $doctor->specialty->name : null,
-                        'clinic' => $doctor->clinic ? [
-                            'id' => $doctor->clinic->id,
-                            'name' => $doctor->clinic->name,
-                            'address' => $doctor->clinic->address,
-                            'phone' => $doctor->clinic->phone,
-                            'email' => $doctor->clinic->email,
-                            'pharm_name_fr' => $doctor->clinic->pharm_name_fr,
-                        ] : null,
+                        'name_clinic' => $doctor->clinic->name,
                     ];
                 });
 

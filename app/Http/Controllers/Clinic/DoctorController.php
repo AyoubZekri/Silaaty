@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class DoctorController extends Controller
@@ -27,10 +28,14 @@ class DoctorController extends Controller
             ], 404);
         }
 
+
         $doctors = Doctor::with('clinic')
             ->where('clinic_id', $id)
             ->with("schedules")
             ->get();
+
+        $doctors->profile_image = $doctors->profile_image ? asset('storage/' . $doctors->profile_image) : null;
+
 
         return response()->json([
             'status' => 1,
@@ -52,6 +57,8 @@ class DoctorController extends Controller
                     'message' => 'الطبيب غير موجودة'
                 ], 404);
             }
+            $doctor->profile_image = $doctor->profile_image ? asset('storage/' . $doctor->profile_image) : null;
+
 
             // $clinic->cover_image = $clinic->cover_image ? asset('storage/' . $clinic->cover_image) : null;
             // $clinic->profile_image = $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null;
@@ -81,6 +88,7 @@ class DoctorController extends Controller
             'password' => 'required|string|min:6',
             'clinic_id' => 'required|exists:clinics,id',
             'specialties_id' => 'required|exists:specialties,id',
+            'profile_image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $days = collect([
@@ -95,6 +103,9 @@ class DoctorController extends Controller
 
         DB::beginTransaction();
         try {
+
+            $profile_image = $request->file('profile_image')->store('doctor_images', 'public');
+
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -110,6 +121,7 @@ class DoctorController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
+                'profile_image'=>$profile_image
             ]);
 
             foreach ($days as $day) {
@@ -164,17 +176,24 @@ class DoctorController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $doctor->user_id,
             'phone' => 'required|string|max:15',
-            'password' => 'nullable|string|min:6',
             'specialties_id' => 'required|exists:specialties,id',
             'clinic_id' => 'required|exists:clinics,id',
-
+            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
         DB::beginTransaction();
         try {
+
+            if ($request->hasFile('profile_image')) {
+                if ($doctor->profile_image) {
+                    Storage::disk('public')->delete($doctor->profile_image);
+                }
+                $profileImagePath = $request->file('profile_image')->store('doctor_images', 'public');
+            } else {
+                $profileImagePath = $doctor->profile_image;
+            }
             $doctor->user->update([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => $request->password ? Hash::make($request->password) : $doctor->user->password,
             ]);
 
             $doctor->update([
@@ -183,8 +202,12 @@ class DoctorController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
+                'profile_image' => $profileImagePath,
             ]);
             DB::commit();
+
+            $doctor->profile_image = $doctor->profile_image ? asset('storage/' . $doctor->profile_image) : null;
+
             return response()->json([
                 'status' => 1,
                 'message' => 'Success',
@@ -213,13 +236,34 @@ class DoctorController extends Controller
             ], 404);
         }
 
-        $doctor->user->delete();
+        DB::beginTransaction();
+        try {
+            $profileImagePath = $doctor->profile_image;
 
-        $doctor->delete();
+            $doctor->user->delete();
 
-        return response()->json([
-            'status' => 1,
-            'message' => 'Success',
-        ], 200);
+            $doctor->delete();
+
+            if ($profileImagePath) {
+                Storage::disk('public')->delete($profileImagePath);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'تم حذف الطبيب بنجاح',
+            ], 200);
+
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 0,
+                'message' => 'حدث خطأ أثناء عملية الحذف',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+
 }
