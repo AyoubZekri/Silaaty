@@ -34,11 +34,10 @@ class DoctorController extends Controller
                         'name' => $doctor->name,
                         'email' => $doctor->email,
                         'phone' => $doctor->phone,
-                        'profile_image' => $doctor->profile_image ? asset('storage/' . $doctor->profile_image) : null,
-                        'Presence'=> $doctor->Presence,
                         'specialty_name' => $doctor->specialty ? $doctor->specialty->name : null,
                         'name_clinic' => $doctor->clinic->name,
-
+                        'profile_image' => $doctor->profile_image ? asset('storage/' . $doctor->profile_image) : null,
+                        'Presence' => $doctor->Presence,
                     ];
                 });
 
