@@ -33,7 +33,11 @@ class DoctorController extends Controller
             ->where('clinic_id', $id)
             ->with("schedules")
             ->get();
-
+        foreach ($doctors as $doctor) {
+            $doctor->profile_image = $doctor->profile_image
+                ? asset('storage/' . $doctor->profile_image)
+                : null;
+        }
         // $doctors->profile_image = $doctors->profile_image ? asset('storage/' . $doctors->profile_image) : null;
 
 
@@ -121,7 +125,7 @@ class DoctorController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'profile_image'=>$profile_image
+                'profile_image' => $profile_image
             ]);
 
             foreach ($days as $day) {
