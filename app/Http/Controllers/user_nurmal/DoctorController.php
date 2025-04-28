@@ -38,6 +38,7 @@ class DoctorController extends Controller
                         'Presence'=> $doctor->Presence,
                         'specialty_name' => $doctor->specialty ? $doctor->specialty->name : null,
                         'name_clinic' => $doctor->clinic->name,
+
                     ];
                 });
 
@@ -70,6 +71,9 @@ class DoctorController extends Controller
                         'phone' => $doctor->phone,
                         'specialty_name' => $doctor->specialty ? $doctor->specialty->name : null,
                         'name_clinic' => $doctor->clinic->name,
+                        'profile_image' => $doctor->profile_image ? asset('storage/' . $doctor->profile_image) : null,
+                        'Presence' => $doctor->Presence,
+
                     ];
                 });
 
