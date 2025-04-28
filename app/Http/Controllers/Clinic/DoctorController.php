@@ -34,7 +34,7 @@ class DoctorController extends Controller
             ->with("schedules")
             ->get();
 
-        $doctors->profile_image = $doctors->profile_image ? asset('storage/' . $doctors->profile_image) : null;
+        // $doctors->profile_image = $doctors->profile_image ? asset('storage/' . $doctors->profile_image) : null;
 
 
         return response()->json([
