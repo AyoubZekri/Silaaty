@@ -12,8 +12,8 @@ class StatisticsController extends Controller
 {
     public function index()
     {
-        $normalUsersCount = User::where('role', '2')->count();
-        $doctorsCount = User::where('role', '4')->count();
+        $normalUsersCount = User::where('user_role', '2')->count();
+        $doctorsCount = User::where('user_role', '4')->count();
 
         $approvedClinics = Clinic::where('Statue', '1')->count();
         $rejectedClinics = Clinic::where('Statue', '2')->count();
