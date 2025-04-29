@@ -48,8 +48,8 @@ class Register extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => 'error',
-                'errors' => $validator->errors()
+                'status' => 0,
+                "message" => $validator->errors()->first()
             ], 422);
         }
 
@@ -151,7 +151,7 @@ class Register extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 0,
-                'message' => $validator->errors()
+                'message' => $validator->errors()->first()
             ], 422);
         }
 

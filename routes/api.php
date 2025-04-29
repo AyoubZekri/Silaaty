@@ -9,6 +9,7 @@ use App\Http\Controllers\Clinic\Auth\Login;
 use App\Http\Controllers\Clinic\Auth\Register;
 use App\Http\Controllers\Clinic\SchedulesController;
 use App\Http\Controllers\Doctor\Auth\LogouteController;
+use App\Http\Controllers\Doctor\PresenceController;
 use App\Http\Controllers\user_nurmal\ClinicOrDoctorController;
 use App\Http\Controllers\user_nurmal\ReportController;
 use App\Http\Controllers\showSpecialtyController;
@@ -89,6 +90,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('Schedules_doctor/delete/{id}', [\App\Http\Controllers\Doctor\SchedulesController::class, 'delete']);
     Route::get('Schedules_doctor/show/{clinic_id}', [\App\Http\Controllers\Doctor\SchedulesController::class, 'getSchedulesByClinicId']);
 
+    Route::post("/doctor/Presence",[PresenceController::class, 'Presence']);
 });
 
 Route::post('/admin/login', [LoginController::class, 'login']);
