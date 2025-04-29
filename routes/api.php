@@ -74,8 +74,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('User/update', [GoogleAuth::class, 'update']);
 
-    Route::post("Clinic_and_doctor",[ClinicOrDoctorController::class,"ClinicAndDoctor" ]);
-    Route::post('all/doctor', [\App\Http\Controllers\user_nurmal\DoctorController::class, 'Doctorall']);
     Route::post('delet_user/google', [GoogleAuth::class, 'destroy']);
     Route::post('/user/logout', [GoogleAuth::class, 'logout']);
 
@@ -122,6 +120,8 @@ Route::get('Municipality/show', [MunicipalityController::class, 'show']);
 
 Route::post('/doctor/login', [\App\Http\Controllers\Doctor\Auth\LoginController::class, 'login']);
 
+Route::post('all/doctor', [\App\Http\Controllers\user_nurmal\DoctorController::class, 'Doctorall']);
+Route::post("Clinic_and_doctor",[ClinicOrDoctorController::class,"ClinicAndDoctor" ]);
 
 
 
