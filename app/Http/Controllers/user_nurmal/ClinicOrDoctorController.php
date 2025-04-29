@@ -50,7 +50,7 @@ class ClinicOrDoctorController extends Controller
                     'email' => $doctor->email,
                     'phone' => $doctor->phone,
                     'specialty_name' => $doctor->specialty->name ?? null,
-                    'name_clinic'=> $clinic->name,
+                    'name_clinic'=> $doctor->clinic->name,
                     'profile_image' => $doctor->profile_image ? asset('storage/' . $doctor->profile_image) : null,
                     'Presence' => $doctor->Presence,
                 ];
