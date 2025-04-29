@@ -84,4 +84,9 @@ class User extends Authenticatable
     {
         return $this->user_roles()->where('role_name', 'Clinic')->exists();
     }
+
+    public function isDoctor()
+    {
+        return $this->user_roles()->where('role_name', 'Doctor')->exists();
+    }
 }

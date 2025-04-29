@@ -5,6 +5,7 @@ use App\Http\Controllers\admin\Auth\LogoutController;
 use App\Http\Controllers\admin\Auth\RegisterController;
 use App\Http\Controllers\admin\ClinicConfermController;
 use App\Http\Controllers\admin\MunicipalityController;
+use App\Http\Controllers\admin\StatisticsController;
 use App\Http\Controllers\Clinic\Auth\Login;
 use App\Http\Controllers\Clinic\Auth\Register;
 use App\Http\Controllers\Clinic\SchedulesController;
@@ -93,7 +94,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('/admin/login', [LoginController::class, 'login']);
 Route::post('/admin/create', [RegisterController::class, 'Registeradmin']);
-
+Route::get("Statistics",[StatisticsController::class,"index"]);
 
 Route::post('auth/google', [GoogleAuth::class, 'GoogleLogin']);
 Route::get('Clinics/nearby', [ClinicController::class, 'nearbyClinics']);
