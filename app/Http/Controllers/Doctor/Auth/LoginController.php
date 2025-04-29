@@ -56,6 +56,9 @@ class LoginController extends Controller
                 ], 404);
             }
 
+            $Doctor->profile_image = $Doctor->profile_image ? asset('storage/' . $Doctor->profile_image) : null;
+
+
 
             $token = $user->createToken('API Token')->plainTextToken;
 

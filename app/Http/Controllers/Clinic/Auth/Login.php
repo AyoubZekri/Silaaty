@@ -48,6 +48,8 @@ class Login extends Controller
             ->with(['schedules'])
             ->first();
 
+            $clinic->cover_image = $clinic->cover_image ? asset('storage/'.$clinic->cover_image):null;
+            $clinic->profile_image = $clinic->profile_image? asset('storage/' . $clinic->profile_image) : null;
             if (!$clinic) {
                 return response()->json([
                     'status' => 0,
