@@ -49,7 +49,7 @@ class ClinicOrDoctorController extends Controller
                     'name' => $doctor->name,
                     'email' => $doctor->email,
                     'phone' => $doctor->phone,
-                    'specialty' => $doctor->specialty->name ?? null,
+                    'specialty_name' => $doctor->specialty->name ?? null,
                     'profile_image' => $doctor->profile_image ? asset('storage/' . $doctor->profile_image) : null,
                     'Presence' => $doctor->Presence,
                 ];
