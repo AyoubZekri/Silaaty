@@ -20,7 +20,7 @@ class CountReportController extends Controller
             ->with([
                 'reported' => function ($query) {
                     $query->select('id')->with([
-                        'user_Clinic'
+                        'user_Clinic:id,user_id,name,pharm_name_fr,profile_image,address'
                     ]);
                 }
             ])
@@ -43,4 +43,5 @@ class CountReportController extends Controller
             "data" => $clinicReports
         ], 200);
     }
+
 }

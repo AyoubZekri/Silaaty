@@ -61,7 +61,7 @@ class User extends Authenticatable
 
     public function user_Clinic()
     {
-        return $this->hasOne('App\Models\Clinic');
+        return $this->hasOne(Clinic::class, "user_id");
     }
 
     public function notifications()
