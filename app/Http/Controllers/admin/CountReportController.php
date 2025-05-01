@@ -4,8 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Report;
-use DB;
-use Google\Rpc\Status;
+use \Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class CountReportController extends Controller
@@ -19,7 +18,7 @@ class CountReportController extends Controller
             ->with([
                 'reported' => function ($query) {
                     $query->select('id')->with([
-                        'user_Clinic:id,user_id,name,pharm_name_fr,profile_image,address'
+                        'user_Clinic:user_id,name,pharm_name_fr,profile_image,address'
                     ]);
                 }
             ])
