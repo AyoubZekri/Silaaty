@@ -4,6 +4,8 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Clinic;
+use App\Models\Municipality;
+use App\Models\specialties;
 use App\Models\User;
 use Google\Rpc\Status;
 use Illuminate\Http\Request;
@@ -19,6 +21,9 @@ class StatisticsController extends Controller
         $rejectedClinics = Clinic::where('Statue', '2')->count();
         $pendingClinics = Clinic::where('Statue', '0')->count();
 
+        $municipality = Municipality::all()->count();
+        $specialties = specialties::all()->count();
+
         return response()->json([
             'Status' => 0,
             'message' => 'success',
@@ -27,6 +32,8 @@ class StatisticsController extends Controller
             'approved' => $approvedClinics,
             'rejected' => $rejectedClinics,
             'pending' => $pendingClinics,
+            'municipality'=>$municipality,
+            'specialties'=>$specialties
         ]);
     }
 }
