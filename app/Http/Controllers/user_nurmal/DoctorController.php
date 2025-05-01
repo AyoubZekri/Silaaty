@@ -23,6 +23,7 @@ class DoctorController extends Controller
         }
 
         try {
+            $pagination= $request->pagination ;
             if ($request->pagination == true) {
                 $doctors = Doctor::with(['specialty', 'clinic'])
                     ->select('id', 'name', 'email', 'phone','profile_image','Presence', 'specialties_id', 'clinic_id')
@@ -42,6 +43,7 @@ class DoctorController extends Controller
                 });
 
                 return response()->json([
+                    "pagination"=>$pagination,
                     'status' => 1,
                     'message' => 'Success',
                     'data'=>[
@@ -77,6 +79,7 @@ class DoctorController extends Controller
                 });
 
                 return response()->json([
+                    "pagination" => $pagination,
                     'status' => 1,
                     'message' => 'Success',
                     'data' => $data,
