@@ -31,7 +31,7 @@ class GoogleAuth extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'uid'=>$request->uid,
+                'uid' => $request->uid,
                 'status' => 0,
                 'message' => $validator->errors()->first(),
             ], 400);
@@ -71,7 +71,6 @@ class GoogleAuth extends Controller
                     'access_token' => $token,
                     'role_id' => $roleId,
                     'user' => $user,
-                    'profile_image' => $firebase->photoUrl,
 
                 ]);
             } else {
@@ -87,7 +86,8 @@ class GoogleAuth extends Controller
                 'email' => $firebase->email,
                 'password' => Hash::make("password@1234"),
                 //  'google_id' => $firebase->id,
-                'user_role' => $roleId
+                'user_role' => $roleId,
+                "profile_image"=>$firebase->photoUrl
             ]);
 
 
@@ -105,7 +105,6 @@ class GoogleAuth extends Controller
                 'access_token' => $token,
                 'role_id' => $roleId,
                 'user' => $user,
-                'profile_image' => $firebase->photoUrl,
             ]);
         }
 
