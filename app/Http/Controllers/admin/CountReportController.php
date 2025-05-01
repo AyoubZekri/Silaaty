@@ -17,7 +17,7 @@ class CountReportController extends Controller
             })
             ->with(
                 'reported' , function ($query) {
-                    $query->select('id')->with([
+                    $query->with([
                         'user_Clinic:user_id,name,pharm_name_fr,profile_image,address'
                     ]);
                 }
