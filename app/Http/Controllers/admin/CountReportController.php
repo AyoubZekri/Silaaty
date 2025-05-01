@@ -18,13 +18,13 @@ class CountReportController extends Controller
             ->groupBy('reported_id')
             ->get()
             ->map(function ($report) {
-                $clinic = optional($report->reported->user_Clinic);
+                $clinic = optional($report->reported);
                 return [
                     "id" => $clinic->id,
                     'clinic_name' => $clinic->name,
-                    'pharm_name_fr' => $clinic->pharm_name_fr,
-                    'profile_image' => $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null,
-                    'address' => $clinic->address,
+                    // 'pharm_name_fr' => $clinic->pharm_name_fr,
+                    // 'profile_image' => $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null,
+                    // 'address' => $clinic->address,
                     'report_count' => $report->report_count,
                 ];
             });
