@@ -4,6 +4,7 @@ use App\Http\Controllers\admin\Auth\LoginController;
 use App\Http\Controllers\admin\Auth\LogoutController;
 use App\Http\Controllers\admin\Auth\RegisterController;
 use App\Http\Controllers\admin\ClinicConfermController;
+use App\Http\Controllers\admin\CountReportController;
 use App\Http\Controllers\admin\MunicipalityController;
 use App\Http\Controllers\admin\StatisticsController;
 use App\Http\Controllers\Clinic\Auth\Login;
@@ -50,6 +51,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     // admin
+
+
+    Route::get("/countReport",[CountReportController::class, "CountReport"]);
+
     Route::post('/clinics/approve', [ClinicConfermController::class, 'approveClinic']);
     Route::post('/clinics/Refusal', [ClinicConfermController::class, 'RefusalClinic']);
 

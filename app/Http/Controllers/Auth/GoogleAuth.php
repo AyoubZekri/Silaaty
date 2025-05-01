@@ -35,6 +35,7 @@ class GoogleAuth extends Controller
                 'status' => 0,
                 'message' => $validator->errors()->first(),
             ], 400);
+            
         }
 
         DB::beginTransaction();
