@@ -66,7 +66,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('Schedules/add', [SchedulesController::class, 'addSchedules']);
     Route::post('Schedules/update', [SchedulesController::class, 'UpdataSchedules']);
     Route::post('Schedules/delete', [SchedulesController::class, 'delete']);
-    Route::get('Schedules/show', [SchedulesController::class, 'getSchedulesByClinicId']);
+    Route::post('Schedules/show', [SchedulesController::class, 'getSchedulesByClinicId']);
 
 
     Route::post('Municipality/update/{id}', [MunicipalityController::class, 'update']);
@@ -92,7 +92,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('Schedules_doctor/add', [\App\Http\Controllers\Doctor\SchedulesController::class, 'addSchedules']);
     Route::post('Schedules_doctor/update', [\App\Http\Controllers\Doctor\SchedulesController::class, 'UpdataSchedules']);
     Route::post('Schedules_doctor/delete', [\App\Http\Controllers\Doctor\SchedulesController::class, 'delete']);
-    Route::get('Schedules_doctor/show', [\App\Http\Controllers\Doctor\SchedulesController::class, 'getSchedulesByClinicId']);
+    Route::post('Schedules_doctor/show', [\App\Http\Controllers\Doctor\SchedulesController::class, 'getSchedulesByClinicId']);
 
     Route::post("/doctor/Presence",[PresenceController::class, 'Presence']);
 });
