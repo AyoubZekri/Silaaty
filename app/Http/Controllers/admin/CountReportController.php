@@ -12,21 +12,31 @@ class CountReportController extends Controller
 {
     public function CountReport()
     {
-        $clinicReport = Report::select('reported_id', DB::raw('count(*) as report_count'))
-            ->whereHas("reported", function ($query)  {
-              $query->where("user_role" , 3);
+        $clinicReports = Report::select('reported_id', DB::raw('count(*) as report_count'))
+            ->whereHas("reported", function ($query) {
+                $query->where("user_role", 3);
             })
-            ->with([
-                'reported.user_Clinic:id,user_id,name,pharm_name_fr,profile_image,address' 
-            ])
             ->groupBy('reported_id')
-            ->get();
-
+            ->with([
+                'reported.user_Clinic:id,user_id,name,pharm_name_fr,profile_image,address'
+            ])
+            ->get()
+            ->map(function ($report) {
+                $clinic = optional($report->reported->user_Clinic);
+                return [
+                    "id" => $clinic->id,
+                    'clinic_name' => $clinic->name,
+                    'pharm_name_fr' => $clinic->pharm_name_fr,
+                    'profile_image' => $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null,
+                    'address' => $clinic->address,
+                    'report_count' => $report->report_count,
+                ];
+            });
 
         return response()->json([
             "status" => 1,
-            "message"=> 'success',
-            "data"=>$clinicReport
-        ],200);
+            "message" => 'success',
+            "data" => $clinicReports
+        ], 200);
     }
 }
