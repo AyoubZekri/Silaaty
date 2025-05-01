@@ -71,6 +71,8 @@ class GoogleAuth extends Controller
                     'access_token' => $token,
                     'role_id' => $roleId,
                     'user' => $user,
+                    'profile_image' => $firebase->photoUrl,
+
                 ]);
             } else {
                 DB::rollBack();
