@@ -15,13 +15,13 @@ class CountReportController extends Controller
             ->whereHas("reported", function ($query) {
                 $query->where("user_role", 3);
             })
-            ->with([
-                'reported' => function ($query) {
+            ->with(
+                'reported' , function ($query) {
                     $query->select('id')->with([
                         'user_Clinic:user_id,name,pharm_name_fr,profile_image,address'
                     ]);
                 }
-            ])
+            )
             ->groupBy('reported_id')
             ->get()
             ->map(function ($report) {
