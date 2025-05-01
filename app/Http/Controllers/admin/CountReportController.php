@@ -18,7 +18,11 @@ class CountReportController extends Controller
             })
             ->groupBy('reported_id')
             ->with([
-                'reported.user_Clinic:id,user_id,name,pharm_name_fr,profile_image,address'
+                'reported' => function ($query) {
+                    $query->select('id')->with([
+                        'user_Clinic'
+                    ]);
+                }
             ])
             ->get()
             ->map(function ($report) {
