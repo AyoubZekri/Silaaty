@@ -24,7 +24,7 @@ class DoctorController extends Controller
 
         try {
             $pagination= $request->pagination ;
-            if ($request->pagination == true) {
+            if ($request->pagination == "true") {
                 $doctors = Doctor::with(['specialty', 'clinic'])
                     ->select('id', 'name', 'email', 'phone','profile_image','Presence', 'specialties_id', 'clinic_id')
                     ->paginate(10);
