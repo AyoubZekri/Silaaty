@@ -31,6 +31,7 @@ class GoogleAuth extends Controller
 
         if ($validator->fails()) {
             return response()->json([
+                'uid'=>$request->uid,
                 'status' => 0,
                 'message' => $validator->errors()->first(),
             ], 400);
