@@ -16,7 +16,6 @@ class CountReportController extends Controller
             ->whereHas("reported", function ($query) {
                 $query->where("user_role", 3);
             })
-            ->groupBy('reported_id')
             ->with([
                 'reported' => function ($query) {
                     $query->select('id')->with([
@@ -24,6 +23,7 @@ class CountReportController extends Controller
                     ]);
                 }
             ])
+            ->groupBy('reported_id')
             ->get()
             ->map(function ($report) {
                 $clinic = optional($report->reported->user_Clinic);
