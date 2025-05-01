@@ -13,8 +13,11 @@ class CountReportController extends Controller
     public function CountReport()
     {
         $clinicReport = Report::select('reported_id', DB::raw('count(*) as report_count'))
+            ->whereHas("reported", function ($query)  {
+              $query->where("user_role" , 3);
+            })
             ->groupBy('reported_id')
-            ->with('clinic:id,name,pharm_name_fr,profile_image,address')
+            ->with('reported:id,name,pharm_name_fr,profile_image,address')
             ->get();
 
 
