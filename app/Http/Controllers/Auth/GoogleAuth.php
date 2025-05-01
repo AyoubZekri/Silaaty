@@ -35,7 +35,7 @@ class GoogleAuth extends Controller
                 'status' => 0,
                 'message' => $validator->errors()->first(),
             ], 400);
-            
+
         }
 
         DB::beginTransaction();
@@ -103,6 +103,7 @@ class GoogleAuth extends Controller
                 'access_token' => $token,
                 'role_id' => $roleId,
                 'user' => $user,
+                'profile_image' => $firebase->photoUrl,
             ]);
         }
 

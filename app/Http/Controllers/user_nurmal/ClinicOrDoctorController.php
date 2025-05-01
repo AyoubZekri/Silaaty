@@ -15,6 +15,7 @@ class ClinicOrDoctorController extends Controller
     {
         $validator = Validator::make($request->all(), [
             "id" => "required|integer|exists:clinics,id",
+            "search" => "nullable|string|max:255",
         ]);
 
         if ($validator->fails()) {
@@ -24,9 +25,8 @@ class ClinicOrDoctorController extends Controller
             ], 400);
         }
 
-
-
-        $clinic = Clinic::with('doctors.specialty')->find($request->input('id'));
+        $clinic = Clinic::with(['doctors.specialty'])
+            ->find($request->input('id'));
 
         if (!$clinic) {
             return response()->json([
@@ -34,6 +34,16 @@ class ClinicOrDoctorController extends Controller
                 'message' => 'العيادة غير موجودة',
             ]);
         }
+
+        $search = $request->input('search', '');
+
+        $doctors = $clinic->doctors()->when($search, function ($query, $search) {
+            return $query->where('name', 'like', "%$search%")
+                ->orWhere('email', 'like', "%$search%")
+                ->orWhereHas('specialty', function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%");
+                });
+        })->get();
 
         $data = [
             'id' => $clinic->id,
@@ -43,14 +53,14 @@ class ClinicOrDoctorController extends Controller
             'phone' => $clinic->phone,
             'latitude' => $clinic->latitude,
             'longitude' => $clinic->longitude,
-            'doctors' => $clinic->doctors->map(function ($doctor) {
+            'doctors' => $doctors->map(function ($doctor) {
                 return [
                     'id' => $doctor->id,
                     'name' => $doctor->name,
                     'email' => $doctor->email,
                     'phone' => $doctor->phone,
                     'specialty_name' => $doctor->specialty->name ?? null,
-                    'name_clinic'=> $doctor->clinic->name,
+                    'name_clinic' => $doctor->clinic->name,
                     'profile_image' => $doctor->profile_image ? asset('storage/' . $doctor->profile_image) : null,
                     'Presence' => $doctor->Presence,
                 ];
@@ -63,4 +73,5 @@ class ClinicOrDoctorController extends Controller
             'data' => $data
         ]);
     }
+
 }

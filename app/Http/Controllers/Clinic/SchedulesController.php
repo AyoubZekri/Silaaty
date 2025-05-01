@@ -11,10 +11,15 @@ class SchedulesController extends Controller
 {
 
 
-    public function getSchedulesByClinicId($clinic_id)
+    public function getSchedulesByClinicId(Request $request)
     {
+
+        $data = $request->validate([
+            'clinic_id' => "required|exists:clinics,id",
+        ]);
+
         try {
-            $schedule = clinic_schedules::where('clinic_id', $clinic_id)->get();
+            $schedule = clinic_schedules::where('clinic_id', $data['clinic_id'])->get();
 
             return response()->json([
                 'status' => 1,
@@ -42,6 +47,17 @@ class SchedulesController extends Controller
                 'closing_time' => 'required|date_format:H:i|after:opening_time'
             ]);
 
+            $existingSchedule = clinic_schedules::where('clinic_id', $data['clinic_id'])
+                ->where('day', $data['day'])
+                ->first();
+
+            if ($existingSchedule) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'اليوم موجود بالفعل.',
+                ], 400);
+            }
+
             $Schedules = clinic_schedules::create($data);
             return response()->json([
                 'status' => 1,
@@ -55,12 +71,20 @@ class SchedulesController extends Controller
         }
     }
 
-    public function UpdataSchedules(Request $request, $id)
+    public function UpdataSchedules(Request $request)
     {
-        try {
-            $schedule = clinic_schedules::findOrFail($id);
+        $data = $request->validate([
+            "id"=>"required",
+            'clinic_id' => "required|exists:clinics,id",
+            'day' => "required|string",
+            'opening_time' => 'required|date_format:H:i',
+            'closing_time' => 'required|date_format:H:i|after:opening_time'
+        ]);
 
-            $schedule = clinic_schedules::find($id);
+        try {
+            $schedule = clinic_schedules::findOrFail($data["id"]);
+
+            $schedule = clinic_schedules::find($data["id"]);
 
             if (!$schedule) {
                 return response()->json([
@@ -69,12 +93,6 @@ class SchedulesController extends Controller
                 ], 404);
             }
 
-            $data = $request->validate([
-                'clinic_id' => "required|exists:clinics,id",
-                'day' => "required|string",
-                'opening_time' => 'required|date_format:H:i',
-                'closing_time' => 'required|date_format:H:i|after:opening_time'
-            ]);
 
             $schedule->update($data);
             return response()->json([
@@ -89,9 +107,12 @@ class SchedulesController extends Controller
         }
     }
 
-    public function delete($id)
+    public function delete(Request $request)
     {
-        $schedule = clinic_schedules::findOrFail($id);
+        $data = $request->validate([
+            "id" => "required",
+        ]);
+        $schedule = clinic_schedules::findOrFail($data["id"]);
 
         $schedule->delete();
 

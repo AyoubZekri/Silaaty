@@ -8,14 +8,17 @@ use Illuminate\Http\Request;
 
 class SchedulesController extends Controller
 {
-    public function getSchedulesByClinicId($doctor_id)
+    public function getSchedulesByClinicId(Request $request)
     {
+        $data = $request->validate([
+            'doctor_id' => "required|exists:doctors,id",
+        ]);
         try {
-            $schedule = DoctorSchedule::where('doctor_id', $doctor_id)->get();
+            $schedule = DoctorSchedule::where('doctor_id', $data['doctor_id'])->get();
 
             return response()->json([
-                'status' => 0,
-                'message' => 'حدث خطأ',
+                'status' => 1,
+                'message' => 'Success',
                 'data' => $schedule,
             ], 200);
 
@@ -38,6 +41,18 @@ class SchedulesController extends Controller
                 'closing_time' => 'required|date_format:H:i|after:opening_time'
             ]);
 
+
+            $existingSchedule = DoctorSchedule::where('doctor_id', $data['doctor_id'])
+                ->where('day', $data['day'])
+                ->first();
+
+            if ($existingSchedule) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'اليوم موجود بالفعل.',
+                ], 400);
+            }
+
             $Schedules = DoctorSchedule::create($data);
             return response()->json([
                 'status' => 1,
@@ -53,10 +68,18 @@ class SchedulesController extends Controller
 
     public function UpdataSchedules(Request $request, $id)
     {
-        try {
-            $schedule = DoctorSchedule::findOrFail($id);
 
-            $schedule = DoctorSchedule::find($id);
+        $data = $request->validate([
+            'id'=> "required",
+            'doctor_id' => "required|exists:doctors,id",
+            'day' => "required|string",
+            'opening_time' => 'required|date_format:H:i',
+            'closing_time' => 'required|date_format:H:i|after:opening_time'
+        ]);
+        try {
+            $schedule = DoctorSchedule::findOrFail($data['id']);
+
+            $schedule = DoctorSchedule::find($data['id']);
 
             if (!$schedule) {
                 return response()->json([
@@ -65,12 +88,7 @@ class SchedulesController extends Controller
                 ], 404);
             }
 
-            $data = $request->validate([
-                'doctor_id' => "required|exists:doctors,id",
-                'day' => "required|string",
-                'opening_time' => 'required|date_format:H:i',
-                'closing_time' => 'required|date_format:H:i|after:opening_time'
-            ]);
+
 
             $schedule->update($data);
             return response()->json([
@@ -86,9 +104,12 @@ class SchedulesController extends Controller
         }
     }
 
-    public function delete($id)
+    public function delete(Request $request)
     {
-        $schedule = DoctorSchedule::findOrFail($id);
+        $data = $request->validate([
+            'id'=> 'required'
+        ]);
+        $schedule = DoctorSchedule::findOrFail($data['id']);
 
         $schedule->delete();
 
