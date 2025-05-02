@@ -17,18 +17,18 @@ class CountReportController extends Controller
             })
             ->with("reported.user_Clinic")
             ->groupBy('reported_id')
-            ->get()
-            ->map(function ($report) {
-                $clinic = optional($report->reported->user_Clinic);
-                return [
-                    "id" => $clinic->id,
-                    'clinic_name' => $clinic->name,
-                    'pharm_name_fr' => $clinic->pharm_name_fr,
-                    'profile_image' => $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null,
-                    'address' => $clinic->address,
-                    'report_count' => $report->report_count,
-                ];
-            });
+            ->get();
+            // ->map(function ($report) {
+            //     $clinic = optional($report->reported->user_Clinic);
+            //     return [
+            //         "id" => $clinic->id,
+            //         'clinic_name' => $clinic->name,
+            //         'pharm_name_fr' => $clinic->pharm_name_fr,
+            //         'profile_image' => $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null,
+            //         'address' => $clinic->address,
+            //         'report_count' => $report->report_count,
+            //     ];
+            // });
 
         return response()->json([
             "status" => 1,
