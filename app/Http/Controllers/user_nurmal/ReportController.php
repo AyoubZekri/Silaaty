@@ -40,6 +40,18 @@ class ReportController extends Controller
             'reported_id' => 'required|exists:users,id|different:reporter_id',
         ]);
 
+        $existingReport = Report::where('reporter_id', $request->reporter_id)
+            ->where('reported_id', $request->reported_id)
+            ->first();
+
+        if ($existingReport) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'لقد قمت بالإبلاغ عن هذه العيادة من قبل.',
+            ], 409);
+        }
+
+
         $report = Report::create([
             'reporter_id' => $request->reporter_id,
             'reported_id' => $request->reported_id,
