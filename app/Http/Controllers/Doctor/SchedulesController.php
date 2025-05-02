@@ -66,7 +66,7 @@ class SchedulesController extends Controller
         }
     }
 
-    public function UpdataSchedules(Request $request, $id)
+    public function UpdataSchedules(Request $request)
     {
 
         $data = $request->validate([
@@ -74,7 +74,7 @@ class SchedulesController extends Controller
             'doctor_id' => "required|exists:doctors,id",
             'day' => "required|string",
             'opening_time' => 'required|date_format:H:i',
-            'closing_time' => 'required|date_format:H:i|after:opening_time'
+            'closing_time' => 'required|date_format:H:i'
         ]);
         try {
             $schedule = DoctorSchedule::findOrFail($data['id']);

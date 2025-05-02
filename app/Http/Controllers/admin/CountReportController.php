@@ -15,6 +15,7 @@ class CountReportController extends Controller
             ->with("reported", function ($query) {
                 $query->where("user_role", 3)->with('user_Clinic');
             })
+            ->with("reported.user_Clinic")
             ->groupBy('reported_id')
             ->get()
             ->map(function ($report) {
