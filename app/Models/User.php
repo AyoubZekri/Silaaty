@@ -60,7 +60,7 @@ class User extends Authenticatable
     }
 
 
-    public function user_Clinic()
+    public function Clinic()
     {
         return $this->hasOne(Clinic::class, "user_id");
     }
