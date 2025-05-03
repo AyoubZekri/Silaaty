@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Clinic;
 use Exception;
+use Illuminate\Support\Facades\Validator;
 
 class ClinicConfermController extends Controller
 {
@@ -15,8 +16,6 @@ class ClinicConfermController extends Controller
             $clinics = Clinic::with('schedules', 'municipality')->where('Statue', 0)->get()->map(function ($clinic) {
                 $clinic->cover_image = $clinic->cover_image ? asset('storage/' . $clinic->cover_image) : null;
                 $clinic->profile_image = $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null;
-                $clinic->specialty_name = $clinic->specialty ? $clinic->specialty->name : null;
-                unset($clinic->specialty);
                 return $clinic;
             });
 
@@ -35,7 +34,52 @@ class ClinicConfermController extends Controller
         }
     }
 
+    public function infoClinicsNotConferm(Request $request)
+    {
+       $validator = Validator::make($request->all(),[
+             'id_clinic' => "required|exists:clinics,id",
+       ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'فشل التحقق من البيانات',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+
+
+            $clinics = Clinic::with('schedules', 'municipality',)
+                ->where("id", $request->id_clinic)
+                ->where('Statue', 0)
+                ->first();
+
+            if (!$clinics) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'العيادة غير موجودة أو تم تأكيدها بالفعل',
+                ], 404);
+            }
+
+            $clinics->cover_image = $clinics->cover_image ? asset('storage/' . $clinics->cover_image) : null;
+            $clinics->profile_image = $clinics->profile_image ? asset('storage/' . $clinics->profile_image) : null;
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Success',
+                'count' => $clinics->count(),
+                'clinics' => $clinics->toArray()
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'حدث خطأ أثناء جلب البيانات',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function approveClinic(Request $request)
     {

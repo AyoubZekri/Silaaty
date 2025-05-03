@@ -17,8 +17,8 @@ class CountReportController extends Controller
             })
             ->with("reported.clinic")
             ->groupBy('reported_id')
-            ->get()
-            ->map(function ($report) {
+            ->paginate(10)
+            ->through(function ($report) {
                 $clinic = optional($report->reported->clinic);
                 return [
                     "id" => $clinic->id,
@@ -33,7 +33,16 @@ class CountReportController extends Controller
         return response()->json([
             "status" => 1,
             "message" => 'success',
-            "data" => $clinicReports
+            "data" => [
+                'data' => $clinicReports,
+                'meta' => [
+                    'current_page' => $clinicReports->currentPage(),
+                    'last_page' => $clinicReports->lastPage(),
+                    'per_page' => $clinicReports->perPage(),
+                    'total' => $clinicReports->total(),
+                    'count' => $clinicReports->count(),
+                ]
+            ]
         ], 200);
     }
 
