@@ -62,7 +62,7 @@ class DoctorController extends Controller
     public function showdoctor($id)
     {
         try {
-            $doctor = Doctor::with('schedules',"specialty:name,name_fr")->find($id);
+            $doctor = Doctor::with('schedules',"specialty:id,name,name_fr")->find($id);
 
             if (!$doctor) {
                 return response()->json([
@@ -72,6 +72,7 @@ class DoctorController extends Controller
             }
             $doctor->profile_image = $doctor->profile_image ? asset('storage/' . $doctor->profile_image) : null;
             $doctor->specialty_name = optional($doctor->specialty)->name;
+            $doctor->specialty_name_fr = optional($doctor->specialty)->name_fr;
             unset($doctor->specialty);
 
             // $clinic->cover_image = $clinic->cover_image ? asset('storage/' . $clinic->cover_image) : null;
