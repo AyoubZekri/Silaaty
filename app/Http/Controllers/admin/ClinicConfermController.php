@@ -98,7 +98,7 @@ class ClinicConfermController extends Controller
     public function ReportClinic(Request $request)
     {
         $validated = $request->validate([
-            'id' => 'required|integer|exists:clinics,id',
+            'id' => 'required|integer',
         ]);
 
         try {
