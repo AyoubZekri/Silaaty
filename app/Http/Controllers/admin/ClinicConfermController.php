@@ -65,6 +65,7 @@ class ClinicConfermController extends Controller
 
             $clinics->cover_image = $clinics->cover_image ? asset('storage/' . $clinics->cover_image) : null;
             $clinics->profile_image = $clinics->profile_image ? asset('storage/' . $clinics->profile_image) : null;
+            $clinics->register = $clinics->register ? asset('storage/' . $clinics->register) : null;
 
             return response()->json([
                 'status' => 1,
