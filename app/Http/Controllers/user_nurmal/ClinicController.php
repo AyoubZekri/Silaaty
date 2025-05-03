@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Clinic;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ClinicController extends Controller
 {
@@ -42,17 +43,28 @@ class ClinicController extends Controller
     public function searchClinicMap(Request $request)
     {
         try {
-            $search = $request->input('name');
+            $search = $request->input('query');
 
-            $clinics = Clinic::select(
-                'id',
-                'name',
-                'latitude',
-                'longitude',
-                'Statue'
-            )
+            $clinics = Clinic::select('id', 'name', 'latitude', 'longitude', 'Statue')
                 ->where('Statue', 1)
-                ->where('name', 'LIKE', '%' . $search . '%')
+                ->where(function ($query) use ($search) {
+                    if (!is_numeric($search)) {
+                        $query->where('name', 'LIKE', '%' . $search . '%');
+                    }
+
+                    if (is_numeric($search)) {
+                        $query->orWhereHas('doctors', function ($q) use ($search) {
+                            $q->where('specialties_id', $search);
+                        });
+                    }
+                })
+                ->with([
+                    'doctors' => function ($query) use ($search) {
+                        $query->when(is_numeric($search), function ($q) use ($search) {
+                            $q->where('specialties_id', $search);
+                        })->with('schedules');
+                    }
+                ])
                 ->get();
 
             return response()->json([
@@ -68,6 +80,7 @@ class ClinicController extends Controller
             ], 500);
         }
     }
+
 
     public function nearbyClinics(Request $request)
     {

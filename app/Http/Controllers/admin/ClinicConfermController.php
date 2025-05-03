@@ -77,12 +77,44 @@ class ClinicConfermController extends Controller
             $clinic = Clinic::findOrFail($validated['id']);
 
 
+
             $clinic->Statue = 2;
             $clinic->save();
 
             return response()->json([
                 'status' => 1,
                 'message' => 'تم رفض العيادة بنجاح',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'حدث خطأ أثناء معالجة الطلب',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function ReportClinic(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => 'required|integer|exists:clinics,id',
+        ]);
+
+        try {
+            $clinic = Clinic::findOrFail($validated['id']);
+
+            if ($clinic->Statue == 3) {
+                return response()->json(['message' => 'تم حضر العيادة بالفعل'], 200);
+            }
+
+
+            $clinic->Statue = 3;
+            $clinic->save();
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'تم حضر العيادة  العيادة بنجاح',
             ], 200);
         } catch (Exception $e) {
             return response()->json([
