@@ -76,7 +76,7 @@ class SchedulesController extends Controller
         $data = $request->validate([
             "id"=>"required",
             'clinic_id' => "required|exists:clinics,id",
-            'day' => "required|string",
+            'day' => "nullable|string",
             'opening_time' => 'required|date_format:H:i',
             'closing_time' => 'required|date_format:H:i|after:opening_time'
         ]);
