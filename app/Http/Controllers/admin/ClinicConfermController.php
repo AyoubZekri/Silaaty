@@ -102,10 +102,28 @@ class ClinicConfermController extends Controller
         ]);
 
         try {
-            $clinic = Clinic::findOrFail($validated['id']);
+            $clinic = Clinic::find($validated['id']);
+
+            if (!$clinic) {
+                return response()->json(
+                    [
+                        "status" => 0,
+                        'message' => "العيادة غير موجودة"
+                    ]
+                    ,
+                    404
+                );
+            }
 
             if ($clinic->Statue == 3) {
-                return response()->json(['message' => 'تم حضر العيادة بالفعل'], 200);
+                return response()->json(
+                    [
+                        "status" => 0,
+                        'message' => 'تم حضر العيادة بالفعل'
+                    ]
+                    ,
+                    403
+                );
             }
 
 
