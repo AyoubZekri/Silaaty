@@ -18,17 +18,19 @@ class ReportController extends Controller
                 "reported_id" => $report->reported,
             ];
         });
+
+        $report->setCollection($reports);
         return response()->json([
             'status' => 1,
             'message' => 'Success',
             'data' => [
-                "data" => $reports,
+                "data" => $report,
                 'meta' => [
-                    'current_page' => $reports->currentPage(),
-                    'last_page' => $reports->lastPage(),
-                    'per_page' => $reports->perPage(),
-                    'total' => $reports->total(),
-                    'count' => $reports->count(),
+                    'current_page' => $report->currentPage(),
+                    'last_page' => $report->lastPage(),
+                    'per_page' => $report->perPage(),
+                    'total' => $report->total(),
+                    'count' => $report->count(),
                 ]
             ]
         ]);
