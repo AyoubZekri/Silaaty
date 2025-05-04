@@ -10,8 +10,8 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $report = Report::all()->paginate(10);
-        $reports = $report->map(function ($report) {
+        $report = Report::paginate(10);
+        $reports = $report->getCollection()->map(function ($report) {
             return [
                 "id" => $report->id,
                 "reporter_id" => $report->reporter,
