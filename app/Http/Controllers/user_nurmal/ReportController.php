@@ -10,12 +10,19 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $reports = Report::latest()->paginate(10);
+        $report = Report::all()->paginate(10);
+        $reports = $report->map(function ($report) {
+            return [
+                "id" => $report->id,
+                "reporter_id" => $report->reporter,
+                "reported_id" => $report->reported,
+            ];
+        });
         return response()->json([
             'status' => 1,
             'message' => 'Success',
             'data' => [
-                 "data"=>$reports,
+                "data" => $reports,
                 'meta' => [
                     'current_page' => $reports->currentPage(),
                     'last_page' => $reports->lastPage(),
