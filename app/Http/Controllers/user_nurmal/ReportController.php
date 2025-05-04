@@ -14,8 +14,8 @@ class ReportController extends Controller
         $reports = $report->getCollection()->map(function ($report) {
             return [
                 "id" => $report->id,
-                "reporter_id" => $report->reporter,
-                "reported_id" => $report->reported,
+                "reporter_id" => $report->reporter_id,
+                "reported_id" => $report->reported_id,
             ];
         });
 
