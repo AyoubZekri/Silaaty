@@ -85,7 +85,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('delet_user/google', [GoogleAuth::class, 'destroy']);
     Route::post('/user/logout', [GoogleAuth::class, 'logout']);
 
-    Route::get('/reports/show', [ReportController::class, 'show']);
+    Route::post('/reports/show', [ReportController::class, 'show']);
     Route::get('/reports/all', [ReportController::class, 'index']);
     Route::post('/reports/add', [ReportController::class, 'store']);
     Route::post('/reports/delete', [ReportController::class, 'destroy']);

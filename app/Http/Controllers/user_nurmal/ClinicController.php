@@ -43,25 +43,23 @@ class ClinicController extends Controller
     public function searchClinicMap(Request $request)
     {
         try {
-            $search = $request->input('query');
+            $clinicName = $request->input('clinic_name');
+            $specialtyId = $request->input('specialty_id');
 
             $clinics = Clinic::select('id', 'name', 'latitude', 'longitude', 'Statue')
                 ->where('Statue', 1)
-                ->where(function ($query) use ($search) {
-                    if (!is_numeric($search)) {
-                        $query->where('name', 'LIKE', '%' . $search . '%');
-                    }
-
-                    if (is_numeric($search)) {
-                        $query->orWhereHas('doctors', function ($q) use ($search) {
-                            $q->where('specialties_id', $search);
-                        });
-                    }
+                ->when($clinicName, function ($query) use ($clinicName) {
+                    $query->where('name', 'LIKE', '%' . $clinicName . '%');
+                })
+                ->when($specialtyId, function ($query) use ($specialtyId) {
+                    $query->whereHas('doctors', function ($q) use ($specialtyId) {
+                        $q->where('specialties_id', $specialtyId);
+                    });
                 })
                 ->with([
-                    'doctors' => function ($query) use ($search) {
-                        $query->when(is_numeric($search), function ($q) use ($search) {
-                            $q->where('specialties_id', $search);
+                    'doctors' => function ($query) use ($specialtyId) {
+                        $query->when($specialtyId, function ($q) use ($specialtyId) {
+                            $q->where('specialties_id', $specialtyId);
                         })->with('schedules');
                     }
                 ])
@@ -72,7 +70,7 @@ class ClinicController extends Controller
                 'message' => 'Success',
                 'clinics' => $clinics
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 0,
                 'message' => 'حدث خطأ أثناء البحث',
@@ -80,6 +78,7 @@ class ClinicController extends Controller
             ], 500);
         }
     }
+
 
 
     public function nearbyClinics(Request $request)
