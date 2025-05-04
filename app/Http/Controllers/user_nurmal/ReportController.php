@@ -10,22 +10,7 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $reports = Report::latest()->get();
-        return response()->json([
-            'status' => 1,
-            'message' => 'Success',
-            'reports' => $reports
-        ]);
-    }
-
-    public function show(Request $request)
-    {
-        $request->validate([
-            "id" => "required"
-        ]);
-
-        $reports = Report::where("id", $request->id)->with(['reporter', 'reported'])->paginate(10);
-
+        $reports = Report::latest()->paginate(10);
         return response()->json([
             'status' => 1,
             'message' => 'Success',
@@ -39,6 +24,21 @@ class ReportController extends Controller
                     'count' => $reports->count(),
                 ]
             ]
+        ]);
+    }
+
+    public function show(Request $request)
+    {
+        $request->validate([
+            "id" => "required"
+        ]);
+
+        $reports = Report::where("id", $request->id)->with(['reporter', 'reported'])->get();
+
+        return response()->json([
+            'status' => 1,
+            'message' => 'Success',
+            'reports' => $reports
         ]);
     }
 
