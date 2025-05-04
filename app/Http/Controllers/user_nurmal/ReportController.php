@@ -24,12 +24,21 @@ class ReportController extends Controller
             "id" => "required"
         ]);
 
-        $reports = Report::where("id", $request->id)->with(['reporter', 'reported'])->get();
+        $reports = Report::where("id", $request->id)->with(['reporter', 'reported'])->paginate(10);
 
         return response()->json([
             'status' => 1,
             'message' => 'Success',
-            'reports' => $reports
+            'data' => [
+                 "data"=>$reports,
+                'meta' => [
+                    'current_page' => $reports->currentPage(),
+                    'last_page' => $reports->lastPage(),
+                    'per_page' => $reports->perPage(),
+                    'total' => $reports->total(),
+                    'count' => $reports->count(),
+                ]
+            ]
         ]);
     }
 
