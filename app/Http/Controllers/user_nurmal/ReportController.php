@@ -24,7 +24,7 @@ class ReportController extends Controller
             'status' => 1,
             'message' => 'Success',
             'data' => [
-                "data" => $report,
+                "data" => $report->items(),
                 'meta' => [
                     'current_page' => $report->currentPage(),
                     'last_page' => $report->lastPage(),
