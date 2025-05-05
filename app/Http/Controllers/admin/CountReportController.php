@@ -34,7 +34,7 @@ class CountReportController extends Controller
             "status" => 1,
             "message" => 'success',
             "data" => [
-                'data' => $clinicReports,
+                'data' => $clinicReports->items(),
                 'meta' => [
                     'current_page' => $clinicReports->currentPage(),
                     'last_page' => $clinicReports->lastPage(),

@@ -175,8 +175,22 @@ class DoctorController extends Controller
 
 
 
-    public function update(Request $request, $id)
+    public function update(Request $request,$id)
     {
+
+
+
+        $request->validate([
+            "id"=> "required",
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone' => 'required|string|max:15',
+            'specialties_id' => 'required|exists:specialties,id',
+            'clinic_id' => 'required|exists:clinics,id',
+            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+
         $doctor = Doctor::find($id);
 
         if (!$doctor) {
@@ -185,16 +199,6 @@ class DoctorController extends Controller
                 'message' => 'الطبيب غير موجود'
             ], 404);
         }
-
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $doctor->user_id,
-            'phone' => 'required|string|max:15',
-            'specialties_id' => 'required|exists:specialties,id',
-            'clinic_id' => 'required|exists:clinics,id',
-            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
         DB::beginTransaction();
         try {
 
