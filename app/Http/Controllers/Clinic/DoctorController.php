@@ -181,7 +181,6 @@ class DoctorController extends Controller
 
 
         $request->validate([
-            "id"=> "required",
             'name' => 'required|string|max:255',
             'email' => 'required|email',
             'phone' => 'required|string|max:15',
