@@ -21,11 +21,18 @@ class CountReportController extends Controller
             ->through(function ($report) {
                 $clinic = optional($report->reported->clinic);
                 return [
-                    "id" => $clinic->id,
-                    'clinic_name' => $clinic->name,
-                    'pharm_name_fr' => $clinic->pharm_name_fr,
-                    'profile_image' => $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null,
+                    'id' => $clinic->id,
+                    'name' => $clinic->name,
                     'address' => $clinic->address,
+                    'phone' => $clinic->phone,
+                    'email' => $clinic->email,
+                    'latitude' => $clinic->latitude,
+                    'longitude' => $clinic->longitude,
+                    'type' => $clinic->type,
+                    'pharm_name_fr' => $clinic->pharm_name_fr,
+                    'cover_image' => $clinic->cover_image ? asset('storage/' . $clinic->cover_image) : null,
+                    'profile_image' => $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null,
+                    'municipality' => $clinic->municipality->name ?? null,
                     'report_count' => $report->report_count,
                 ];
             });
