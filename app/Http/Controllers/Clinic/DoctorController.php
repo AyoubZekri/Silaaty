@@ -178,12 +178,12 @@ class DoctorController extends Controller
     public function update(Request $request,$id)
     {
         $request->validate([
-            'name' => 'nullable|string|max:255',
-            'email' => 'nullable|email',
-            'phone' => 'nullable|string|max:15',
-            'specialties_id' => 'nullable|exists:specialties,id',
-            'clinic_id' => 'nullable|exists:clinics,id',
-            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|email',
+            'phone' => 'sometimes|string|max:15',
+            'specialties_id' => 'sometimes|exists:specialties,id',
+            'clinic_id' => 'sometimes|exists:clinics,id',
+            'profile_image' => 'sometimes|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
 
@@ -206,19 +206,38 @@ class DoctorController extends Controller
             } else {
                 $profileImagePath = $doctor->profile_image;
             }
-            $doctor->user->update([
-                'name' => $request->name,
-                'email' => $request->email,
-            ]);
 
-            $doctor->update([
-                'clinic_id' => $request->clinic_id,
-                'specialties_id' => $request->specialties_id,
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'profile_image' => $profileImagePath,
-            ]);
+            if ($request->has('name')) {
+                $userUpdateData['name'] = $request->name;
+            }
+
+            if ($request->has('email')) {
+                $userUpdateData['email'] = $request->email;
+            }
+
+            if ($request->has('clinic_id')) {
+                $userUpdateData['clinic_id'] = $request->email;
+            }
+            if ($request->has('specialties_id')) {
+                $userUpdateData['specialties_id'] = $request->email;
+            }
+            if ($request->has('phone')) {
+                $userUpdateData['phone'] = $request->email;
+            }
+
+            if ($request->has('profile_image')) {
+                $userUpdateData['profile_image'] = $request->email;
+            }
+
+            if (!empty($userUpdateData)) {
+                $doctor->user->update($userUpdateData);
+            }
+
+            if (!empty($userUpdateData)) {
+                $doctor->update($userUpdateData);
+            }
+
+
             DB::commit();
 
             $doctor->profile_image = $doctor->profile_image ? asset('storage/' . $doctor->profile_image) : null;
