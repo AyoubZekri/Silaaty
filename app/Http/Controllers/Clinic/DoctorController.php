@@ -216,17 +216,17 @@ class DoctorController extends Controller
             }
 
             if ($request->has('clinic_id')) {
-                $userUpdateData['clinic_id'] = $request->email;
+                $userUpdateData['clinic_id'] = $request->clinic_id;
             }
             if ($request->has('specialties_id')) {
-                $userUpdateData['specialties_id'] = $request->email;
+                $userUpdateData['specialties_id'] = $request->specialties_id;
             }
             if ($request->has('phone')) {
-                $userUpdateData['phone'] = $request->email;
+                $userUpdateData['phone'] = $request->phone;
             }
 
             if ($request->has('profile_image')) {
-                $userUpdateData['profile_image'] = $request->email;
+                $userUpdateData['profile_image'] = $request->profile_image;
             }
 
             if (!empty($userUpdateData)) {
