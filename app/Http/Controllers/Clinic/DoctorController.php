@@ -62,7 +62,7 @@ class DoctorController extends Controller
     public function showdoctor($id)
     {
         try {
-            $doctor = Doctor::with('schedules',"specialty:id,name,name_fr")->find($id);
+            $doctor = Doctor::with('schedules',"specialty:id,name,name_fr","clinic:name,pharm_name_fr")->find($id);
 
             if (!$doctor) {
                 return response()->json([
@@ -74,11 +74,11 @@ class DoctorController extends Controller
             $doctor->specialty_name = optional($doctor->specialty)->name;
             $doctor->specialty_name_fr = optional($doctor->specialty)->name_fr;
             unset($doctor->specialty);
+            $doctor->clinic_name = optional($doctor->clinic)->name;
+            $doctor->clinic_name_fr = optional($doctor->clinic)->pharm_name_fr;
+            unset($doctor->clinic);
 
-            // $clinic->cover_image = $clinic->cover_image ? asset('storage/' . $clinic->cover_image) : null;
-            // $clinic->profile_image = $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null;
-            // $clinic->specialty_name = $clinic->specialty ? $clinic->specialty->name : null;
-            // unset($clinic->specialty);
+
 
             return response()->json([
                 'status' => 1,
@@ -178,11 +178,11 @@ class DoctorController extends Controller
     public function update(Request $request,$id)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'phone' => 'required|string|max:15',
-            'specialties_id' => 'required|exists:specialties,id',
-            'clinic_id' => 'required|exists:clinics,id',
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email',
+            'phone' => 'nullable|string|max:15',
+            'specialties_id' => 'nullable|exists:specialties,id',
+            'clinic_id' => 'nullable|exists:clinics,id',
             'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
