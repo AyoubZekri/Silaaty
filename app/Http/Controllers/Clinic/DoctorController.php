@@ -62,7 +62,7 @@ class DoctorController extends Controller
     public function showdoctor($id)
     {
         try {
-            $doctor = Doctor::with('schedules',"specialty:id,name,name_fr","clinic:name,pharm_name_fr")->find($id);
+            $doctor = Doctor::with('schedules',"specialty:id,name,name_fr","clinic:id,name,pharm_name_fr")->find($id);
 
             if (!$doctor) {
                 return response()->json([
@@ -74,8 +74,8 @@ class DoctorController extends Controller
             $doctor->specialty_name = optional($doctor->specialty)->name;
             $doctor->specialty_name_fr = optional($doctor->specialty)->name_fr;
             unset($doctor->specialty);
-            $doctor->clinic_name = optional($doctor->clinic)->name;
-            $doctor->clinic_name_fr = optional($doctor->clinic)->pharm_name_fr;
+            $doctor->name_clinic = optional($doctor->clinic)->name;
+            $doctor->name_clinic_fr = optional($doctor->clinic)->pharm_name_fr;
             unset($doctor->clinic);
 
 
