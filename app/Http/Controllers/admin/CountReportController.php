@@ -19,9 +19,16 @@ class CountReportController extends Controller
             ->groupBy('reported_id')
             ->paginate(10);
 
-        $reportCounts->getCollection()->transform(function ($report) {
-            $user = User::with('clinic.municipality')->find($report->reported_id);
-            $clinic = optional($user->clinic);
+        $reportedIds = $reportCounts->pluck('reported_id')->toArray();
+
+        $users = User::with('clinic.municipality')
+            ->whereIn('id', $reportedIds)
+            ->get()
+            ->keyBy('id');
+
+        $reportCounts->getCollection()->transform(function ($report) use ($users) {
+            $user = $users[$report->reported_id] ?? null;
+            $clinic = optional($user?->clinic);
 
             return [
                 'id' => $clinic->id,
@@ -55,6 +62,7 @@ class CountReportController extends Controller
             ]
         ], 200);
     }
+
 
 
 }
