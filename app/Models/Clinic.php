@@ -43,7 +43,10 @@ class Clinic extends Model
         return $this->hasMany(Doctor::class, 'clinic_id');
     }
 
-
+    public function reports()
+    {
+        return $this->hasMany(Report::class, 'reported_id');
+    }
     public function municipality()
     {
         return $this->belongsTo(Municipality::class, 'municipalities_id');

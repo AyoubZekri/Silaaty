@@ -11,27 +11,25 @@ use Illuminate\Http\Request;
 
 class CountReportController extends Controller
 {
+
     public function CountReport()
     {
-        // تجميع التقارير على أساس العيادة المبلّغ عنها
         $reportCounts = Report::select('reported_id', DB::raw('count(*) as report_count'))
-            ->whereHas("reported.user", function ($query) {
-                $query->where("user_role", 3); // تأكد أن المستخدم المرتبط بالعيادة دوره "عيادة"
+            ->whereHas('reported', function ($query) {
+                $query->where('user_role', 3);
             })
             ->groupBy('reported_id')
             ->paginate(10);
 
-        // نجيب الـ IDs الخاصة بالعيادات
         $clinicIds = $reportCounts->pluck('reported_id')->toArray();
 
-        // جلب بيانات العيادات مع المستخدمين والبلديات المرتبطين
-        $clinics = Clinic::with(['user', 'municipality'])
+        $clinics = Clinic::with('municipality')
             ->whereIn('id', $clinicIds)
             ->get()
             ->keyBy('id');
 
-        $reportCounts->getCollection()->transform(function ($report) use ($clinics) {
-            $clinic = $clinics[$report->reported_id] ?? null;
+        $data = $reportCounts->map(function ($report) use ($clinics) {
+            $clinic = $clinics->get($report->reported_id);
 
             return [
                 'id' => $clinic->id,
@@ -51,18 +49,18 @@ class CountReportController extends Controller
         });
 
         return response()->json([
-            "status" => 1,
-            "message" => 'success',
-            "data" => [
-                'data' => $reportCounts->items(),
+            'status' => 1,
+            'message' => 'success',
+            'data' => [
+                'data' => $data->toArray(),
                 'meta' => [
                     'current_page' => $reportCounts->currentPage(),
                     'last_page' => $reportCounts->lastPage(),
                     'per_page' => $reportCounts->perPage(),
                     'total' => $reportCounts->total(),
                     'count' => $reportCounts->count(),
-                ]
-            ]
+                ],
+            ],
         ], 200);
     }
 
