@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Clinic;
+use App\Models\Doctor;
 use App\Models\Municipality;
 use App\Models\specialties;
 use App\Models\User;
@@ -15,7 +16,7 @@ class StatisticsController extends Controller
     public function index()
     {
         $normalUsersCount = User::where('user_role', '2')->count();
-        $doctorsCount = User::where('user_role', '4')->count();
+        $doctorsCount = Doctor::all()->count();
 
         $approvedClinics = Clinic::where('Statue', '1')->count();
         $rejectedClinics = Clinic::where('Statue', '2')->count();
