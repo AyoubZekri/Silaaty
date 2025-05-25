@@ -341,8 +341,8 @@ class ClinicController extends Controller
                         });
                 });
 
-            $clinics = $query->inRandomOrder()->limit(10)->get();
-            
+            $clinics = $query->paginate(10);
+
             $data = $clinics->map(function ($clinic) {
                 return [
                     'id' => $clinic->id,
