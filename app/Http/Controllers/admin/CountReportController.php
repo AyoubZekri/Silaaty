@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Clinic;
 use App\Models\Report;
 use App\Models\User;
 use \Illuminate\Support\Facades\DB;
@@ -29,7 +30,6 @@ class CountReportController extends Controller
             ->get()
             ->keyBy('id');
 
-        // تجهيز النتيجة
         $reportCounts->getCollection()->transform(function ($report) use ($clinics) {
             $clinic = $clinics[$report->reported_id] ?? null;
 
