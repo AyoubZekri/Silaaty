@@ -11,8 +11,7 @@ use Illuminate\Http\Request;
 
 class CountReportController extends Controller
 {
-
-    public function CountReport()
+   public function CountReport()
     {
         $reportCounts = Report::select('reported_id', DB::raw('count(*) as report_count'))
             ->groupBy('reported_id')
