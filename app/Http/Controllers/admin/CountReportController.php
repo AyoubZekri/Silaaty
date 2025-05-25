@@ -12,23 +12,26 @@ class CountReportController extends Controller
 {
     public function CountReport()
     {
+        // تجميع التقارير على أساس العيادة المبلّغ عنها
         $reportCounts = Report::select('reported_id', DB::raw('count(*) as report_count'))
-            ->whereHas("reported", function ($query) {
-                $query->where("user_role", 3);
+            ->whereHas("reported.user", function ($query) {
+                $query->where("user_role", 3); // تأكد أن المستخدم المرتبط بالعيادة دوره "عيادة"
             })
             ->groupBy('reported_id')
             ->paginate(10);
 
-        $reportedIds = $reportCounts->pluck('reported_id')->toArray();
+        // نجيب الـ IDs الخاصة بالعيادات
+        $clinicIds = $reportCounts->pluck('reported_id')->toArray();
 
-        $users = User::with('clinic.municipality')
-            ->whereIn('id', $reportedIds)
+        // جلب بيانات العيادات مع المستخدمين والبلديات المرتبطين
+        $clinics = Clinic::with(['user', 'municipality'])
+            ->whereIn('id', $clinicIds)
             ->get()
             ->keyBy('id');
 
-        $reportCounts->getCollection()->transform(function ($report) use ($users) {
-            $user = $users[$report->reported_id] ?? null;
-            $clinic = optional($user?->clinic);
+        // تجهيز النتيجة
+        $reportCounts->getCollection()->transform(function ($report) use ($clinics) {
+            $clinic = $clinics[$report->reported_id] ?? null;
 
             return [
                 'id' => $clinic->id,
@@ -62,7 +65,6 @@ class CountReportController extends Controller
             ]
         ], 200);
     }
-
 
 
 }
