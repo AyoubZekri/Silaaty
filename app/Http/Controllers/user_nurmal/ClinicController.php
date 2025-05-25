@@ -163,7 +163,7 @@ class ClinicController extends Controller
         try {
             $clinics = Clinic::with(['schedules', 'municipality'])
                 ->where('Statue', 1)
-                ->paginate(10); // يمكنك استخدام ->get() إن أردت بدون pagination
+                ->paginate(15);
 
             $data = $clinics->map(function ($clinic) {
                 return [
