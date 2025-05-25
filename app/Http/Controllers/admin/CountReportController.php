@@ -15,9 +15,6 @@ class CountReportController extends Controller
     public function CountReport()
     {
         $reportCounts = Report::select('reported_id', DB::raw('count(*) as report_count'))
-            ->whereHas('reported', function ($query) {
-                $query->where('user_role', 3);
-            })
             ->groupBy('reported_id')
             ->paginate(10);
 
