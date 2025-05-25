@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Report;
+use App\Models\User;
 use \Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -11,46 +12,49 @@ class CountReportController extends Controller
 {
     public function CountReport()
     {
-        $clinicReports = Report::select('reported_id', DB::raw('count(*) as report_count'))
+        $reportCounts = Report::select('reported_id', DB::raw('count(*) as report_count'))
             ->whereHas("reported", function ($query) {
                 $query->where("user_role", 3);
             })
-            ->with("reported.clinic")
             ->groupBy('reported_id')
-            ->paginate(10)
-            ->through(function ($report) {
-                $clinic = optional($report->reported->clinic);
-                return [
-                    'id' => $clinic->id,
-                    'name' => $clinic->name,
-                    'address' => $clinic->address,
-                    'phone' => $clinic->phone,
-                    'email' => $clinic->email,
-                    'latitude' => $clinic->latitude,
-                    'longitude' => $clinic->longitude,
-                    'type' => $clinic->type,
-                    'pharm_name_fr' => $clinic->pharm_name_fr,
-                    'cover_image' => $clinic->cover_image ? asset('storage/' . $clinic->cover_image) : null,
-                    'profile_image' => $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null,
-                    'municipality' => $clinic->municipality->name ?? null,
-                    'report_count' => $report->report_count,
-                ];
-            });
+            ->paginate(10);
+
+        $reportCounts->getCollection()->transform(function ($report) {
+            $user = User::with('clinic.municipality')->find($report->reported_id);
+            $clinic = optional($user->clinic);
+
+            return [
+                'id' => $clinic->id,
+                'name' => $clinic->name,
+                'address' => $clinic->address,
+                'phone' => $clinic->phone,
+                'email' => $clinic->email,
+                'latitude' => $clinic->latitude,
+                'longitude' => $clinic->longitude,
+                'type' => $clinic->type,
+                'pharm_name_fr' => $clinic->pharm_name_fr,
+                'cover_image' => $clinic->cover_image ? asset('storage/' . $clinic->cover_image) : null,
+                'profile_image' => $clinic->profile_image ? asset('storage/' . $clinic->profile_image) : null,
+                'municipality' => $clinic->municipality->name ?? null,
+                'report_count' => $report->report_count,
+            ];
+        });
 
         return response()->json([
             "status" => 1,
             "message" => 'success',
             "data" => [
-                'data' => $clinicReports->items(),
+                'data' => $reportCounts->items(),
                 'meta' => [
-                    'current_page' => $clinicReports->currentPage(),
-                    'last_page' => $clinicReports->lastPage(),
-                    'per_page' => $clinicReports->perPage(),
-                    'total' => $clinicReports->total(),
-                    'count' => $clinicReports->count(),
+                    'current_page' => $reportCounts->currentPage(),
+                    'last_page' => $reportCounts->lastPage(),
+                    'per_page' => $reportCounts->perPage(),
+                    'total' => $reportCounts->total(),
+                    'count' => $reportCounts->count(),
                 ]
             ]
         ], 200);
     }
+
 
 }
