@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\admin\Auth;
+namespace App\Http\Controllers\Admin\Auth;
 
+use App\Function\Login;
+use App\Function\Respons;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -18,34 +20,14 @@ class LoginController extends Controller
                 'password' => 'required|string',
             ]);
 
-            $user = User::where('email', $request->email)->first();
+            $result = Login::loginUser($request->email, $request->password, 1);
 
-            if (!$user || !Hash::check($request->password, $user->password) || $user->user_role != 1) {
-                throw ValidationException::withMessages([
-                    'email' => ['البريد الإلكتروني أو كلمة المرور غير صحيحة'],
-                ]);
-            }
+            return Respons::success($result, 'تم تسجيل الدخول بنجاح');
 
-            $token = $user->createToken('api_token')->plainTextToken;
-
-            return response()->json([
-                'status' => 1,
-                'message' => 'Success',
-                'user' => $user,
-                'token' => $token,
-            ]);
         } catch (ValidationException $e) {
-            return response()->json([
-                'status' => 0,
-                'message' => 'بيانات الدخول غير صحيحة',
-                'errors' => $e->errors(),
-            ], 422);
-        } catch (Exception $e) {
-            return response()->json([
-                'status' => 0,
-                'message' => 'حدث خطأ أثناء محاولة تسجيل الدخول',
-                'error' => $e->getMessage(),
-            ], 500);
+            return Respons::error('بيانات الدخول غير صحيحة', 422, $e->errors());
+        } catch (\Exception $e) {
+            return Respons::error('حدث خطأ أثناء محاولة تسجيل الدخول', 500, $e->getMessage());
         }
     }
 }

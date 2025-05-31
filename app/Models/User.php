@@ -20,6 +20,8 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        "family_name",
+        "phone_number",
         'email',
         'password',
         'google_id',
@@ -59,11 +61,16 @@ class User extends Authenticatable
         return $this->belongsToMany(\App\Models\Role::class, 'roles_user', 'user_id', 'roles_id');
     }
 
-
-    public function clinic()
+    public function products()
     {
-        return $this->hasOne(Clinic::class, "user_id");
+        return $this->hasMany(Product::class);
     }
+
+    public function zakat()
+    {
+        return $this->hasOne(Zakat::class);
+    }
+
 
     public function notifications()
     {
@@ -81,13 +88,4 @@ class User extends Authenticatable
         return $this->user_roles()->where('role_name', 'User')->exists();
     }
 
-    public function isClinic()
-    {
-        return $this->user_roles()->where('role_name', 'Clinic')->exists();
-    }
-
-    public function isDoctor()
-    {
-        return $this->user_roles()->where('role_name', 'Doctor')->exists();
-    }
 }

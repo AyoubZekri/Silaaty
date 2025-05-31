@@ -1,27 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\admin\Auth;
+namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Exception;
+use App\Function\Logout_user;
 class LogoutController extends Controller
 {
     public function logout(Request $request)
     {
-        try {
-            $request->user()->currentAccessToken()->delete();
-
-            return response()->json([
-                'status' => 1,
-                'message' => 'Success',
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'status' => 0,
-                'message' => 'حدث خطأ أثناء تسجيل الخروج',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        Logout_user::Logout_user($request);
     }
 }

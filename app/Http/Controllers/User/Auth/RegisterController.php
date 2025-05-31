@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Auth;
+namespace App\Http\Controllers\User\Auth;
 
 use App\Function\Respons;
 use App\Http\Controllers\Controller;
@@ -11,11 +11,13 @@ use Illuminate\Support\Facades\Validator;
 class RegisterController extends Controller
 {
 
-    public function Registeradmin(Request $request)
+    public function RegisterUser(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
+                'family_name' => 'required|string|max:255',
+                'phone_number' => 'required|string|max:12',
                 'email' => 'required|email|unique:users',
                 'password' => 'required|string|min:6|confirmed',
             ]);
@@ -37,3 +39,4 @@ class RegisterController extends Controller
     }
 
 }
+

@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('clinics', function (Blueprint $table) {
-            $table->string('cover_image')->nullable()->after('longitude');
-            $table->string('profile_image')->nullable()->after('cover_image');
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id();
+            $table->string("categorie_name");
+            $table->string("categories_image");
+            $table->timestamps();
         });
     }
 
@@ -22,8 +24,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('clinics', function (Blueprint $table) {
-            $table->dropColumn(['cover_image', 'profile_image']);
-        });
+        Schema::dropIfExists('categories');
+
     }
 };
