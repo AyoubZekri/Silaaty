@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Function;
 
 use App\Models\User;
 use App\Models\Role;
@@ -16,6 +16,8 @@ class UserService
         try {
             $user = User::create([
                 'name' => $data['name'],
+                'phone_number' => $data['phone_number'],
+                'family_name' => $data['family_name'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
                 'user_role' => $roleName === 'admin' ? 1 : 2,
@@ -27,13 +29,10 @@ class UserService
                 $user->user_roles()->attach($role->id);
             }
 
-            $token = $user->createToken("{$roleName}-token")->plainTextToken;
-
             DB::commit();
 
             return [
                 'user' => $user,
-                'token' => $token,
             ];
         } catch (\Exception $e) {
             DB::rollBack();

@@ -14,14 +14,13 @@ class Product extends Model
     protected $fillable = [
         'categorie_id',
         'user_id',
+        "invoies_id",
         'product_name',
+        "Product_image",
         'product_description',
         'product_quantity',
         'product_price',
         'product_price_total',
-        'product_debtor_Name',
-        'product_payment',
-        'product_debtor_phone',
     ];
 
 
@@ -32,7 +31,7 @@ class Product extends Model
 
     public function category()
     {
-        return $this->belongsTo(categories::class, 'categorie_id');
+        return $this->belongsTo(invoies::class, 'invoies_id');
     }
 }
 

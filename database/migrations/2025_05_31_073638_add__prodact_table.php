@@ -12,16 +12,16 @@ return new class extends Migration {
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('categorie_id')->constrained('categories')->onDelete('restrict');
+            $table->foreignId('categorie_id');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('invoies_id')->constrained('invoies')->onDelete('cascade');
+            $table->foreignId('categoris_id')->constrained('categoris')->onDelete('cascade');
             $table->string("product_name");
+            $table->string("Product_image")->nullable();
             $table->string("product_description");
             $table->string("product_quantity");
             $table->decimal("product_price",13,2);
             $table->decimal("product_price_total", 13, 2);
-            $table->string("product_debtor_Name");
-            $table->date("product_payment");
-            $table->string("product_debtor_phone");
             $table->timestamps();
         });
     }

@@ -10,8 +10,7 @@ class Login
 {
     public static function loginUser(string $email, string $password, int $ROLE)
     {
-
-        $user = User::where("email", $email)->ferst();
+        $user = User::where("email", $email)->first();
 
         if (!$user || !Hash::check($password, $user->password) || $user->user_role != $ROLE) {
             throw ValidationException::withMessages([

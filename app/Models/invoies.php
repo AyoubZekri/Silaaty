@@ -5,13 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class categories extends Model
+class invoies extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'categorie_name',
-        'categories _image',
+        "Transaction_id",
+        "invoies_numper",
+        'invoies_date',
+        'invoies_payment_date',
+        'invoies_status',
     ];
 
     public function products()

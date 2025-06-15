@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('invoies', function (Blueprint $table) {
             $table->id();
-            $table->string("categorie_name");
-            $table->string("categories_image");
+            $table->foreignId('Transaction_id')->constrained('users')->onDelete('cascade');
+            $table->string("invoies_numper");
+            $table->date("invoies_date");
+            $table->date("invoies_payment_date");
+            $table->tinyInteger("invoies_status")->default(1);
             $table->timestamps();
         });
     }
@@ -24,7 +27,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('invoies');
 
     }
 };

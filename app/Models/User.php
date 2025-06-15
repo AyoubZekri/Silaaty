@@ -88,4 +88,13 @@ class User extends Authenticatable
         return $this->user_roles()->where('role_name', 'User')->exists();
     }
 
+    public function isDealer()
+    {
+        return $this->user_roles()->where('role_name', 'Dealer')->exists();
+    }
+    public function isConvicts()
+    {
+        return $this->user_roles()->where('role_name', 'Convicts')->exists();
+    }
+
 }

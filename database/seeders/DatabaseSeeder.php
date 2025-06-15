@@ -20,6 +20,9 @@ class DatabaseSeeder extends Seeder
         DB::table('roles')->insert([
             ['id'=> 1,'role_name' => 'admin', 'created_at' => now()],
             ['id' => 2,'role_name' => 'User', 'created_at' => now()],
+            ['id' => 3, 'role_name' => 'Dealer', 'created_at' => now()],
+            ['id' => 4, 'role_name' => 'Convicts', 'created_at' => now()],
+
         ]);
     }
 }
