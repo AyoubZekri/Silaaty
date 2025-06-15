@@ -16,6 +16,7 @@ class AddProductController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
+                "categoris_id"=>"required",
                 'categorie_id' => 'required',
                 'product_name' => 'required|string|max:255',
                 'product_description' => 'nullable|string',

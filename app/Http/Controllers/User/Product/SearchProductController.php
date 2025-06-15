@@ -25,8 +25,7 @@ class SearchProductController extends Controller
 
             $products = Product::where('user_id', auth()->id())
                 ->where(function ($q) use ($query) {
-                    $q->where('product_name', 'LIKE', "%$query%")
-                        ->orWhere('product_debtor_Name', 'LIKE', "%$query%");
+                    $q->where('product_name', 'LIKE', "%$query%");
                 })
                 ->get();
 

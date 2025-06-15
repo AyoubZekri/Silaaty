@@ -50,6 +50,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/products', [ShwoProductController::class, 'index']);
     Route::post('/products/show', [ShwoProductController::class, 'show']);
     Route::post('/products/show_cat', [ShwoProductController::class, 'ShowProdact']);
+    Route::post('/products/show_by_cat', [ShwoProductController::class, 'ShowProdactbyCat']);
+
     Route::get('/products/Zakat/show', [ShwoProductController::class, 'ShowProducts_zakat']);
     Route::post('/products/search', [SearchProductController::class, 'search']);
 

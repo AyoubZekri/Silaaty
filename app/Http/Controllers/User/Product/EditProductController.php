@@ -16,6 +16,7 @@ class EditProductController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'id' => 'required|exists:products,id',
+                "categoris_id"=>"sometimes",
                 'categorie_id' => 'sometimes',
                 'product_name' => 'sometimes|string|max:255',
                 'product_description' => 'nullable|string',
@@ -36,6 +37,7 @@ class EditProductController extends Controller
                 ->where('user_id', auth()->id())
                 ->firstOrFail();
             $data = $request->only([
+                "categoris_id",
                 'product_name',
                 'product_description',
                 'product_quantity',

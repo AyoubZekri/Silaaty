@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\User\Categorie;
 
 use App\Http\Controllers\Controller;
+use App\Models\Categoris;
 use Illuminate\Http\Request;
 use App\Function\Respons;
-use App\Models\categories;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -18,11 +18,11 @@ class EditCategorisController extends Controller
             $validator = Validator::make($request->all(), [
                 'id'=>"required",
                 'categorie_name' => 'sometimes|string|max:255',
-                'categorie_name_ar' => 'required|string|max:255',
+                'categorie_name_fr' => 'required|string|max:255',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
 
-            $category = categories::findOrFail($request->id);
+            $category = Categoris::findOrFail($request->id);
 
 
             if ($validator->fails()) {
@@ -30,19 +30,19 @@ class EditCategorisController extends Controller
             }
 
             if ($request->has('categorie_name')) {
-                $category->categorie_name = $request->categorie_name;
+                $category->categoris_name = $request->categorie_name;
             }
 
             if ($request->has('categorie_name')) {
-                $category->categorie_name_ar = $request->categorie_name_ar;
+                $category->categoris_name_fr = $request->categorie_name_ar;
             }
 
             if ($request->hasFile('image')) {
-                if ($category->categories_image) {
-                    Storage::disk('public')->delete($category->categories_image);
+                if ($category->categoris_image) {
+                    Storage::disk('public')->delete($category->categoris_image);
                 }
 
-                $category->categories_image = $request->file('image')->store('categories', 'public');
+                $category->categoris_image = $request->file('image')->store('categories', 'public');
             }
 
             $category->save();

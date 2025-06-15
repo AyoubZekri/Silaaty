@@ -4,7 +4,7 @@ namespace App\Http\Controllers\User\Categorie;
 
 use App\Function\Respons;
 use App\Http\Controllers\Controller;
-use App\Models\categories;
+use App\Models\Categoris;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -13,10 +13,10 @@ class ShowCategorisController extends Controller
     public function index()
     {
         try {
-            
-            $categories = categories::all()->map(function ($category) {
-                $category->categories_image = $category->categories_image
-                    ? asset('storage/' . $category->categories_image)
+
+            $categories = Categoris::where("user_id",auth()->id())->map(function ($category) {
+                $category->categoris_image = $category->categoris_image
+                    ? asset('storage/' . $category->categoris_image)
                     : null;
                 return $category;
             });
@@ -41,10 +41,10 @@ class ShowCategorisController extends Controller
             }
 
 
-            $category = categories::findOrFail($request->id);
+            $category = Categoris::findOrFail($request->id);
 
-            $category->categories_image = $category->categories_image
-                ? asset('storage/' . $category->categories_image)
+            $category->categoris_image = $category->categoris_image
+                ? asset('storage/' . $category->categoris_image)
                 : null;
 
             return Respons::success(['data' => $category]);

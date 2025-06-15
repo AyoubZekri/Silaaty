@@ -37,7 +37,42 @@ class ShwoProductController extends Controller
         ]);
 
         try {
+            if ($validator->fails()) {
+                return Respons::error('بيانات غير صحيحة', 422, $validator->errors());
+            }
+
             $products = Product::where('user_id', auth()->id())->Where("categorie_id", $request->Categoris_id)->get();
+
+            // $products->map(function ($product) {
+            //     $product->Product_image = $product->Product_image
+            //         ? asset('storage/' . $product->Product_image)
+            //         : null;
+            // });
+
+            return Respons::success(['data' => $products]);
+        } catch (\Exception $e) {
+            return Respons::error('حدث خطأ أثناء جلب المنتجات', 500, $e->getMessage());
+        }
+    }
+
+    public function ShowProdactbyCat(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'Categorie_id' => 'required',
+            'Categoris_id' => 'required',
+        ]);
+
+        try {
+
+            if ($validator->fails()) {
+                return Respons::error('بيانات غير صحيحة', 422, $validator->errors());
+            }
+
+            $products = Product::where('user_id', auth()->id())
+                ->Where("categorie_id", $request->Categorie_id)
+                ->Where("categoris_id", $request->Categoris_id)
+                ->get();
 
             // $products->map(function ($product) {
             //     $product->Product_image = $product->Product_image
@@ -63,13 +98,21 @@ class ShwoProductController extends Controller
                 ->where('categorie_id', 1)
                 ->sum('product_price_total');
 
+            $TotalPriseDealer = Product::where('user_id', auth()->id())
+                ->where('categorie_id', 3)
+                ->sum('product_price_total');
+
+            $TotalPriseConvicts = Product::where('user_id', auth()->id())
+                ->where('categorie_id', 4)
+                ->sum('product_price_total');
+
             $products->map(function ($product) {
                 $product->Product_image = $product->Product_image
                     ? asset('storage/' . $product->Product_image)
                     : null;
             });
 
-            return Respons::success(['data' => $products, "SumTotalPrise" => $TotalPrise]);
+            return Respons::success(['data' => $products, "SumTotalPrise" => $TotalPrise, "SumTotalDealer" => $TotalPriseDealer, "SumTotalPriseConvicts" => $TotalPriseConvicts,]);
         } catch (\Exception $e) {
             return Respons::error('حدث خطأ أثناء جلب المنتجات', 500, $e->getMessage());
         }
