@@ -16,12 +16,13 @@ class EditProductController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'id' => 'required|exists:products,id',
-                "categoris_id"=>"sometimes",
+                "categoris_id" => "sometimes",
                 'categorie_id' => 'sometimes',
                 'product_name' => 'sometimes|string|max:255',
                 'product_description' => 'nullable|string',
                 'product_quantity' => 'sometimes|numeric|min:1',
                 'product_price' => 'sometimes|numeric|min:0',
+                'product_price_purchase' => 'required|numeric|min:0',
                 'product_price_total' => 'sometimes|numeric|min:0',
                 'product_debtor_Name' => 'nullable|string|max:255',
                 'product_payment' => 'nullable|numeric|min:0',
@@ -37,6 +38,7 @@ class EditProductController extends Controller
                 ->where('user_id', auth()->id())
                 ->firstOrFail();
             $data = $request->only([
+                "product_price_purchase",
                 "categoris_id",
                 'product_name',
                 'product_description',
@@ -69,4 +71,31 @@ class EditProductController extends Controller
         }
     }
 
+    public function SwitchProduct(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:products,id',
+        ]);
+
+        if ($validator->fails()) {
+            return Respons::error('بيانات غير صحيحة', 422, $validator->errors());
+        }
+
+        try {
+            $product = Product::where("user_id", auth()->id())
+                ->where("id", $request->id)
+                ->firstOrFail();
+
+            $product->categorie_id = $product->categorie_id == 1 ? 2 : 1;
+            $product->save();
+
+            return Respons::success('تم تغيير الفئة بنجاح');
+
+        } catch (\Exception $e) {
+            return Respons::error('حدث خطأ أثناء تحديث المنتج', 500, $e->getMessage());
+        }
+    }
+
+
 }
+

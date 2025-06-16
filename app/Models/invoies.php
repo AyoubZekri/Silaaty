@@ -10,6 +10,7 @@ class invoies extends Model
     use HasFactory;
 
     protected $fillable = [
+        "user_id",
         "Transaction_id",
         "invoies_numper",
         'invoies_date',
@@ -20,6 +21,12 @@ class invoies extends Model
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transactions::class, 'Transaction_id');
     }
 }
 

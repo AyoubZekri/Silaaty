@@ -21,6 +21,8 @@ return new class extends Migration {
             $table->string("product_description");
             $table->string("product_quantity");
             $table->decimal("product_price",13,2);
+            $table->decimal("product_price_purchase",13,2);
+            $table->decimal("product_price_total_purchase",13,2);
             $table->decimal("product_price_total", 13, 2);
             $table->timestamps();
         });

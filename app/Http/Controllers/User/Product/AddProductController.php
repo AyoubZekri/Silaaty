@@ -15,40 +15,53 @@ class AddProductController extends Controller
     public function AddProduct(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                "categoris_id"=>"required",
-                'categorie_id' => 'required',
-                'product_name' => 'required|string|max:255',
-                'product_description' => 'nullable|string',
-                'product_quantity' => 'required|numeric|min:1',
-                'product_price' => 'required|numeric|min:0',
-                'product_price_total' => 'required|numeric|min:0',
-                'product_debtor_Name' => 'nullable|string|max:255',
-                'product_payment' => 'nullable|numeric|min:0',
-                'product_debtor_phone' => 'nullable|string|max:20',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ]);
+            $allData = $request->all();
 
-            if ($validator->fails()) {
-                return Respons::error('بيانات غير صحيحة', 422, $validator->errors());
+            $isMultiple = isset($allData['products']) && is_array($allData['products']);
+
+            $products = $isMultiple ? $allData['products'] : [$allData];
+
+            if (count($products) === 0) {
+                return Respons::error('لا توجد بيانات لإضافة منتجات', 422);
             }
 
+            foreach ($products as $index => $productData) {
+                $validator = Validator::make($productData, [
+                    "categoris_id" => "sometimes",
+                    'categorie_id' => "required",
+                    'invoies_id'=>"sometimes",
+                    'product_name' => 'required|string|max:255',
+                    'product_description' => 'nullable|string',
+                    'product_quantity' => 'required|numeric|min:1',
+                    'product_price' => 'required|numeric|min:0',
+                    'product_price_purchase' => 'required|numeric|min:0',
+                    'product_price_total' => 'required|numeric|min:0',
+                    'product_debtor_Name' => 'nullable|string|max:255',
+                    'product_payment' => 'nullable|numeric|min:0',
+                    'product_debtor_phone' => 'nullable|string|max:20',
+                    'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                ]);
 
-            $data = $request->all();
-            $data['user_id'] = auth()->id();
+                if ($validator->fails()) {
+                    return Respons::error("خطأ في المنتج رقم " . ($index + 1), 422, $validator->errors());
+                }
 
-            if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('products', 'public');
-                $data['Product_image'] = $path;
+                $productData['user_id'] = auth()->id();
+
+                if ($request->hasFile($isMultiple ? "products.$index.image" : "image")) {
+                    $file = $isMultiple ? $request->file("products")[$index]['image'] : $request->file("image");
+                    $path = $file->store('products', 'public');
+                    $productData['Product_image'] = $path;
+                }
+
+                Product::create($productData);
             }
-
-            $prodact = Product::create($data);
 
             Zakats::Zakats();
 
-            return Respons::success();
+            return Respons::success('تمت إضافة المنتج' . (count($products) > 1 ? 'ات' : '') . ' بنجاح');
         } catch (\Exception $e) {
-            return Respons::error('حدث خطأ أثناء إضافة المنتج', 500, $e->getMessage());
+            return Respons::error('حدث خطأ أثناء إضافة المنتجات', 500, $e->getMessage());
         }
     }
 
