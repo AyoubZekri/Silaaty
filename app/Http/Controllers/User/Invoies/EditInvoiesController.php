@@ -16,6 +16,8 @@ class EditInvoiesController extends Controller
             $validator = Validator::make($request->all(), [
                 "id"=>"required",
                 "invoies_payment_date" => "sometimes|date",
+                "Payment_price" => "sometimes",
+
             ]);
 
             if ($validator->fails()) {
@@ -30,44 +32,24 @@ class EditInvoiesController extends Controller
                 return Respons::error('الفاتورة غير موجودة', 404);
             }
 
-            $invoice->update($request->only([
-                'invoies_payment_date',
-            ]));
 
+
+            if ($request->filled('Payment_price')) {
+                $newPayment = $invoice->Payment_price + $request->Payment_price;
+                $invoice->Payment_price = $newPayment;
+            }
+
+            if ($request->filled('invoies_payment_date')) {
+                $invoice->invoies_payment_date = $request->invoies_payment_date;
+            }
+
+            $invoice->save();
             return Respons::success('تم تعديل الفاتورة بنجاح');
         } catch (\Exception $e) {
             return Respons::error('حدث خطأ أثناء تعديل الفاتورة', 500, $e->getMessage());
         }
     }
 
-    public function updateInvoiceSwitch(Request $request)
-    {
-        try {
-            $validator = Validator::make($request->all(), [
-                "id"=>"required",
-            ]);
-
-            if ($validator->fails()) {
-                return Respons::error("خطأ في البيانات", 422, $validator->errors());
-            }
-
-            $invoice = invoies::where('id', $request->id)
-                ->where('user_id', auth()->id())
-                ->firstOrFail();
-
-            if (!$invoice) {
-                return Respons::error('الفاتورة غير موجودة', 404);
-            }
-
-           $invoice->invoies_status = $invoice->invoies_status == 1 ? 2 : 1;
-           $invoice->save();
-
-
-            return Respons::success('تم تعديل الفاتورة بنجاح');
-        } catch (\Exception $e) {
-            return Respons::error('حدث خطأ أثناء تعديل الفاتورة', 500, $e->getMessage());
-        }
-    }
 
 
 }

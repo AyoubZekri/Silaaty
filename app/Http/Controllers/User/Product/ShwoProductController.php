@@ -60,7 +60,7 @@ class ShwoProductController extends Controller
 
         $validator = Validator::make($request->all(), [
             'Categorie_id' => 'required',
-            'Categoris_id' => 'required',
+            'Categoris_id' => "sometimes",
         ]);
 
         try {
@@ -69,10 +69,14 @@ class ShwoProductController extends Controller
                 return Respons::error('بيانات غير صحيحة', 422, $validator->errors());
             }
 
-            $products = Product::where('user_id', auth()->id())
-                ->Where("categorie_id", $request->Categorie_id)
-                ->Where("categoris_id", $request->Categoris_id)
-                ->get();
+            $query = Product::where('user_id', auth()->id())
+                ->where('categorie_id', $request->Categorie_id);
+
+            if ($request->filled('Categoris_id')) {
+                $query->where('categoris_id', $request->Categoris_id);
+            }
+
+            $products = $query->get();
 
             // $products->map(function ($product) {
             //     $product->Product_image = $product->Product_image

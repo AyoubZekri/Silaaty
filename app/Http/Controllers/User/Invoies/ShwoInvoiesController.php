@@ -27,9 +27,11 @@ class ShwoInvoiesController extends Controller
                 ->where('Transaction_id', $request->transaction_id)
                 ->get();
 
-            if ($invoices->isEmpty()) {
-                return Respons::error('لا توجد فواتير لهذه المعاملة', 404);
-            }
+            $sumpaymentPrice = invoies::where('user_id', auth()->id())
+                ->where('Transaction_id', $request->transaction_id)
+                ->sum("payment_Price");
+
+
 
             $transaction = Transactions::where('user_id', auth()->id())
                 ->where('id', $request->transaction_id)
@@ -39,23 +41,32 @@ class ShwoInvoiesController extends Controller
                 return Respons::error('المعاملة غير موجودة', 404);
             }
 
-            $invoiceIds = $invoices->pluck('id');
-
             $isPurchase = $transaction->transactions == 1;
 
-            $sumPrice = Product::where('user_id', auth()->id())
-                ->whereIn('invoice_id', $invoiceIds)
-                ->sum($isPurchase ? 'product_price_total_purchase' : 'product_price_total');
+            $sumPrice = 0;
+
+            $invoices = $invoices->map(function ($invoice) use ($isPurchase, &$sumPrice) {
+                $invoiceSum = Product::where('user_id', auth()->id())
+                    ->where('invoies_id', $invoice->id)
+                    ->sum($isPurchase ? 'product_price_total_purchase' : 'product_price_total');
+
+                $invoice->invoice_sum = $invoiceSum;
+
+                $sumPrice += $invoiceSum;
+
+                return $invoice;
+            });
 
             return Respons::success([
                 'invoices' => $invoices,
                 'transaction' => $transaction,
-                'sum_price' => $sumPrice
+                'sum_price' => $sumPrice,
+                'sum_payment_Price' => $sumpaymentPrice,
             ]);
-
         } catch (\Exception $e) {
             return Respons::error('حدث خطأ أثناء جلب الفواتير', 500, $e->getMessage());
         }
+
     }
 
 
@@ -82,6 +93,7 @@ class ShwoInvoiesController extends Controller
                 ->where('id', $invoice->Transaction_id)
                 ->first();
 
+
             if (!$transaction) {
                 return Respons::error('المعاملة غير موجودة لهذه الفاتورة', 404);
             }
@@ -89,12 +101,16 @@ class ShwoInvoiesController extends Controller
             $isPurchase = $transaction->transactions == 1;
 
             $sumPrice = Product::where('user_id', auth()->id())
-                ->where('invoice_id', $invoice->id)
+                ->where('invoies_id', $invoice->id)
                 ->sum($isPurchase ? 'product_price_total_purchase' : 'product_price_total');
+            $Product = Product::where('user_id', auth()->id())
+                ->where('invoies_id', $invoice->id)
+                ->get();
 
             return Respons::success([
                 'invoice' => $invoice,
                 'transaction' => $transaction,
+                'Product' => $Product,
                 'sum_price' => $sumPrice
             ]);
         } catch (\Exception $e) {

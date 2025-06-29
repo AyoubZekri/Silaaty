@@ -27,20 +27,19 @@ class AddProductController extends Controller
 
             foreach ($products as $index => $productData) {
                 $validator = Validator::make($productData, [
-                    "categoris_id" => "sometimes",
+                    "categoris_id" => "sometimes", // type
                     'categorie_id' => "required",
                     'invoies_id'=>"sometimes",
                     'product_name' => 'required|string|max:255',
                     'product_description' => 'nullable|string',
-                    'product_quantity' => 'required|numeric|min:1',
-                    'product_price' => 'required|numeric|min:0',
-                    'product_price_purchase' => 'required|numeric|min:0',
-                    'product_price_total' => 'required|numeric|min:0',
-                    'product_debtor_Name' => 'nullable|string|max:255',
-                    'product_payment' => 'nullable|numeric|min:0',
-                    'product_debtor_phone' => 'nullable|string|max:20',
+                    'product_quantity' => 'sometimes|numeric|min:1',
+                    'product_price' => 'sometimes|numeric',
+                    'product_price_total_purchase' => 'sometimes|numeric',
+                    'product_price_purchase' => 'sometimes|numeric',
+                    'product_price_total' => 'sometimes|numeric',
                     'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 ]);
+
 
                 if ($validator->fails()) {
                     return Respons::error("خطأ في المنتج رقم " . ($index + 1), 422, $validator->errors());

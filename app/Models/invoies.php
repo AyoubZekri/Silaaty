@@ -15,7 +15,7 @@ class invoies extends Model
         "invoies_numper",
         'invoies_date',
         'invoies_payment_date',
-        'invoies_status',
+        'Payment_price',
     ];
 
     public function products()

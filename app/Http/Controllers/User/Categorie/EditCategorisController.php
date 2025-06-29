@@ -18,12 +18,13 @@ class EditCategorisController extends Controller
             $validator = Validator::make($request->all(), [
                 'id'=>"required",
                 'categorie_name' => 'sometimes|string|max:255',
-                'categorie_name_fr' => 'required|string|max:255',
+                'categorie_name_fr' => 'sometimes|string|max:255',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
 
-            $category = Categoris::findOrFail($request->id);
-
+            $category = Categoris::where("user_id", auth()->id())
+                ->where("id", $request->id)
+                ->firstOrFail();
 
             if ($validator->fails()) {
                 return Respons::error('بيانات غير صحيحة', 422, $validator->errors());
@@ -33,8 +34,8 @@ class EditCategorisController extends Controller
                 $category->categoris_name = $request->categorie_name;
             }
 
-            if ($request->has('categorie_name')) {
-                $category->categoris_name_fr = $request->categorie_name_ar;
+            if ($request->has('categorie_name_fr')) {
+                $category->categoris_name_fr = $request->categorie_name_fr;
             }
 
             if ($request->hasFile('image')) {

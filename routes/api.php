@@ -8,6 +8,7 @@ use App\Http\Controllers\User\Categorie\AddCategorisController;
 use App\Http\Controllers\User\Categorie\DeleteCategorisController;
 use App\Http\Controllers\User\Categorie\EditCategorisController;
 use App\Http\Controllers\User\Categorie\ShowCategorisController;
+use App\Http\Controllers\User\Invoies\AddInvoiesController;
 use App\Http\Controllers\User\Invoies\DeleteInvoiesController;
 use App\Http\Controllers\User\Invoies\EditInvoiesController;
 use App\Http\Controllers\User\Invoies\ShwoInvoiesController;
@@ -25,7 +26,6 @@ use App\Http\Controllers\User\Transaction\DeleteTransactionController;
 use App\Http\Controllers\User\Transaction\EditTransactionController;
 use App\Http\Controllers\User\Transaction\ShwoTransactionController;
 use App\Http\Controllers\User\Zakat\ShwoZakatController;
-use \App\Http\Controllers\User\Invoices\AddInvoiesController;
 
 use Illuminate\Support\Facades\Route;
 

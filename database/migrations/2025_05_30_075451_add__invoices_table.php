@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('invoies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('Transaction_id')->constrained('Transactions')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string("invoies_numper");
             $table->date("invoies_date");
             $table->date("invoies_payment_date");
-            $table->tinyInteger("invoies_status")->default(1);
+            $table->integer("Payment_price")->default(0);
             $table->timestamps();
         });
     }

@@ -14,14 +14,9 @@ class ShowCategorisController extends Controller
     {
         try {
 
-            $categories = Categoris::where("user_id",auth()->id())->map(function ($category) {
-                $category->categoris_image = $category->categoris_image
-                    ? asset('storage/' . $category->categoris_image)
-                    : null;
-                return $category;
-            });
+            $categories = Categoris::where("user_id",auth()->id())->get();
 
-            return Respons::success(['data' => $categories]);
+            return Respons::success(['catdata' => $categories]);
         } catch (\Exception $e) {
             return Respons::error('حدث خطأ أثناء جلب الفئات', 500, $e->getMessage());
         }

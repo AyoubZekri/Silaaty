@@ -22,7 +22,8 @@ class EditProductController extends Controller
                 'product_description' => 'nullable|string',
                 'product_quantity' => 'sometimes|numeric|min:1',
                 'product_price' => 'sometimes|numeric|min:0',
-                'product_price_purchase' => 'required|numeric|min:0',
+                'product_price_purchase' => 'sometimes|numeric|min:0',
+                'product_price_total_purchase' => 'sometimes|numeric|min:0',
                 'product_price_total' => 'sometimes|numeric|min:0',
                 'product_debtor_Name' => 'nullable|string|max:255',
                 'product_payment' => 'nullable|numeric|min:0',
@@ -38,6 +39,7 @@ class EditProductController extends Controller
                 ->where('user_id', auth()->id())
                 ->firstOrFail();
             $data = $request->only([
+                "product_price_total_purchase",
                 "product_price_purchase",
                 "categoris_id",
                 'product_name',

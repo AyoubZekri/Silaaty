@@ -13,6 +13,9 @@ return new class extends Migration {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('categorie_id');
+            // 1 product
+            // 2 مستلزمات
+            // 
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('invoies_id')->constrained('invoies')->onDelete('cascade');
             $table->foreignId('categoris_id')->constrained('categoris')->onDelete('cascade');
@@ -24,6 +27,7 @@ return new class extends Migration {
             $table->decimal("product_price_purchase",13,2);
             $table->decimal("product_price_total_purchase",13,2);
             $table->decimal("product_price_total", 13, 2);
+            $table->integer("codepar");
             $table->timestamps();
         });
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\User\Invoices;
+namespace App\Http\Controllers\User\Invoies;
 
 use App\Function\Respons;
 use App\Http\Controllers\Controller;
@@ -17,6 +17,7 @@ class AddInvoiesController extends Controller
             $validator = Validator::make($request->all(), [
                 "Transaction_id" => "required",
                 "invoies_payment_date" => "sometimes|date",
+                "Payment_price"=>"sometimes",
             ]);
 
             if ($validator->fails()) {
@@ -28,8 +29,9 @@ class AddInvoiesController extends Controller
                 ->count();
 
             $invoiceData = $request->only([
-                "Transaction_id",       
+                "Transaction_id",
                 "invoies_payment_date",
+                "Payment_price"
             ]);
 
             $invoiceData['user_id'] = auth()->id();

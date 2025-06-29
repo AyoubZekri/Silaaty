@@ -24,30 +24,32 @@ class ShwoTransactionController extends Controller
                 return Respons::error("خطأ في البيانات", 422, $validator->errors());
             }
 
+            $isPurchase = $request->transactions == 1;
+
             $transactions = Transactions::where('user_id', auth()->id())
                 ->where('transactions', $request->transactions)
-                ->get();
-            $invoices = invoies::where('user_id', auth()->id())
-                ->where('Transaction_id', $transactions->id)
                 ->get();
 
             if ($transactions->isEmpty()) {
                 return Respons::error('لا توجد معاملات من هذا النوع', 404);
             }
 
-            $invoiceIds = $invoices->pluck('id');
+            $result = $transactions->map(function ($transaction) use ($isPurchase) {
+                $invoiceIds = invoies::where('user_id', auth()->id())
+                    ->where('Transaction_id', $transaction->id)
+                    ->pluck('id');
 
-            $isPurchase = $request->transactions == 1;
+                $sumPrice =Product::where('user_id', auth()->id())
+                    ->whereIn('invoies_id', $invoiceIds)
+                    ->sum($isPurchase ? 'product_price_total_purchase' : 'product_price_total');
 
-            $sumPrice = Product::where('user_id', auth()->id())
-                ->whereIn('invoice_id', $invoiceIds)
-                ->sum($isPurchase ? 'product_price_total_purchase' : 'product_price_total');
+                return [
+                    'transaction' => $transaction,
+                    "sum_price" => round((float) $sumPrice, 2)
+                ];
+            });
 
-
-            return Respons::success([
-                'transaction' => $transactions,
-                'sum_price' => $sumPrice
-            ]);
+            return Respons::success($result);
         } catch (Exception $e) {
             return Respons::error('فشل في جلب المعاملات', 500, $e->getMessage());
         }
