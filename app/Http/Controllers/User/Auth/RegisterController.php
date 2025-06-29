@@ -38,6 +38,7 @@ class RegisterController extends Controller
             Zakat::create([
                 "user_id" => $result["user"]->id
             ]);
+            
 
             return Respons::success();
 
