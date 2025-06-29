@@ -5,8 +5,9 @@ namespace App\Http\Controllers\User\Auth;
 use App\Function\Login;
 use App\Function\Respons;
 use App\Http\Controllers\Controller;
-use Dotenv\Exception\ValidationException;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Exception;
 
 class LoginUserController extends Controller
@@ -17,9 +18,18 @@ class LoginUserController extends Controller
             $request->validate([
                 'email' => 'required|email',
                 'password' => 'required|string',
+                'fcm_token' => 'nullable|string',
             ]);
 
             $result = Login::loginUser($request->email, $request->password, 2);
+
+            $user = User::where('email', $request->email)->first();
+
+            if ($request->filled('fcm_token')) {
+                $user->update([
+                    'fcm_token' => $request->fcm_token,
+                ]);
+            }
 
             return Respons::success($result, 'تم تسجيل الدخول بنجاح');
 

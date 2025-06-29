@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class NewPasswordController extends Controller
 {
-    public function reset(Request $request)
+    public function newpassword(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [

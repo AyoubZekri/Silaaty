@@ -4,6 +4,10 @@ use App\Http\Controllers\admin\Auth\LoginController;
 use App\Http\Controllers\admin\Auth\LogoutController;
 use App\Http\Controllers\admin\Auth\RegisterController;
 use App\Http\Controllers\User\Auth\LogoutUserController;
+use App\Http\Controllers\User\Auth\Password\NewPasswordController;
+use App\Http\Controllers\User\Auth\Password\RessetpasswordController;
+use App\Http\Controllers\User\Auth\Password\sendemaileController;
+use App\Http\Controllers\User\Auth\Password\VerifyemailController;
 use App\Http\Controllers\User\Categorie\AddCategorisController;
 use App\Http\Controllers\User\Categorie\DeleteCategorisController;
 use App\Http\Controllers\User\Categorie\EditCategorisController;
@@ -12,6 +16,8 @@ use App\Http\Controllers\User\Invoies\AddInvoiesController;
 use App\Http\Controllers\User\Invoies\DeleteInvoiesController;
 use App\Http\Controllers\User\Invoies\EditInvoiesController;
 use App\Http\Controllers\User\Invoies\ShwoInvoiesController;
+use App\Http\Controllers\User\Notification\deleteNotification;
+use App\Http\Controllers\User\Notification\ShwoNotification;
 use App\Http\Controllers\User\Product\AddProductController;
 use App\Http\Controllers\User\Product\DeleteProductController;
 use App\Http\Controllers\User\Product\EditProductController;
@@ -35,6 +41,18 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/logout', [LogoutController::class, 'logout']);
     Route::post('/User/logout', [LogoutUserController::class, 'logout']);
+
+    Route::post('/User/resetpassword', [RessetpasswordController::class, 'reset']);
+    Route::post('/User/sendCode', [sendemaileController::class, 'sendCode']);
+    Route::post('/User/verifyCode', [VerifyemailController::class, 'verifyCode']);
+    Route::post('/User/newpassword', [NewPasswordController::class, 'newpassword']);
+
+
+    Route::post('/Notification', [ShwoNotification::class, 'index']);
+    Route::post('/Notification/shwo', [ShwoNotification::class, 'show']);
+    Route::post('/Notification/delete', [deleteNotification::class, 'deletenot']);
+
+
 
     // admin
 

@@ -1,74 +1,149 @@
 {
     "info": {
-        "name": "Transactions API",
+        "name": "User Notifications & Password Reset",
+        "_postman_id": "a1b2c3d4-e5f6-7890-abcd-1234567890ab",
+        "description": "مجموعة خاصة بإشعارات المستخدم واسترجاع كلمة المرور",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
         {
-            "name": "Add Transaction",
+            "name": "Reset Password",
             "request": {
                 "method": "POST",
-                "header": [
-                    {
-                        "key": "Accept",
-                        "value": "application/json"
-                    },
-                    {
-                        "key": "Authorization",
-                        "value": "Bearer {{token}}"
-                    }
-                ],
-                "body": {
-                    "mode": "formdata",
-                    "formdata": [
-                        {
-                            "key": "transactions",
-                            "value": "1",
-                            "type": "text"
-                        },
-                        {
-                            "key": "name",
-                            "value": "محمد",
-                            "type": "text"
-                        },
-                        {
-                            "key": "family_name",
-                            "value": "العنزي",
-                            "type": "text"
-                        },
-                        {
-                            "key": "phone_number",
-                            "value": "0555555555",
-                            "type": "text"
-                        }
-                    ]
-                },
+                "header": [],
                 "url": {
-                    "raw": "{{base_url}}/transactions/add",
+                    "raw": "{{base_url}}/User/resetpassword",
                     "host": [
                         "{{base_url}}"
                     ],
                     "path": [
-                        "transactions",
-                        "add"
+                        "User",
+                        "resetpassword"
+                    ]
+                },
+                "body": {
+                    "mode": "formdata",
+                    "formdata": []
+                }
+            }
+        },
+        {
+            "name": "Send Code to Email",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/User/sendCode",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "User",
+                        "sendCode"
+                    ]
+                },
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        {
+                            "key": "email",
+                            "value": "example@email.com",
+                            "type": "text"
+                        }
                     ]
                 }
             }
         },
         {
-            "name": "Update Transaction",
+            "name": "Verify Code",
             "request": {
                 "method": "POST",
-                "header": [
-                    {
-                        "key": "Accept",
-                        "value": "application/json"
-                    },
-                    {
-                        "key": "Authorization",
-                        "value": "Bearer {{token}}"
-                    }
-                ],
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/User/verifyCode",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "User",
+                        "verifyCode"
+                    ]
+                },
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        {
+                            "key": "code",
+                            "value": "1234",
+                            "type": "text"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Set New Password",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/User/newpassword",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "User",
+                        "newpassword"
+                    ]
+                },
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        {
+                            "key": "password",
+                            "value": "new_password_here",
+                            "type": "text"
+                        },
+                        {
+                            "key": "password_confirmation",
+                            "value": "new_password_here",
+                            "type": "text"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Show All Notifications",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/Notification",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "Notification"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Show Single Notification",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/Notification/shwo",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "Notification",
+                        "shwo"
+                    ]
+                },
                 "body": {
                     "mode": "formdata",
                     "formdata": [
@@ -76,112 +151,43 @@
                             "key": "id",
                             "value": "1",
                             "type": "text"
-                        },
-                        {
-                            "key": "transactions",
-                            "value": "2",
-                            "type": "text"
-                        },
-                        {
-                            "key": "name",
-                            "value": "سالم",
-                            "type": "text"
-                        },
-                        {
-                            "key": "family_name",
-                            "value": "الشمري",
-                            "type": "text"
-                        },
-                        {
-                            "key": "phone_number",
-                            "value": "0550000000",
-                            "type": "text"
                         }
-                    ]
-                },
-                "url": {
-                    "raw": "{{base_url}}/transactions/update",
-                    "host": [
-                        "{{base_url}}"
-                    ],
-                    "path": [
-                        "transactions",
-                        "update"
                     ]
                 }
             }
         },
         {
-            "name": "Delete Transaction",
+            "name": "Delete Notification",
             "request": {
                 "method": "POST",
-                "header": [
-                    {
-                        "key": "Accept",
-                        "value": "application/json"
-                    },
-                    {
-                        "key": "Authorization",
-                        "value": "Bearer {{token}}"
-                    }
-                ],
-                "body": {
-                    "mode": "formdata",
-                    "formdata": [
-                        {
-                            "key": "id",
-                            "value": "1",
-                            "type": "text"
-                        }
-                    ]
-                },
+                "header": [],
                 "url": {
-                    "raw": "{{base_url}}/transactions/delete",
+                    "raw": "{{base_url}}/Notification/delete",
                     "host": [
                         "{{base_url}}"
                     ],
                     "path": [
-                        "transactions",
+                        "Notification",
                         "delete"
                     ]
-                }
-            }
-        },
-        {
-            "name": "Get Transactions by Type",
-            "request": {
-                "method": "POST",
-                "header": [
-                    {
-                        "key": "Accept",
-                        "value": "application/json"
-                    },
-                    {
-                        "key": "Authorization",
-                        "value": "Bearer {{token}}"
-                    }
-                ],
+                },
                 "body": {
                     "mode": "formdata",
                     "formdata": [
                         {
-                            "key": "transactions",
+                            "key": "id",
                             "value": "1",
                             "type": "text"
                         }
                     ]
-                },
-                "url": {
-                    "raw": "{{base_url}}/transactions/by-type",
-                    "host": [
-                        "{{base_url}}"
-                    ],
-                    "path": [
-                        "transactions",
-                        "by-type"
-                    ]
                 }
             }
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000/api"
         }
     ]
 }
