@@ -40,7 +40,7 @@ class confermemail extends Mailable
     {
         return $this->from(env('MAIL_FROM_ADDRESS'))
             ->subject('مرحبا بك في موقعنا!')
-            ->view('emails.welcome')
+            ->view('emails.ConfirmEmail')
             ->with('CodeVerify', $this->codeverfy);
     }
     /**

@@ -13,23 +13,28 @@ class VerifyemailController extends Controller
     public function verifyCode(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code' => 'required|digits:4',
+            'code' => 'required|digits:5',
+            'email' => 'required|email',
         ]);
 
         if ($validator->fails()) {
             return Respons::error('بيانات غير صحيحة', 422, $validator->errors());
         }
 
-        $user = auth()->user();
+        $user = User::where('email', $request->email)->first();
 
+        if (!$user) {
+            return Respons::error('المستخدم غير موجود', 404);
+        }
 
-        if ($user->email_verification_code != $request->code) {
+        if ($user->email_verified != $request->code) {
             return Respons::error('رمز التحقق غير صحيح', 401);
         }
 
+        $user->Status =1;
         $user->email_verified = null;
         $user->save();
 
-        return Respons::success();
+        return Respons::success('تم التحقق بنجاح');
     }
 }

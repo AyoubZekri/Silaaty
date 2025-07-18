@@ -3,11 +3,13 @@
 use App\Http\Controllers\admin\Auth\LoginController;
 use App\Http\Controllers\admin\Auth\LogoutController;
 use App\Http\Controllers\admin\Auth\RegisterController;
+use App\Http\Controllers\User\Transaction\ShwoTransactionController;
 use App\Http\Controllers\User\Auth\LogoutUserController;
 use App\Http\Controllers\User\Auth\Password\NewPasswordController;
 use App\Http\Controllers\User\Auth\Password\RessetpasswordController;
 use App\Http\Controllers\User\Auth\Password\sendemaileController;
 use App\Http\Controllers\User\Auth\Password\VerifyemailController;
+use App\Http\Controllers\User\Auth\UpdateUserController;
 use App\Http\Controllers\User\Categorie\AddCategorisController;
 use App\Http\Controllers\User\Categorie\DeleteCategorisController;
 use App\Http\Controllers\User\Categorie\EditCategorisController;
@@ -30,7 +32,6 @@ use App\Http\Controllers\User\Report\UpdateReportController;
 use App\Http\Controllers\User\Transaction\AddTransactionController;
 use App\Http\Controllers\User\Transaction\DeleteTransactionController;
 use App\Http\Controllers\User\Transaction\EditTransactionController;
-use App\Http\Controllers\User\Transaction\ShwoTransactionController;
 use App\Http\Controllers\User\Zakat\ShwoZakatController;
 
 use Illuminate\Support\Facades\Route;
@@ -39,16 +40,13 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/admin/logout', [LogoutController::class, 'logout']);
     Route::post('/User/logout', [LogoutUserController::class, 'logout']);
+    Route::post('/User/update', [UpdateUserController::class, 'UpdateUser']);
 
     Route::post('/User/resetpassword', [RessetpasswordController::class, 'reset']);
-    Route::post('/User/sendCode', [sendemaileController::class, 'sendCode']);
-    Route::post('/User/verifyCode', [VerifyemailController::class, 'verifyCode']);
-    Route::post('/User/newpassword', [NewPasswordController::class, 'newpassword']);
 
 
-    Route::post('/Notification', [ShwoNotification::class, 'index']);
+    Route::get('/Notification', [ShwoNotification::class, 'index']);
     Route::post('/Notification/shwo', [ShwoNotification::class, 'show']);
     Route::post('/Notification/delete', [deleteNotification::class, 'deletenot']);
 
@@ -102,17 +100,24 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('transactions/update', [EditTransactionController::class, 'update']);
     Route::post('transactions/delete', [DeleteTransactionController::class, 'delete']);
     Route::post('transactions/by-type', [ShwoTransactionController::class, 'getByType']);
+    Route::post('transactions/Switch', [ShwoTransactionController::class, 'Switch']);
 
+    Route::post('/Zakat/addCashliquidity', [ShwoZakatController::class, 'addCashliquidity']);
     Route::get('/Zakat', [ShwoZakatController::class, 'index']);
 });
 
-Route::post('/admin/login', [LoginController::class, 'login']);
-Route::post('/admin/create', [RegisterController::class, 'Registeradmin']);
 
 Route::post('/User/create', [\App\Http\Controllers\User\Auth\RegisterController::class, "RegisterUser"]);
 Route::post('/User/Login', [\App\Http\Controllers\User\Auth\LoginUserController::class, "login"]);
 
 
+Route::post('/User/sendCode', [sendemaileController::class, 'sendCode']);
+Route::post('/User/verifyCode', [VerifyemailController::class, 'verifyCode']);
+Route::post('/User/newpassword', [NewPasswordController::class, 'newpassword']);
 
 
 
+Route::get('/test-firebase', function () {
+    $messaging = app('firebase.messaging');
+    dd($messaging);
+});

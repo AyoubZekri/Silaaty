@@ -15,6 +15,7 @@ class SearchProductController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'query' => 'required|string|max:255',
+                'categorie' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -27,6 +28,7 @@ class SearchProductController extends Controller
                 ->where(function ($q) use ($query) {
                     $q->where('product_name', 'LIKE', "%$query%");
                 })
+                ->where('categorie_id',$request->categorie)
                 ->get();
 
             return Respons::success(['data' => $products]);

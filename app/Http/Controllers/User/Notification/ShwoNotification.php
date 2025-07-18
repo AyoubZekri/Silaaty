@@ -15,7 +15,7 @@ class ShwoNotification extends Controller
         try {
             $products = Notifications::where('user_id', auth()->id())->get();
 
-            return Respons::success(['data' => $products]);
+            return Respons::success(['Notifications' => $products]);
         } catch (\Exception $e) {
             return Respons::error('حدث خطأ أثناء جلب الشعارات', 500, $e->getMessage());
         }
@@ -37,9 +37,9 @@ class ShwoNotification extends Controller
                 ->where('user_id', auth()->id())
                 ->firstOrFail();
 
-            $notification->update(['is_read' => true]);
+            $notification->update(['is_read' => 1]);
 
-            return Respons::success(['data' => $notification]);
+            return Respons::success(['Notifications' => $notification]);
         } catch (\Exception $e) {
             return Respons::error('الإشعار غير موجود أو غير مسموح الوصول إليه', 404);
         }

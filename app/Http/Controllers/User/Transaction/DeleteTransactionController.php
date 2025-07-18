@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User\Transaction;
 
 use App\Function\Respons;
+use App\Function\Zakats;
 use App\Http\Controllers\Controller;
 use App\Models\Transactions;
 use Exception;
@@ -31,6 +32,7 @@ class DeleteTransactionController extends Controller
             }
 
             $transaction->delete();
+            Zakats::Zakats();
 
             return Respons::success('تم حذف المعاملة بنجاح');
         } catch (Exception $e) {

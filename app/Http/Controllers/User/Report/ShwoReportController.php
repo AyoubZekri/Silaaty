@@ -14,10 +14,10 @@ class ShwoReportController extends Controller
     public static function index()
     {
         try {
-            $Reports = Report::all();
+            $Reports = Report::where("report_id",auth()->id())->get();
 
             return Respons::success([
-                "data" => $Reports,
+                "Report" => $Reports,
             ]);
         } catch (\Exception $e) {
             return Respons::error('حدث خطأ أثناء جلب الابلاغات', 500, $e->getMessage());
@@ -39,7 +39,7 @@ class ShwoReportController extends Controller
             $Reports = Report::where("id", $request->id)->first();
 
             return Respons::success([
-                "data" => $Reports,
+                "Report" => $Reports,
             ]);
 
         } catch (\Exception $e) {

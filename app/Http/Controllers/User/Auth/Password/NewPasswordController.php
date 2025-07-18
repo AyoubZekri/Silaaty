@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User\Auth\Password;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Function\Respons;
 use Illuminate\Support\Facades\Hash;
@@ -14,14 +15,20 @@ class NewPasswordController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'new_password' => 'required|string|min:8|confirmed',
+                'password' => 'required|string|min:8|confirmed',
+                'email' => 'required|email',
+
             ]);
 
             if ($validator->fails()) {
                 return Respons::error('بيانات غير صحيحة', 422, $validator->errors());
             }
 
-            $user = auth()->user();
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user) {
+                return Respons::error('المستخدم غير موجود', 404);
+            }
 
 
             $user->password = Hash::make($request->new_password);

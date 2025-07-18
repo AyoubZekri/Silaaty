@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User\Auth\Password;
 use App\Function\Respons;
 use App\Http\Controllers\Controller;
 use App\Mail\confermemail;
+use App\Models\User;
 use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,14 +26,17 @@ class sendemaileController extends Controller
 
         }
 
-        $code = random_int(1000, 9999);
+        $code = random_int(10000, 99999);
 
-        $user = auth()->user();
+        $user = User::where('email', $request->email)->first();
 
+        if (!$user) {
+            return Respons::error('المستخدم غير موجود', 404);
+        }
         $user->email_verified = $code;
         $user->save();
 
-        Mail::to($user->email)->send(new confermemail($code));
+        Mail::to($user->email)->send(new confermemail($user));
 
         return Respons::success();
 

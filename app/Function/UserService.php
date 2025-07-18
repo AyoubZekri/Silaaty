@@ -2,10 +2,12 @@
 
 namespace App\Function;
 
+use App\Mail\confermemail;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class UserService
 {
@@ -14,6 +16,7 @@ class UserService
         DB::beginTransaction();
 
         try {
+            $statusCode = random_int(10000, 99999);
             $user = User::create([
                 'name' => $data['name'],
                 'phone_number' => $data['phone_number'],
@@ -21,6 +24,7 @@ class UserService
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
                 'user_role' => $roleName === 'admin' ? 1 : 2,
+                'email_verified' => $statusCode,
             ]);
 
             $role = Role::where('role_name', $roleName)->first();
@@ -28,6 +32,8 @@ class UserService
             if ($role) {
                 $user->user_roles()->attach($role->id);
             }
+
+            Mail::to($user->email)->send(new confermemail($user));
 
             DB::commit();
 

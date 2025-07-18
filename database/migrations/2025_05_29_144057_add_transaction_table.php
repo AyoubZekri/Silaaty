@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('family_name');
             $table->string('phone_number');
             $table->tinyInteger('transactions');
+            $table->tinyInteger("Status")->default(0);
+            //0 زبون عادي
+            //1 زبون ميؤس منه
             $table->timestamps();
         });
     }

@@ -15,6 +15,9 @@ class Zakat extends Model
         'user_id',
         'zakat_nisab',
         'zakat_total_asset_value',
+        'zakat_total_debts_value',
+        'zakat_total_deborts_value',
+        "zakat_Cash_liquidity",
         'zakat_due_amount',
         'zakat_due',
     ];

@@ -11,10 +11,11 @@ class Transactions extends Model
 
     protected $fillable = [
         'user_id',
-        'transactions',
-        'name',
+        'transactions', // 1 مورد
+        'name',           // 2 زبون
         'family_name',
         'phone_number',
+        "Status",
     ];
 
 

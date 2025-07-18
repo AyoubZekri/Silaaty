@@ -4,6 +4,7 @@
 namespace App\Function;
 
 use App\Models\Notifications;
+use App\Models\User;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification as FirebaseNotification;
 use Kreait\Firebase\Exception\MessagingException;
@@ -22,25 +23,27 @@ class Notification
      *
      * @param string $fcmToken
      * @param array $tokens
+     * @param array $topic
      * @param string $title
      * @param string $body
      * @param int $userId
      * @param array $userIds
      * @return array
      */
-    public function sendNotification(string $fcmToken, string $title, string $body, int $userId): array
+    public function sendNotification(string $fcmToken, string $title, string $body, int $userId, array $data = []): array
     {
         try {
             $notification = FirebaseNotification::create($title, $body);
 
+            // دمج البيانات الإضافية مع الإشعار
             $message = CloudMessage::withTarget('token', $fcmToken)
-                ->withNotification($notification);
+                ->withNotification($notification)
+                ->withData($data); 
 
             $this->messaging->send($message);
 
-            // حفظ في جدول notifications
             Notifications::create([
-                'title'   => $title,
+                'title' => $title,
                 'content' => $body,
                 'is_read' => false,
                 'user_id' => $userId,
@@ -53,6 +56,43 @@ class Notification
             return ['status' => false, 'message' => 'خطأ غير متوقع', 'error' => $e->getMessage()];
         }
     }
+
+    public function sendNotificationToTopic(string $topic, string $title, string $body): array
+    {
+        try {
+            $notification = FirebaseNotification::create($title, $body);
+
+            $message = CloudMessage::withTarget('topic', $topic)
+                ->withNotification($notification)
+                ->withData([
+                    'pagename' => $title,
+                    'type' => $body
+                ]);
+
+            $this->messaging->send($message);
+
+            $users = User::where('user_role', 2)->get();
+
+            $data = [];
+            foreach ($users as $user) {
+                $data[] = [
+                    'title' => $title,
+                    'content' => $body,
+                    'is_read' => false,
+                    'user_id' => $user->id,
+                ];
+            }
+
+            Notifications::insert($data);
+
+            return ['status' => true, 'message' => 'تم إرسال الإشعار للتوبيك وحفظه بنجاح'];
+        } catch (MessagingException $e) {
+            return ['status' => false, 'message' => 'فشل الإرسال', 'error' => $e->getMessage()];
+        } catch (\Throwable $e) {
+            return ['status' => false, 'message' => 'خطأ غير متوقع', 'error' => $e->getMessage()];
+        }
+    }
+
 
 
     public function sendBulkNotification(array $tokens, string $title, string $body, array $userIds): array
@@ -70,7 +110,7 @@ class Notification
 
             foreach ($userIds as $index => $userId) {
                 Notifications::create([
-                    'title'   => $title,
+                    'title' => $title,
                     'content' => $body,
                     'is_read' => false,
                     'user_id' => $userId,

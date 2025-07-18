@@ -12,8 +12,8 @@ class Product extends Model
     protected $table = 'products';
 
     protected $fillable = [
-        'categorie_id',
-        'categoris_id',
+        'categorie_id',  // النوع 1 البضائع العادية 2البضائع الضرورية 4 الديون لك وعليك
+        'categoris_id',  // الفئة يتم انشائها بواسطة المستخدم
         'user_id',
         "invoies_id",
         'product_name',

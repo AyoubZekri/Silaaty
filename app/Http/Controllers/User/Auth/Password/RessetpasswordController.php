@@ -15,7 +15,7 @@ class RessetpasswordController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'old_password' => 'required|string',
-                'new_password' => 'required|string|min:8|confirmed',
+                'password' => 'required|string|min:8|confirmed',
             ]);
 
             if ($validator->fails()) {
@@ -23,6 +23,10 @@ class RessetpasswordController extends Controller
             }
 
             $user = auth()->user();
+
+            if (!$user) {
+                return Respons::error('المستخدم غير مصادق عليه', 401);
+            }
 
             if (!Hash::check($request->old_password, $user->password)) {
                 return Respons::error('كلمة المرور القديمة غير صحيحة', 401);

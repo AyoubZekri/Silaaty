@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('family_name');
-            $table->string('phone_number');
+            $table->string('phone_number')->nullable();
             $table->string('email')->unique()->default(null);
             $table->integer('email_verified')->nullable();
             $table->string('password')->default(null);
@@ -23,6 +23,8 @@ return new class extends Migration
             $table->boolean('user_notify_status')->default(true);
             $table->string('fcm_token')->nullable();
             $table->integer('user_role')->default(2);
+            $table->tinyInteger("Status")->default(0);
+            $table->date("date_experiment")->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

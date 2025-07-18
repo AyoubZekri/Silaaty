@@ -1,0 +1,34 @@
+{
+    "menu": [
+        {
+            "url": "/",
+            "name": "Dashboard",
+            "icon": "menu-icon tf-icons bx bx-home-circle",
+            "slug": "dashboard-analytics"
+        },
+        {
+            "url": "/user/index",
+            "name": "users",
+            "icon": "menu-icon tf-icons bx bx-group",
+            "slug": "user-index"
+        },
+        {
+            "url": "/admin/index",
+            "name": "Admins",
+            "icon": "menu-icon tf-icons bx bx-shield-quarter",
+            "slug": "admin-index"
+        },
+        {
+            "url": "/Notification/index",
+            "name": "Notifications",
+            "icon": "menu-icon tf-icons bx bx-bell",
+            "slug": "Notification-index"
+        },
+        {
+            "url": "/Report/index",
+            "name": "Reports",
+            "icon": "menu-icon tf-icons bx bx-file",
+            "slug": "Report-index"
+        }
+    ]
+}

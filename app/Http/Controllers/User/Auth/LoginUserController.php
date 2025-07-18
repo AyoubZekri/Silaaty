@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User\Auth;
 
 use App\Function\Login;
+use App\Function\Notification;
 use App\Function\Respons;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -21,7 +22,7 @@ class LoginUserController extends Controller
                 'fcm_token' => 'nullable|string',
             ]);
 
-            $result = Login::loginUser($request->email, $request->password, 2);
+            $data = Login::loginUser($request->email, $request->password, 2);
 
             $user = User::where('email', $request->email)->first();
 
@@ -31,7 +32,12 @@ class LoginUserController extends Controller
                 ]);
             }
 
-            return Respons::success($result, 'تم تسجيل الدخول بنجاح');
+            $notification = new Notification();
+            // $result = $notification->sendNotificationToTopic('users', 'تنبيه جديد', 'هذا إشعار جماعي');
+
+            return Respons::success([
+                'user' => $data,
+            ], 'تم تسجيل الدخول بنجاح');
 
         } catch (ValidationException $e) {
             return Respons::error('بيانات الدخول غير صحيحة', 422, $e->errors());

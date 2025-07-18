@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User\Auth;
 use App\Function\Respons;
 use App\Function\UserService;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\Zakat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -19,26 +20,37 @@ class RegisterController extends Controller
                 'name' => 'required|string|max:255',
                 'family_name' => 'required|string|max:255',
                 'phone_number' => 'required|string|max:12',
-                'email' => 'required|email|unique:users',
+                'email' => 'required|email',
                 'password' => 'required|string|min:6|confirmed',
             ]);
 
             if ($validator->fails()) {
-                    return Respons::error('بيانات غير صحيحة', 422, $validator->errors());
+                return Respons::error('بيانات غير صحيحة', 422, $validator->errors());
             }
 
-
-
+            $existingUser = User::where('email', $request->email)->first();
+            if ($existingUser) {
+                if ($existingUser->Status == 0) {
+                    $existingUser->delete();
+                } else {
+                    return Respons::error('البريد الإلكتروني مستخدم مسبقاً', 422, [
+                        'البريد الإلكتروني مستخدم مسبقاً'
+                    ]);
+                }
+            }
 
             $result = UserService::createUserWithRole(
                 $request->only(['name', 'email', 'password', 'phone_number', 'family_name']),
                 "User"
             );
+            $nisab = Zakat::first()?->zakat_nisab;
+
 
             Zakat::create([
-                "user_id" => $result["user"]->id
+                "user_id" => $result["user"]->id,
+                "zakat_nisab" => $nisab
             ]);
-            
+
 
             return Respons::success();
 

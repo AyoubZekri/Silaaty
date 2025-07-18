@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User\Transaction;
 
 use App\Function\Respons;
+use App\Function\Zakats;
 use App\Http\Controllers\Controller;
 use App\Models\invoies;
 use App\Models\Product;
@@ -30,18 +31,20 @@ class ShwoTransactionController extends Controller
                 ->where('transactions', $request->transactions)
                 ->get();
 
-            if ($transactions->isEmpty()) {
-                return Respons::error('لا توجد معاملات من هذا النوع', 404);
-            }
-
             $result = $transactions->map(function ($transaction) use ($isPurchase) {
                 $invoiceIds = invoies::where('user_id', auth()->id())
                     ->where('Transaction_id', $transaction->id)
                     ->pluck('id');
 
-                $sumPrice =Product::where('user_id', auth()->id())
+                $sumPrice = Product::where('user_id', auth()->id())
                     ->whereIn('invoies_id', $invoiceIds)
                     ->sum($isPurchase ? 'product_price_total_purchase' : 'product_price_total');
+
+                $paidAmount = invoies::where('user_id', auth()->id())
+                    ->whereIn('id', $invoiceIds)
+                    ->sum('Payment_price');
+
+                $sumPrice = $sumPrice - $paidAmount;
 
                 return [
                     'transaction' => $transaction,
@@ -54,4 +57,34 @@ class ShwoTransactionController extends Controller
             return Respons::error('فشل في جلب المعاملات', 500, $e->getMessage());
         }
     }
+
+
+
+    public function Switch(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:transactions,id',
+        ]);
+
+        $transaction = Transactions::where('id', $request->id)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if (!$transaction) {
+            return Respons::error('المعاملة غير موجودة  ', 404);
+        }
+
+
+        $transaction->Status = $transaction->Status == 0 ? 1 : 0;
+
+
+        $transaction->save();
+
+        Zakats::Zakats();
+
+
+        return response()->json(['status' => 1, 'message' => 'تم تغير الحالة']);
+    }
+
 }

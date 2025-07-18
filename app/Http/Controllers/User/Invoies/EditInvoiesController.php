@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User\Invoies;
 
 use App\Function\Respons;
+use App\Function\Zakats;
 use App\Http\Controllers\Controller;
 use App\Models\invoies;
 use Illuminate\Http\Request;
@@ -44,6 +45,8 @@ class EditInvoiesController extends Controller
             }
 
             $invoice->save();
+            Zakats::Zakats();
+
             return Respons::success('تم تعديل الفاتورة بنجاح');
         } catch (\Exception $e) {
             return Respons::error('حدث خطأ أثناء تعديل الفاتورة', 500, $e->getMessage());

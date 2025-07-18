@@ -30,6 +30,9 @@ class User extends Authenticatable
         'user_notify_status',
         'fcm_token',
         'user_role',
+        'Status',
+        "created_at",
+        "date_experiment",
     ];
 
     /**

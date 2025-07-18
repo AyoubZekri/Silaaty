@@ -27,16 +27,16 @@ class AddProductController extends Controller
 
             foreach ($products as $index => $productData) {
                 $validator = Validator::make($productData, [
-                    "categoris_id" => "sometimes", // type
+                    "categoris_id" => "sometimes",
                     'categorie_id' => "required",
-                    'invoies_id'=>"sometimes",
+                    'invoies_id' => "sometimes",
                     'product_name' => 'required|string|max:255',
                     'product_description' => 'nullable|string',
-                    'product_quantity' => 'sometimes|numeric|min:1',
-                    'product_price' => 'sometimes|numeric',
-                    'product_price_total_purchase' => 'sometimes|numeric',
-                    'product_price_purchase' => 'sometimes|numeric',
-                    'product_price_total' => 'sometimes|numeric',
+                    'product_quantity' => 'nullable|numeric|min:1',
+                    'product_price' => 'nullable|numeric',
+                    'product_price_total_purchase' => 'nullable|numeric',
+                    'product_price_purchase' => 'nullable|numeric',
+                    'product_price_total' => 'nullable|numeric',
                     'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 ]);
 

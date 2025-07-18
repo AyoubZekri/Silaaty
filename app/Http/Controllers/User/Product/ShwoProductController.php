@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User\Product;
 
+use App\Function\Notification;
 use App\Function\Respons;
 use App\Http\Controllers\Controller;
 use App\Models\categories;
@@ -49,6 +50,10 @@ class ShwoProductController extends Controller
             //         : null;
             // });
 
+            // $notification = new Notification();
+            // $result = $notification->sendNotificationToTopic('users', 'تنبيه جديد', 'هذا إشعار جماعي');
+
+
             return Respons::success(['data' => $products]);
         } catch (\Exception $e) {
             return Respons::error('حدث خطأ أثناء جلب المنتجات', 500, $e->getMessage());
@@ -83,6 +88,9 @@ class ShwoProductController extends Controller
             //         ? asset('storage/' . $product->Product_image)
             //         : null;
             // });
+            // $notification = new Notification();
+            // $result = $notification->sendNotificationToTopic('users', 'تنبيه جديد', 'هذا إشعار جماعي');
+            // $notification->sendNotification("dP_AsfpnT1-GoGco5b268F:APA91bHfezM-OidzCvO1EUcl3DOpr2VQgEJx3sDGKwt5b7IBCnc8ZUr5se69C9201OULbfNCCpNnatDmS-b98q5LhNnDGsOGcrL1NMPvojXXxAma1a2IbKE", "hi", "hi", auth()->id());
 
             return Respons::success(['data' => $products]);
         } catch (\Exception $e) {

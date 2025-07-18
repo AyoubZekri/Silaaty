@@ -17,7 +17,7 @@ class AddInvoiesController extends Controller
             $validator = Validator::make($request->all(), [
                 "Transaction_id" => "required",
                 "invoies_payment_date" => "sometimes|date",
-                "Payment_price"=>"sometimes",
+                "Payment_price" => "sometimes",
             ]);
 
             if ($validator->fails()) {
@@ -25,8 +25,8 @@ class AddInvoiesController extends Controller
             }
 
             $invoiceCount = invoies::where("user_id", auth()->id())
-                ->where("Transaction_id", $request->transaction_id)
-                ->count();
+                ->where("Transaction_id", $request->Transaction_id)
+                ->max('invoies_numper');
 
             $invoiceData = $request->only([
                 "Transaction_id",

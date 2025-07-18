@@ -18,6 +18,9 @@ return new class extends Migration
             $table->decimal("zakat_total_asset_value",13,2)->default(0.00);
             $table->decimal("zakat_due_amount",3,1)->default("2.5");
             $table->decimal("zakat_due",13,2)->default(0.00);
+            $table->decimal("zakat_total_debts_value", 13, 2)->default(0.00);// الديون
+            $table->decimal("zakat_total_deborts_value", 13, 2)->default(0.00); // بكريدي
+            $table->decimal("zakat_Cash_liquidity", 13, 2)->default(0.00);// الديون
             $table->timestamps();
         });
     }
