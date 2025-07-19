@@ -3,6 +3,7 @@
 namespace App\Function;
 
 use App\Mail\confermemail;
+use App\Mail\WelcomeMail;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
@@ -33,7 +34,7 @@ class UserService
                 $user->user_roles()->attach($role->id);
             }
 
-            Mail::to($user->email)->send(new confermemail($user));
+            Mail::to($user->email)->send(new WelcomeMail($user));
 
             DB::commit();
 

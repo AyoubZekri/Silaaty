@@ -39,7 +39,7 @@ class confermemail extends Mailable
     public function build()
     {
         return $this->from(env('MAIL_FROM_ADDRESS'))
-            ->subject('مرحبا بك في موقعنا!')
+            ->subject('رمز اعادة تعين كلمة السر')
             ->view('emails.ConfirmEmail')
             ->with('CodeVerify', $this->codeverfy);
     }
