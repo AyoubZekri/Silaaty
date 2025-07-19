@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\authentications;
+namespace App\Http\Controllers\Dashbaord\authentications;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
