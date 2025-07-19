@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Dashbaord\Controllers;
+namespace App\Http\Controllers\Dashbaord;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
