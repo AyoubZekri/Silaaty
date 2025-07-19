@@ -17,11 +17,11 @@ class WelcomeMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public $details;
+    public $codeverfy;
 
-    public function __construct($details)
+    public function __construct($codeverfy)
     {
-        $this->details = $details;
+        $this->codeverfy = $codeverfy;
     }
 
     /**
@@ -42,7 +42,7 @@ class WelcomeMail extends Mailable
         return $this->from(env('MAIL_FROM_ADDRESS'))
             ->subject('مرحبا بك في موقعنا!')
             ->view('emails.welcome')
-            ->with('details', $this->details);
+            ->with('codeverfy', $this->codeverfy);
     }
     /**
      * Get the message content definition.
