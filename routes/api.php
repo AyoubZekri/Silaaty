@@ -44,6 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/User/update', [UpdateUserController::class, 'UpdateUser']);
 
     Route::post('/User/resetpassword', [RessetpasswordController::class, 'reset']);
+    Route::post('/User/get', [\App\Http\Controllers\User\Auth\RegisterController::class, "getuser"]);
 
 
     Route::get('/Notification', [ShwoNotification::class, 'index']);
@@ -111,7 +112,7 @@ Route::post('/User/create', [\App\Http\Controllers\User\Auth\RegisterController:
 Route::post('/User/Login', [\App\Http\Controllers\User\Auth\LoginUserController::class, "login"]);
 
 
-Route::post('/User/sendCode', [sendemaileController::class, 'sendCode']);
+Route::get('/User/sendCode', [sendemaileController::class, 'sendCode']);
 Route::post('/User/verifyCode', [VerifyemailController::class, 'verifyCode']);
 Route::post('/User/newpassword', [NewPasswordController::class, 'newpassword']);
 
