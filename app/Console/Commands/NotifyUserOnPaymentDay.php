@@ -30,41 +30,49 @@ class NotifyUserOnPaymentDay extends Command
     {
         $today = Carbon::today()->toDateString();
 
-        $invoices = invoies::whereDate('invoies_payment_date', $today)->with('transaction.user')->get();
+        $invoices = invoies::whereDate('invoies_payment_date', $today)
+            ->with(['products', 'transaction.user'])
+            ->get();
 
         foreach ($invoices as $invoice) {
-            if ($invoice->transaction && $invoice->transaction->user) {
-                $user = $invoice->transaction->user;
-                $transaction = $invoice->transaction;
+            $transaction = $invoice->transaction;
+            $user = $transaction?->user;
+
+            if ($transaction && $user) {
+                $isSupplier = $transaction->transactions == 1;
+
+                // حساب مجموع السعر حسب نوع المعاملة
+                $total = $invoice->products->sum(function ($product) use ($isSupplier) {
+                    $price = $isSupplier ? $product->product_price_purchase : $product->product_price;
+                    return $price * $product->product_quantity;
+                });
+
+                $paid = $invoice->Payment_price ?? 0;
+                $remaining = $total - $paid;
+
+                // إذا مافي حتى دين باقي، ما تبعثش الإشعار
+                if ($remaining <= 0) {
+                    continue;
+                }
 
                 $notification = new Notification();
 
-                $otherPartyName = $transaction->name ?? 'طرف المعاملة';
-                $otherPartyfamlyname = $transaction->family_name ?? '';
+                $name = $transaction->name ?? 'الطرف';
+                $family = $transaction->family_name ?? '';
 
+                $message = $isSupplier
+                    ? "حان وقت تسليم ديونك إلى {$name} {$family} - الفاتورة رقم {$invoice->invoies_numper} - المتبقي: " . number_format($remaining, 2) . " دج"
+                    : "حان وقت إستلام ديونك من {$name} {$family} - الفاتورة رقم {$invoice->invoies_numper} - المتبقي: " . number_format($remaining, 2) . " دج";
 
-                if ($transaction->transactions == 1) {
-                    $notification->sendNotification(
-                        $user->fcm_token,
-                        'تنبيه',
-                        "حان وقت تسليم ديونك إلى {$otherPartyName} {$otherPartyfamlyname} - الفاتورة رقم {$invoice->invoies_numper}",
-                        $user->id,
-                        ['pagename' => 'Dealer']
-
-                    );
-                } else {
-                    $notification->sendNotification(
-                        $user->fcm_token,
-                        'تنبيه',
-                        "حان وقت إستلام ديونك من {$otherPartyName} {$otherPartyfamlyname} - الفاتورة رقم {$invoice->invoies_numper}",
-                        $user->id,
-                        ['pagename' => 'Clients']
-
-                    );
-                }
+                $notification->sendNotification(
+                    $user->fcm_token,
+                    'تنبيه',
+                    $message,
+                    $user->id,
+                    ['pagename' => $isSupplier ? 'Dealer' : 'Clients']
+                );
             }
         }
-
         return Command::SUCCESS;
     }
 }
