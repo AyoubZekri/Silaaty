@@ -118,7 +118,7 @@ Route::post('/User/newpassword', [NewPasswordController::class, 'newpassword']);
 
 
 
-Route::get('/test-firebase', function () {
-    $messaging = app('firebase.messaging');
-    dd($messaging);
-});
+// Route::get('/test-firebase', function () {
+//     $messaging = app('firebase.messaging');
+//     dd($messaging);
+// });
