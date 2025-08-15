@@ -19,6 +19,14 @@ class Usercontroller extends Controller
     {
         try {
             $data = User::where('user_role', 2)->latest();
+            if ($search = $request->input('search.value')) {
+                $data->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('status', 'like', "%{$search}%");
+                });
+            }
+
 
             if ($request->ajax()) {
 
