@@ -10,5 +10,5 @@ Artisan::command('inspire', function () {
 
 Schedule::command('users:check-experiments')->dailyAt("08:00");
 Schedule::command('users:notify-trial')->dailyAt("08:00");
-Schedule::command('notify:payment-day')->dailyAt("08:00");
+Schedule::command('notify:payment-day')->everyMinute();
 

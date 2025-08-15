@@ -68,7 +68,7 @@ class RegisterController extends Controller
             $user = User::where("id", auth()->id())->get();
             return Respons::success(['data' => $user]);
         } catch (\Exception $th) {
-            return Respons::error('الفئة غير موجودة', 404);
+            return Respons::error('المستخدم غير موجودة', 404);
         }
 
     }
