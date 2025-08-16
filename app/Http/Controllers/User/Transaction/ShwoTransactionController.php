@@ -19,6 +19,8 @@ class ShwoTransactionController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'transactions' => 'required',
+                'query' => 'nullable|string|max:255',
+
             ]);
 
             if ($validator->fails()) {
@@ -26,8 +28,14 @@ class ShwoTransactionController extends Controller
             }
 
             $isPurchase = $request->transactions == 1;
+            $query = $request->input('query');
+
 
             $transactions = Transactions::where('user_id', auth()->id())
+                ->where(function ($q) use ($query) {
+                    $q->where('name', 'LIKE', "%$query%");
+                    $q->orWhere('family_name', 'LIKE', "%$query%");
+                })
                 ->where('transactions', $request->transactions)
                 ->get();
 
