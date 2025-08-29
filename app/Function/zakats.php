@@ -28,7 +28,7 @@ class Zakats
         $total_debtors_products = invoies::where('user_id', $userId)
             ->whereHas('transaction', function ($q) {
                 $q->where('transactions', 2)
-                ->where('Status', '!=', 1);
+                ->where('Status', '=', 0);
             })
             ->get()
             ->reduce(function ($carry, $invoice) {
