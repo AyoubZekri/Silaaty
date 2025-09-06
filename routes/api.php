@@ -112,7 +112,7 @@ Route::post('/User/create', [\App\Http\Controllers\User\Auth\RegisterController:
 Route::post('/User/Login', [\App\Http\Controllers\User\Auth\LoginUserController::class, "login"]);
 
 
-Route::get('/User/sendCode', [sendemaileController::class, 'sendCode']);
+Route::post('/User/sendCode', [sendemaileController::class, 'sendCode']);
 Route::post('/User/verifyCode', [VerifyemailController::class, 'verifyCode']);
 Route::post('/User/newpassword', [NewPasswordController::class, 'newpassword']);
 
