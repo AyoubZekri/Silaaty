@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('categoris', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->uuid('uuid')->unique()->after('id')->default("0");
             $table->string("categoris_name");
             $table->string("categoris_name_fr");
             $table->string("categoris_image")->nullable();
