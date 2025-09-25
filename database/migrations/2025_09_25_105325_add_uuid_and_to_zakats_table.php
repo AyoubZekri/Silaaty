@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('zakats', function (Blueprint $table) {
-                $table->uuid('uuid')->unique()->after('id');
+                $table->uuid('uuid')->nullable()->after('id');
         });
 
-        
+
         // نولد UUID لكل سجل موجود
         DB::table('zakats')->get()->each(function ($invoice) {
             DB::table('zakats')
