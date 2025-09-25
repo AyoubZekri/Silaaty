@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('categoris', function (Blueprint $table) {
-                $table->uuid('uuid')->unique()->after('id');
+                $table->uuid('uuid')->unique()->after('id')->default("0");
         });
     }
 
