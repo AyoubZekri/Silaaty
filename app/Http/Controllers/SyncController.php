@@ -65,7 +65,7 @@ class SyncController extends Controller
             // إدخال سجل جديد
             $data['created_at'] = $data['created_at'] ?? now()->toISOString();
             $data['updated_at'] = $data['updated_at'] ?? now()->toISOString();
-
+            $data["user_id"]=auth()->id();
             DB::table($table)->insert($data);
         } else {
             $serverUpdatedAt = Carbon::parse($existing->updated_at);
