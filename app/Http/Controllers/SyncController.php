@@ -61,21 +61,31 @@ class SyncController extends Controller
         $existing = DB::table($table)->where('uuid', $uuid)->where("user_id",auth()->id())
           ->first();
 
-        if (!$existing) {
-            // إدخال سجل جديد
-            $data['created_at'] = $data['created_at'] ?? now()->toISOString();
-            $data['updated_at'] = $data['updated_at'] ?? now()->toISOString();
-            $data["user_id"]=auth()->id();
-            DB::table($table)->insert($data);
-        } else {
-            $serverUpdatedAt = Carbon::parse($existing->updated_at);
 
-            // تعارض: Last-Write-Wins (آخر تحديث يربح)
-            if ($localUpdatedAt->gt($serverUpdatedAt)) {
-                $data['updated_at'] = now()->toISOString();
-                DB::table($table)->where('uuid', $uuid)->where("user_id",auth()->id())->update($data);
-            }
-        }
+if (!$existing) {
+    $now = now();
+    $data['created_at'] = isset($data['created_at'])
+        ? Carbon::parse($data['created_at'])->format('Y-m-d H:i:s')
+        : $now->format('Y-m-d H:i:s');
+
+    $data['updated_at'] = isset($data['updated_at'])
+        ? Carbon::parse($data['updated_at'])->format('Y-m-d H:i:s')
+        : $now->format('Y-m-d H:i:s');
+
+    $data['user_id'] = auth()->id();
+
+    DB::table($table)->insert($data);
+} else {
+    $serverUpdatedAt = Carbon::parse($existing->updated_at);
+
+    if ($localUpdatedAt->gt($serverUpdatedAt)) {
+        $data['updated_at'] = now()->format('Y-m-d H:i:s');
+        DB::table($table)
+            ->where('uuid', $uuid)
+            ->where('user_id', auth()->id())
+            ->update($data);
+    }
+}
 
         return response()->json(['status' => 'ok']);
     }
