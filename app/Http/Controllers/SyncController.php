@@ -41,16 +41,25 @@ class SyncController extends Controller
     /**
      * ✅ Push: إدخال أو تحديث البيانات مع حل التعارض
      */
-    public function syncData(Request $request, $table)
-    {
-        if (!in_array($table, $this->allowedTables)) {
-            return response()->json(['error' => 'Invalid table'], 400);
-        }
+public function syncData(Request $request, $table)
+{
+    if (!in_array($table, $this->allowedTables)) {
+        return response()->json(['error' => 'Invalid table'], 400);
+    }
 
-        $data = $request->all();
+    $payload = $request->all();
 
+    // إذا جا سجل واحد فقط نخليه داخل array لتوحيد المعالجة
+    if (isset($payload['uuid'])) {
+        $payload = [$payload];
+    }
+
+    $results = [];
+
+    foreach ($payload as $data) {
         if (!isset($data['uuid'])) {
-            return response()->json(['error' => 'uuid required'], 400);
+            $results[] = ['status' => 'error', 'error' => 'uuid required'];
+            continue;
         }
 
         $uuid = $data['uuid'];
@@ -58,35 +67,58 @@ class SyncController extends Controller
             ? Carbon::parse($data['updated_at'])
             : Carbon::createFromTimestamp(0);
 
-        $existing = DB::table($table)->where('uuid', $uuid)->where("user_id",auth()->id())
-          ->first();
-
-
-if (!$existing) {
-    $now = now();
-    $data['created_at'] = isset($data['created_at'])
-        ? Carbon::parse($data['created_at'])->format('Y-m-d H:i:s')
-        : $now->format('Y-m-d H:i:s');
-
-    $data['updated_at'] = isset($data['updated_at'])
-        ? Carbon::parse($data['updated_at'])->format('Y-m-d H:i:s')
-        : $now->format('Y-m-d H:i:s');
-
-    $data['user_id'] = auth()->id();
-
-    DB::table($table)->insert($data);
-} else {
-    $serverUpdatedAt = Carbon::parse($existing->updated_at);
-
-    if ($localUpdatedAt->gt($serverUpdatedAt)) {
-        $data['updated_at'] = now()->format('Y-m-d H:i:s');
-        DB::table($table)
+        $existing = DB::table($table)
             ->where('uuid', $uuid)
             ->where('user_id', auth()->id())
-            ->update($data);
+            ->first();
+
+        if (!$existing) {
+            $now = now();
+            $data['created_at'] = isset($data['created_at'])
+                ? Carbon::parse($data['created_at'])->format('Y-m-d H:i:s')
+                : $now->format('Y-m-d H:i:s');
+
+            $data['updated_at'] = isset($data['updated_at'])
+                ? Carbon::parse($data['updated_at'])->format('Y-m-d H:i:s')
+                : $now->format('Y-m-d H:i:s');
+
+            $data['user_id'] = auth()->id();
+
+            try {
+                DB::table($table)->insert($data);
+                $results[] = ['status' => 'inserted', 'uuid' => $uuid];
+            } catch (\Exception $e) {
+                $results[] = [
+                    'status' => 'error',
+                    'uuid' => $uuid,
+                    'error' => $e->getMessage()
+                ];
+            }
+        } else {
+            $serverUpdatedAt = Carbon::parse($existing->updated_at);
+
+            if ($localUpdatedAt->gt($serverUpdatedAt)) {
+                $data['updated_at'] = now()->format('Y-m-d H:i:s');
+                try {
+                    DB::table($table)
+                        ->where('uuid', $uuid)
+                        ->where('user_id', auth()->id())
+                        ->update($data);
+                    $results[] = ['status' => 'updated', 'uuid' => $uuid];
+                } catch (\Exception $e) {
+                    $results[] = [
+                        'status' => 'error',
+                        'uuid' => $uuid,
+                        'error' => $e->getMessage()
+                    ];
+                }
+            } else {
+                $results[] = ['status' => 'skipped', 'uuid' => $uuid];
+            }
+        }
     }
+
+    return response()->json($results);
 }
 
-        return response()->json(['status' => 'ok']);
-    }
 }
