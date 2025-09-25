@@ -11,21 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('categoris', function (Blueprint $table) {
                 $table->uuid('uuid')->unique()->after('id');
         });
 
-
         
         // نولد UUID لكل سجل موجود
-        DB::table('products')->get()->each(function ($invoice) {
-            DB::table('products')
+        DB::table('categoris')->get()->each(function ($invoice) {
+            DB::table('categoris')
                 ->where('id', $invoice->id)
                 ->update(['uuid' => Str::uuid()]);
         });
 
         // نخلي العمود not null + unique
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('categoris', function (Blueprint $table) {
             $table->uuid('uuid')->unique()->nullable(false)->change();
         });
     }
@@ -35,7 +34,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('categoris', function (Blueprint $table) {
             $table->dropcolumn("uuid");
         });
     }

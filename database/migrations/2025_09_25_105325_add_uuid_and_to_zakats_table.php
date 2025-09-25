@@ -12,7 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('zakats', function (Blueprint $table) {
-                $table->uuid('uuid')->unique()->after('id')->default("0");
+                $table->uuid('uuid')->unique()->after('id');
+        });
+
+        
+        // نولد UUID لكل سجل موجود
+        DB::table('zakats')->get()->each(function ($invoice) {
+            DB::table('zakats')
+                ->where('id', $invoice->id)
+                ->update(['uuid' => Str::uuid()]);
+        });
+
+        // نخلي العمود not null + unique
+        Schema::table('zakats', function (Blueprint $table) {
+            $table->uuid('uuid')->unique()->nullable(false)->change();
         });
     }
 
