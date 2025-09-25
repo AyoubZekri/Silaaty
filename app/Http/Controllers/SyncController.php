@@ -32,6 +32,7 @@ class SyncController extends Controller
         // فلترة حسب updated_at
         $data = DB::table($table)
             ->where('updated_at', '>', $since)
+            ->where("user_id",auth()->id())
             ->get();
 
         return response()->json($data);
@@ -57,7 +58,8 @@ class SyncController extends Controller
             ? Carbon::parse($data['updated_at'])
             : Carbon::createFromTimestamp(0);
 
-        $existing = DB::table($table)->where('uuid', $uuid)->first();
+        $existing = DB::table($table)->where('uuid', $uuid)->where("user_id",auth()->id())
+          ->first();
 
         if (!$existing) {
             // إدخال سجل جديد
@@ -71,7 +73,7 @@ class SyncController extends Controller
             // تعارض: Last-Write-Wins (آخر تحديث يربح)
             if ($localUpdatedAt->gt($serverUpdatedAt)) {
                 $data['updated_at'] = now()->toISOString();
-                DB::table($table)->where('uuid', $uuid)->update($data);
+                DB::table($table)->where('uuid', $uuid)->where("user_id",auth()->id())->update($data);
             }
         }
 
