@@ -33,6 +33,8 @@ use App\Http\Controllers\User\Transaction\AddTransactionController;
 use App\Http\Controllers\User\Transaction\DeleteTransactionController;
 use App\Http\Controllers\User\Transaction\EditTransactionController;
 use App\Http\Controllers\User\Zakat\ShwoZakatController;
+use App\Http\Controllers\SyncController;
+
 
 use Illuminate\Support\Facades\Route;
 
@@ -105,6 +107,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/Zakat/addCashliquidity', [ShwoZakatController::class, 'addCashliquidity']);
     Route::get('/Zakat', [ShwoZakatController::class, 'index']);
+
+
+    Route::get('/sync/{table}', [SyncController::class, 'getData']);
+    Route::post('/sync/{table}', [SyncController::class, 'syncData']);
+
 });
 
 
