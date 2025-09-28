@@ -46,7 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/User/update', [UpdateUserController::class, 'UpdateUser']);
 
     Route::post('/User/resetpassword', [RessetpasswordController::class, 'reset']);
-    Route::post('/User/get', [\App\Http\Controllers\User\Auth\RegisterController::class, "getuser"]);
+    Route::get('/User/get', [\App\Http\Controllers\User\Auth\RegisterController::class, "getuser"]);
 
 
     Route::get('/Notification', [ShwoNotification::class, 'index']);
