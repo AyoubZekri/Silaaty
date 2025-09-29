@@ -121,4 +121,60 @@ public function syncData(Request $request, $table)
     return response()->json($results);
 }
 
+
+public function syncDeleteData(Request $request, $table)
+{
+    $allowedTables = [
+        'categoris',
+        'invoies',
+        'notifications',
+        'products',
+        'reports',
+        'transactions',
+        'zakats',];
+    if (!in_array($table, $allowedTables)) {
+        return response()->json(['status' => 0, 'message' => 'جدول غير مسموح'], 400);
+    }
+
+    $uuids = $request->input('uuid');
+
+    // 2️⃣ تأكد أن uuid موجود
+    if (!$uuids) {
+        return response()->json(['status' => 0, 'message' => 'uuid مطلوب'], 422);
+    }
+
+    // 3️⃣ إذا جاء واحد فقط حوّله لمصفوفة لتوحيد المعالجة
+    if (!is_array($uuids)) {
+        $uuids = [$uuids];
+    }
+
+    $results = [];
+
+    foreach ($uuids as $uuid) {
+        try {
+            $record = DB::table($table)
+                ->where('uuid', $uuid)
+                ->where('user_id', auth()->id())
+                ->first();
+
+            if (!$record) {
+                $results[] = ['uuid' => $uuid, 'status' => 'skipped', 'message' => 'غير موجود'];
+                continue;
+            }
+
+            DB::table($table)
+                ->where('uuid', $uuid)
+                ->where('user_id', auth()->id())
+                ->delete(); // أو update(['deleted' => 1]) إذا تريد علامة حذف
+
+            $results[] = ['uuid' => $uuid, 'status' => 'deleted'];
+        } catch (\Exception $e) {
+            $results[] = ['uuid' => $uuid, 'status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    return response()->json($results);
+}
+
+
 }

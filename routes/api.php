@@ -111,6 +111,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/sync/{table}', [SyncController::class, 'getData']);
     Route::post('/sync/{table}', [SyncController::class, 'syncData']);
+    Route::post('/sync/delete/{table}', [SyncController::class, 'syncDeleteData']);
+
 
 });
 
