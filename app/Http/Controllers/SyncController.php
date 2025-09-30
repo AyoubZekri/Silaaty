@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class SyncController extends Controller
 {
@@ -49,7 +50,7 @@ public function syncData(Request $request, $table)
 
     $payload = $request->all();
 
-    // إذا جا سجل واحد فقط نخليه داخل array لتوحيد المعالجة
+    // إذا جا سجل واحد فقط نخليه داخل array
     if (isset($payload['uuid'])) {
         $payload = [$payload];
     }
@@ -62,6 +63,84 @@ public function syncData(Request $request, $table)
             continue;
         }
 
+        // ----------------------
+        // معالجة العلاقات
+        // ----------------------
+        if ($table === 'products') {
+            // جلب category_id من category_uuid
+            if (isset($data['category_uuid'])) {
+                $category = DB::table('categoris')
+                    ->where('uuid', $data['category_uuid'])
+                    ->where('user_id', auth()->id())
+                    ->first();
+                if ($category) {
+                    $data['category_id'] = $category->id;
+                }
+                unset($data['category_uuid']);
+            }
+
+            // جلب invoice_id من invoice_uuid
+            if (isset($data['invoice_uuid'])) {
+                $invoice = DB::table('invoies')
+                    ->where('uuid', $data['invoice_uuid'])
+                    ->where('user_id', auth()->id())
+                    ->first();
+                if ($invoice) {
+                    $data['invoice_id'] = $invoice->id;
+                }
+                unset($data['invoice_uuid']);
+            }
+
+            // معالجة صورة المنتج (Base64 فقط)
+            if (!empty($data['product_image'])) {
+                try {
+                    $imageName = 'product_' . uniqid() . '.png';
+                    $imagePath = 'products/' . $imageName;
+
+                    $base64 = explode(',', $data['product_image'])[1];
+                    Storage::disk('public')->put($imagePath, base64_decode($base64));
+
+                    $data['product_image'] = $imagePath;
+                } catch (\Exception $e) {
+                    unset($data['product_image']);
+                }
+            }
+        }
+
+        if ($table === 'invoies') {
+            // جلب transaction_id من Transaction_uuid
+            if (isset($data['Transaction_uuid'])) {
+                $transaction = DB::table('transactions')
+                    ->where('uuid', $data['Transaction_uuid'])
+                    ->where('user_id', auth()->id())
+                    ->first();
+                if ($transaction) {
+                    $data['Transaction_id'] = $transaction->id;
+                }
+                unset($data['Transaction_uuid']);
+            }
+        }
+
+        if ($table === 'categoris') {
+            // معالجة صورة التصنيف
+            if (!empty($data['categoris_image'])) {
+                try {
+                    $imageName = 'category_' . uniqid() . '.png';
+                    $imagePath = 'categoris/' . $imageName;
+
+                    $base64 = explode(',', $data['categoris_image'])[1];
+                    Storage::disk('public')->put($imagePath, base64_decode($base64));
+
+                    $data['categoris_image'] = $imagePath;
+                } catch (\Exception $e) {
+                    unset($data['categoris_image']);
+                }
+            }
+        }
+
+        // ----------------------
+        // معالجة المزامنة
+        // ----------------------
         $uuid = $data['uuid'];
         $localUpdatedAt = isset($data['updated_at'])
             ? Carbon::parse($data['updated_at'])
@@ -120,6 +199,8 @@ public function syncData(Request $request, $table)
 
     return response()->json($results);
 }
+
+
 
 
 public function syncDeleteData(Request $request, $table)
