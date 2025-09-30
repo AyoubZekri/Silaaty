@@ -192,7 +192,7 @@ public function syncData(Request $request, $table)
                     ];
                 }
             } else {
-                $results[] = ['status' => 'skipped', 'uuid' => $uuid];
+                $results[] = ['status' => 'skipped', 'uuid' => $existing];
             }
         }
     }
