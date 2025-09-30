@@ -76,7 +76,7 @@ public function syncData(Request $request, $table)
                 if ($category) {
                     $data['category_id'] = $category->id;
                 }
-                unset($data['category_id']);
+                unset($data['category_uuid']);
             }
 
             // جلب invoice_id من invoice_uuid
@@ -88,7 +88,7 @@ public function syncData(Request $request, $table)
                 if ($invoice) {
                     $data['invoice_id'] = $invoice->id;
                 }
-                unset($data['invoice_id']);
+                unset($data['invoice_uuid']);
             }
 
             // معالجة صورة المنتج (Base64 فقط)
