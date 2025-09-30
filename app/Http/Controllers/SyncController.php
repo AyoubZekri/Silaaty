@@ -68,41 +68,41 @@ public function syncData(Request $request, $table)
         // ----------------------
         if ($table === 'products') {
             // جلب category_id من category_uuid
-            if (isset($data['category_uuid'])) {
+            if (isset($data['categoris_uuid'])) {
                 $category = DB::table('categoris')
-                    ->where('uuid', $data['category_uuid'])
+                    ->where('uuid', $data['categoris_uuid'])
                     ->where('user_id', auth()->id())
                     ->first();
                 if ($category) {
-                    $data['category_id'] = $category->id;
+                    $data['categoris_id'] = $category->id;
                 }
-                unset($data['category_uuid']);
+                unset($data['categoris_uuid']);
             }
 
             // جلب invoice_id من invoice_uuid
-            if (isset($data['invoice_uuid'])) {
+            if (isset($data['invoies_uuid'])) {
                 $invoice = DB::table('invoies')
-                    ->where('uuid', $data['invoice_uuid'])
+                    ->where('uuid', $data['invoies_uuid'])
                     ->where('user_id', auth()->id())
                     ->first();
                 if ($invoice) {
-                    $data['invoice_id'] = $invoice->id;
+                    $data['invoies_id'] = $invoice->id;
                 }
-                unset($data['invoice_uuid']);
+                unset($data['invoies_uuid']);
             }
 
             // معالجة صورة المنتج (Base64 فقط)
-            if (!empty($data['product_image'])) {
+            if (!empty($data['Product_image'])) {
                 try {
                     $imageName = 'product_' . uniqid() . '.png';
                     $imagePath = 'products/' . $imageName;
 
-                    $base64 = explode(',', $data['product_image'])[1];
+                    $base64 = explode(',', $data['Product_image'])[1];
                     Storage::disk('public')->put($imagePath, base64_decode($base64));
 
-                    $data['product_image'] = $imagePath;
+                    $data['Product_image'] = $imagePath;
                 } catch (\Exception $e) {
-                    unset($data['product_image']);
+                    unset($data['Product_image']);
                 }
             }
         }
