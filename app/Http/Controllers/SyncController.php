@@ -197,6 +197,14 @@ public function syncData(Request $request, $table)
         }
     }
 
+    $hasError = collect($results)->contains(function ($r) {
+    return isset($r['status']) && $r['status'] === 'error';
+    });
+
+    $statusCode = $hasError ? 500 : 200;
+
+    return response()->json($results, $statusCode);
+
     return response()->json($results);
 }
 
