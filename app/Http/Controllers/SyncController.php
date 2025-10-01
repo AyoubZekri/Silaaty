@@ -95,21 +95,23 @@ public function syncData(Request $request, $table)
              unset($data['invoies_uuid']);
 
 
-            // معالجة صورة المنتج (Base64 فقط)
-            if (!empty($data['Product_image'])) {
+                    // معالجة صورة المنتج (Base64 فقط)
+            if ($request->hasFile("products.image")) {
+                $file = $request->file("products.image");
+                $path = $file->store('products', 'public');
+                $data['Product_image'] = $path;
+            } elseif (!empty($data['Product_image']) && str_starts_with($data['Product_image'], "data:image")) {
                 try {
                     $imageName = 'product_' . uniqid() . '.png';
                     $imagePath = 'products/' . $imageName;
-
                     $base64 = explode(',', $data['Product_image'])[1];
                     Storage::disk('public')->put($imagePath, base64_decode($base64));
-
                     $data['Product_image'] = $imagePath;
                 } catch (\Exception $e) {
                     unset($data['Product_image']);
                 }
             }
-        }
+     }
 
         if ($table === 'invoies') {
             // جلب transaction_id من Transaction_uuid
@@ -126,21 +128,24 @@ public function syncData(Request $request, $table)
         }
 
         if ($table === 'categoris') {
-            // معالجة صورة التصنيف
-            if (!empty($data['categoris_image'])) {
+            // 🖼️ معالجة صورة التصنيف (ملف مرفوع أو Base64)
+            if ($request->hasFile("categoris.image")) {
+                $file = $request->file("categoris.image");
+                $path = $file->store('categoris', 'public');
+                $data['categoris_image'] = $path;
+            } elseif (!empty($data['categoris_image']) && str_starts_with($data['categoris_image'], "data:image")) {
                 try {
                     $imageName = 'category_' . uniqid() . '.png';
                     $imagePath = 'categoris/' . $imageName;
-
                     $base64 = explode(',', $data['categoris_image'])[1];
                     Storage::disk('public')->put($imagePath, base64_decode($base64));
-
                     $data['categoris_image'] = $imagePath;
                 } catch (\Exception $e) {
                     unset($data['categoris_image']);
                 }
             }
         }
+
 
         // ----------------------
         // معالجة المزامنة
