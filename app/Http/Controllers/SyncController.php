@@ -79,6 +79,8 @@ public function syncData(Request $request, $table)
                 unset($data['categoris_uuid']);
             }
 
+            unset($data['categoris_uuid']);
+
             // جلب invoice_id من invoice_uuid
             if (isset($data['invoies_uuid'])) {
                 $invoice = DB::table('invoies')
@@ -90,6 +92,8 @@ public function syncData(Request $request, $table)
                 }
                 unset($data['invoies_uuid']);
             }
+             unset($data['invoies_uuid']);
+
 
             // معالجة صورة المنتج (Base64 فقط)
             if (!empty($data['Product_image'])) {
