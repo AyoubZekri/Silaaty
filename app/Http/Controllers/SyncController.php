@@ -22,64 +22,67 @@ class SyncController extends Controller
     /**
      * ✅ Pull: جلب البيانات المحدثة منذ آخر تزامن
      */
-    public function getData(Request $request, $table)
-    {
-        if (!in_array($table, $this->allowedTables)) {
-            return response()->json(['error' => 'Invalid table'], 400);
-        }
-
-        $since = $request->query('since', "1970-01-01T00:00:00Z");
-
-        // فلترة حسب updated_at
-        $data = DB::table($table)
-            ->where('updated_at', '>', $since)
-            ->where("user_id",auth()->id())
-            ->get();
-        if ($table === 'invoies') {
-            // جلب transaction_id من Transaction_uuid
-            if (isset($data['Transaction_id'])) {
-                $transaction = DB::table('transactions')
-                    ->where('id', $data['Transaction_id'])
-                    ->where('user_id', auth()->id())
-                    ->first();
-                if ($transaction) {
-                    $data['Transaction_uuid'] = $transaction->uuid;
-                }
-                unset($data['Transaction_id']);
-            }
-        }
-
-      if ($table === 'products') {
-            // جلب category_id من category_uuid
-            if (isset($data['categoris_id'])) {
-                $category = DB::table('categoris')
-                    ->where('id', $data['categoris_id'])
-                    ->where('user_id', auth()->id())
-                    ->first();
-                if ($category) {
-                    $data['categoris_uuid'] = $category->uuid;
-                }
-                unset($data['categoris_id']);
-            }
-
-            unset($data['categoris_id']);
-
-            // جلب invoice_id من invoice_uuid
-            if (isset($data['invoies_id'])) {
-                $invoice = DB::table('invoies')
-                    ->where('id', $data['invoies_id'])
-                    ->where('user_id', auth()->id())
-                    ->first();
-                if ($invoice) {
-                    $data['invoies_uuid'] = $invoice->uuid;
-                }
-                unset($data['invoies_id']);
-            }
-             unset($data['invoies_id']);
-         }
-
-        return response()->json($data);
+public function getData(Request $request, $table)
+{
+    if (!in_array($table, $this->allowedTables)) {
+        return response()->json(['error' => 'Invalid table'], 400);
     }
+
+    $since = $request->query('since', "1970-01-01T00:00:00Z");
+
+    $data = DB::table($table)
+        ->where('updated_at', '>', $since)
+        ->where("user_id", auth()->id())
+        ->get()
+        ->map(function ($row) use ($table) {
+            $row = (array) $row; // حوّل إلى array عادي
+
+            // ---- معالجة الجدول "invoies"
+            if ($table === 'invoies') {
+                if (!empty($row['Transaction_id'])) {
+                    $transaction = DB::table('transactions')
+                        ->where('id', $row['Transaction_id'])
+                        ->where('user_id', auth()->id())
+                        ->first();
+                    if ($transaction) {
+                        $row['Transaction_uuid'] = $transaction->uuid;
+                    }
+                }
+                unset($row['Transaction_id']);
+            }
+
+            // ---- معالجة جدول "products"
+            if ($table === 'products') {
+                // category
+                if (!empty($row['categoris_id'])) {
+                    $category = DB::table('categoris')
+                        ->where('id', $row['categoris_id'])
+                        ->where('user_id', auth()->id())
+                        ->first();
+                    if ($category) {
+                        $row['categoris_uuid'] = $category->uuid;
+                    }
+                }
+                unset($row['categoris_id']);
+
+                // invoice
+                if (!empty($row['invoies_id'])) {
+                    $invoice = DB::table('invoies')
+                        ->where('id', $row['invoies_id'])
+                        ->where('user_id', auth()->id())
+                        ->first();
+                    if ($invoice) {
+                        $row['invoies_uuid'] = $invoice->uuid;
+                    }
+                }
+                unset($row['invoies_id']);
+            }
+
+            return $row;
+        });
+
+    return response()->json($data);
+}
 
     /**
      * ✅ Push: إدخال أو تحديث البيانات مع حل التعارض
