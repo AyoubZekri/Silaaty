@@ -11,6 +11,7 @@ class Categoris extends Model
 
     protected $fillable = [
         "user_id",
+        'uuid',
         "categoris_name",
         "categoris_image",
         "categoris_name_fr"

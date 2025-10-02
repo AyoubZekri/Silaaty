@@ -35,6 +35,48 @@ class SyncController extends Controller
             ->where('updated_at', '>', $since)
             ->where("user_id",auth()->id())
             ->get();
+        if ($table === 'invoies') {
+            // جلب transaction_id من Transaction_uuid
+            if (isset($data['Transaction_id'])) {
+                $transaction = DB::table('transactions')
+                    ->where('id', $data['Transaction_id'])
+                    ->where('user_id', auth()->id())
+                    ->first();
+                if ($transaction) {
+                    $data['Transaction_uuid'] = $transaction->uuid;
+                }
+                unset($data['Transaction_id']);
+            }
+        }
+
+      if ($table === 'products') {
+            // جلب category_id من category_uuid
+            if (isset($data['categoris_id'])) {
+                $category = DB::table('categoris')
+                    ->where('id', $data['categoris_id'])
+                    ->where('user_id', auth()->id())
+                    ->first();
+                if ($category) {
+                    $data['categoris_uuid'] = $category->uuid;
+                }
+                unset($data['categoris_id']);
+            }
+
+            unset($data['categoris_id']);
+
+            // جلب invoice_id من invoice_uuid
+            if (isset($data['invoies_id'])) {
+                $invoice = DB::table('invoies')
+                    ->where('id', $data['invoies_id'])
+                    ->where('user_id', auth()->id())
+                    ->first();
+                if ($invoice) {
+                    $data['invoies_uuid'] = $invoice->uuid;
+                }
+                unset($data['invoies_id']);
+            }
+             unset($data['invoies_id']);
+         }
 
         return response()->json($data);
     }

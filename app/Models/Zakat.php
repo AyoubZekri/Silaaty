@@ -13,6 +13,7 @@ class Zakat extends Model
 
     protected $fillable = [
         'user_id',
+        'uuid',
         'zakat_nisab',
         'zakat_total_asset_value',
         'zakat_total_debts_value',

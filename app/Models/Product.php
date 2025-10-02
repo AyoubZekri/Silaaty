@@ -15,6 +15,7 @@ class Product extends Model
         'categorie_id',  // النوع 1 البضائع العادية 2البضائع الضرورية 4 الديون لك وعليك
         'categoris_id',  // الفئة يتم انشائها بواسطة المستخدم
         'user_id',
+        'uuid',
         "invoies_id",
         'product_name',
         "Product_image",

@@ -11,6 +11,7 @@ class invoies extends Model
 
     protected $fillable = [
         "user_id",
+        'uuid',
         "Transaction_id",
         "invoies_numper",
         'invoies_date',
