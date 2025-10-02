@@ -96,8 +96,8 @@ public function syncData(Request $request, $table)
 
 
                     // معالجة صورة المنتج (Base64 فقط)
-            if ($request->hasFile("products.image")) {
-                $file = $request->file("products.image");
+            if ($request->hasFile("Product_image")) {
+                $file = $request->file("Product_image");
                 $path = $file->store('products', 'public');
                 $data['Product_image'] = $path;
             } elseif (!empty($data['Product_image']) && str_starts_with($data['Product_image'], "data:image")) {
@@ -129,8 +129,8 @@ public function syncData(Request $request, $table)
 
         if ($table === 'categoris') {
             // 🖼️ معالجة صورة التصنيف (ملف مرفوع أو Base64)
-            if ($request->hasFile("categoris.image")) {
-                $file = $request->file("categoris.image");
+            if ($request->hasFile("categoris_image")) {
+                $file = $request->file("categoris_image");
                 $path = $file->store('categoris', 'public');
                 $data['categoris_image'] = $path;
             } elseif (!empty($data['categoris_image']) && str_starts_with($data['categoris_image'], "data:image")) {
