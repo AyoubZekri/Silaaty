@@ -200,10 +200,17 @@ public function syncData(Request $request, $table)
             ? Carbon::parse($data['updated_at'])
             : Carbon::createFromTimestamp(0);
 
+         if ($table == "reports"){
         $existing = DB::table($table)
+            ->where('uuid', $uuid)
+            ->where('report_id', auth()->id())
+            ->first();
+        }else{
+                    $existing = DB::table($table)
             ->where('uuid', $uuid)
             ->where('user_id', auth()->id())
             ->first();
+        }
 
         if (!$existing) {
             $now = now();
