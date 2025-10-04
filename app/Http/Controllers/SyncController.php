@@ -200,7 +200,7 @@ public function syncData(Request $request, $table)
             ? Carbon::parse($data['updated_at'])
             : Carbon::createFromTimestamp(0);
 
-         if ($table == "reports"){
+    if ($table == "reports"){
         $existing = DB::table($table)
             ->where('uuid', $uuid)
             ->where('report_id', auth()->id())
@@ -221,8 +221,12 @@ public function syncData(Request $request, $table)
             $data['updated_at'] = isset($data['updated_at'])
                 ? Carbon::parse($data['updated_at'])->format('Y-m-d H:i:s')
                 : $now->format('Y-m-d H:i:s');
+                if ($table == "reports") {
+                    $data['report_id'] = auth()->id();
+                }else{
+                    $data['user_id'] = auth()->id();
 
-            $data['user_id'] = auth()->id();
+                }
 
             try {
                 DB::table($table)->insert($data);
@@ -240,10 +244,18 @@ public function syncData(Request $request, $table)
             if ($localUpdatedAt->gt($serverUpdatedAt)) {
                 $data['updated_at'] = now()->format('Y-m-d H:i:s');
                 try {
+
+                if ($table == "reports") {
+                    DB::table($table)
+                        ->where('uuid', $uuid)
+                        ->where('report_id', auth()->id())
+                        ->update($data);
+                }else{
                     DB::table($table)
                         ->where('uuid', $uuid)
                         ->where('user_id', auth()->id())
                         ->update($data);
+                }
                     $results[] = ['status' => 'updated', 'uuid' => $uuid];
                 } catch (\Exception $e) {
                     $results[] = [
