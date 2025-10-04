@@ -30,56 +30,63 @@ public function getData(Request $request, $table)
 
     $since = $request->query('since', "1970-01-01T00:00:00Z");
 
-    $data = DB::table($table)
-        ->where('updated_at', '>', $since)
-        ->where("user_id", auth()->id())
-        ->get()
-        ->map(function ($row) use ($table) {
-            $row = (array) $row; // حوّل إلى array عادي
+    if ($table == "reports") {
+            $data = DB::table($table)
+                ->where('updated_at', '>', $since)
+                ->where("report_id", auth()->id())
+                ->get();
+    }else{
+        $data = DB::table($table)
+            ->where('updated_at', '>', $since)
+            ->where("user_id", auth()->id())
+            ->get()
+            ->map(function ($row) use ($table) {
+                $row = (array) $row;
 
-            // ---- معالجة الجدول "invoies"
-            if ($table === 'invoies') {
-                if (!empty($row['Transaction_id'])) {
-                    $transaction = DB::table('transactions')
-                        ->where('id', $row['Transaction_id'])
-                        ->where('user_id', auth()->id())
-                        ->first();
-                    if ($transaction) {
-                        $row['Transaction_uuid'] = $transaction->uuid;
+                // ---- معالجة الجدول "invoies"
+                if ($table === 'invoies') {
+                    if (!empty($row['Transaction_id'])) {
+                        $transaction = DB::table('transactions')
+                            ->where('id', $row['Transaction_id'])
+                            ->where('user_id', auth()->id())
+                            ->first();
+                        if ($transaction) {
+                            $row['Transaction_uuid'] = $transaction->uuid;
+                        }
                     }
+                    unset($row['Transaction_id']);
                 }
-                unset($row['Transaction_id']);
-            }
 
-            // ---- معالجة جدول "products"
-            if ($table === 'products') {
-                // category
-                if (!empty($row['categoris_id'])) {
-                    $category = DB::table('categoris')
-                        ->where('id', $row['categoris_id'])
-                        ->where('user_id', auth()->id())
-                        ->first();
-                    if ($category) {
-                        $row['categoris_uuid'] = $category->uuid;
+                // ---- معالجة جدول "products"
+                if ($table === 'products') {
+                    // category
+                    if (!empty($row['categoris_id'])) {
+                        $category = DB::table('categoris')
+                            ->where('id', $row['categoris_id'])
+                            ->where('user_id', auth()->id())
+                            ->first();
+                        if ($category) {
+                            $row['categoris_uuid'] = $category->uuid;
+                        }
                     }
-                }
-                unset($row['categoris_id']);
+                    unset($row['categoris_id']);
 
-                // invoice
-                if (!empty($row['invoies_id'])) {
-                    $invoice = DB::table('invoies')
-                        ->where('id', $row['invoies_id'])
-                        ->where('user_id', auth()->id())
-                        ->first();
-                    if ($invoice) {
-                        $row['invoies_uuid'] = $invoice->uuid;
+                    // invoice
+                    if (!empty($row['invoies_id'])) {
+                        $invoice = DB::table('invoies')
+                            ->where('id', $row['invoies_id'])
+                            ->where('user_id', auth()->id())
+                            ->first();
+                        if ($invoice) {
+                            $row['invoies_uuid'] = $invoice->uuid;
+                        }
                     }
+                    unset($row['invoies_id']);
                 }
-                unset($row['invoies_id']);
-            }
 
-            return $row;
+                return $row;
         });
+                }
 
     return response()->json($data);
 }
