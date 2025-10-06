@@ -321,11 +321,17 @@ public function syncDeleteData(Request $request, $table)
 
     foreach ($uuids as $uuid) {
         try {
+            if($table == "reports"){
             $record = DB::table($table)
+                ->where('uuid', $uuid)
+                ->where('report_id', auth()->id())
+                ->first();
+            }else{
+             $record = DB::table($table)
                 ->where('uuid', $uuid)
                 ->where('user_id', auth()->id())
                 ->first();
-
+            }
             if (!$record) {
                 $results[] = ['uuid' => $uuid, 'status' => 'skipped', 'message' => 'غير موجود'];
                 continue;
