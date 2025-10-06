@@ -337,10 +337,18 @@ public function syncDeleteData(Request $request, $table)
                 continue;
             }
 
+            if($table == "reports"){
+             DB::table($table)
+                ->where('uuid', $uuid)
+                ->where('report_id', auth()->id())
+                ->delete();
+            }else{
             DB::table($table)
                 ->where('uuid', $uuid)
                 ->where('user_id', auth()->id())
-                ->delete(); // أو update(['deleted' => 1]) إذا تريد علامة حذف
+                ->delete();
+            }
+
 
             $results[] = ['uuid' => $uuid, 'status' => 'deleted'];
         } catch (\Exception $e) {
