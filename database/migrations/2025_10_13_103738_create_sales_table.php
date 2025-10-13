@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->nullable()->after('id');
+            $table->uuid('uuid')->nullable();
             $table->foreignId('invoie_id')->constrained('invoies')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('restrict');
             $table->integer('quantity')->default(1);
