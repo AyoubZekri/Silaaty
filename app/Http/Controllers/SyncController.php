@@ -17,6 +17,8 @@ class SyncController extends Controller
         'reports',
         'transactions',
         'zakats',
+        'sales',
+
     ];
 
     /**
@@ -82,6 +84,33 @@ public function getData(Request $request, $table)
                         }
                     }
                     unset($row['invoies_id']);
+                }
+
+                                // ---- معالجة جدول "products"
+                if ($table === 'sales') {
+                    // category
+                    if (!empty($row['product_id'])) {
+                        $category = DB::table('products')
+                            ->where('id', $row['product_id'])
+                            ->where('user_id', auth()->id())
+                            ->first();
+                        if ($category) {
+                            $row['product_uuid'] = $category->uuid;
+                        }
+                    }
+                    unset($row['product_id']);
+
+                    // invoice
+                    if (!empty($row['invoie_id'])) {
+                        $invoice = DB::table('invoies')
+                            ->where('id', $row['invoie_id'])
+                            ->where('user_id', auth()->id())
+                            ->first();
+                        if ($invoice) {
+                            $row['invoie_uuid'] = $invoice->uuid;
+                        }
+                    }
+                    unset($row['invoie_id']);
                 }
 
                 return $row;
@@ -163,6 +192,36 @@ public function syncData(Request $request, $table)
                     unset($data['Product_image']);
                 }
             }
+     }
+
+             if ($table === 'sales') {
+            // جلب category_id من category_uuid
+            if (isset($data['product_uuid'])) {
+                $category = DB::table('products')
+                    ->where('uuid', $data['product_uuid'])
+                    ->where('user_id', auth()->id())
+                    ->first();
+                if ($category) {
+                    $data['product_id'] = $category->id;
+                }
+                unset($data['product_uuid']);
+            }
+
+            unset($data['product_uuid']);
+
+            // جلب invoice_id من invoice_uuid
+            if (isset($data['invoie_uuid'])) {
+                $invoice = DB::table('invoies')
+                    ->where('uuid', $data['invoie_uuid'])
+                    ->where('user_id', auth()->id())
+                    ->first();
+                if ($invoice) {
+                    $data['invoie_id'] = $invoice->id;
+                }
+                unset($data['invoie_uuid']);
+            }
+             unset($data['invoie_uuid']);
+
      }
 
         if ($table === 'invoies') {
