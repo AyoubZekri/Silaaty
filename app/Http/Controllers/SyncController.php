@@ -359,5 +359,4 @@ public function syncDeleteData(Request $request, $table)
     return response()->json($results);
 }
 
-
 }
