@@ -26,96 +26,100 @@ class SyncController extends Controller
      */
 public function getData(Request $request, $table)
 {
+    // التحقق من صحة الجدول
     if (!in_array($table, $this->allowedTables)) {
         return response()->json(['error' => 'Invalid table'], 400);
     }
 
     $since = $request->query('since', "1970-01-01T00:00:00Z");
+    $limit = intval($request->query('limit', 50));   // عدد السجلات في كل دفعة
+    $offset = intval($request->query('offset', 0));  // بداية السجلات
 
-    if ($table == "reports") {
-            $data = DB::table($table)
-                ->where('updated_at', '>', $since)
-                ->where("report_id", auth()->id())
-                ->get();
-    }else{
-        $data = DB::table($table)
+    // اختيار بيانات التقرير بشكل خاص
+    if ($table === "reports") {
+        $query = DB::table($table)
             ->where('updated_at', '>', $since)
-            ->where("user_id", auth()->id())
-            ->get()
-            ->map(function ($row) use ($table) {
-                $row = (array) $row;
+            ->where("report_id", auth()->id());
+    } else {
+        $query = DB::table($table)
+            ->where('updated_at', '>', $since)
+            ->where("user_id", auth()->id());
+    }
 
-                // ---- معالجة الجدول "invoies"
-                if ($table === 'invoies') {
-                    if (!empty($row['Transaction_id'])) {
-                        $transaction = DB::table('transactions')
-                            ->where('id', $row['Transaction_id'])
-                            ->where('user_id', auth()->id())
-                            ->first();
-                        if ($transaction) {
-                            $row['Transaction_uuid'] = $transaction->uuid;
-                        }
-                    }
-                    unset($row['Transaction_id']);
+    // تطبيق limit و offset
+    $data = $query->skip($offset)->take($limit)->get()->map(function ($row) use ($table) {
+        $row = (array) $row;
+
+        // معالجة جدول "invoies"
+        if ($table === 'invoies') {
+            if (!empty($row['Transaction_id'])) {
+                $transaction = DB::table('transactions')
+                    ->where('id', $row['Transaction_id'])
+                    ->where('user_id', auth()->id())
+                    ->first();
+                if ($transaction) {
+                    $row['Transaction_uuid'] = $transaction->uuid;
                 }
+            }
+            unset($row['Transaction_id']);
+        }
 
-                // ---- معالجة جدول "products"
-                if ($table === 'products') {
-                    // category
-                    if (!empty($row['categoris_id'])) {
-                        $category = DB::table('categoris')
-                            ->where('id', $row['categoris_id'])
-                            ->where('user_id', auth()->id())
-                            ->first();
-                        if ($category) {
-                            $row['categoris_uuid'] = $category->uuid;
-                        }
-                    }
-                    unset($row['categoris_id']);
-
-                    // invoice
-                    if (!empty($row['invoies_id'])) {
-                        $invoice = DB::table('invoies')
-                            ->where('id', $row['invoies_id'])
-                            ->where('user_id', auth()->id())
-                            ->first();
-                        if ($invoice) {
-                            $row['invoies_uuid'] = $invoice->uuid;
-                        }
-                    }
-                    unset($row['invoies_id']);
+        // معالجة جدول "products"
+        if ($table === 'products') {
+            // category
+            if (!empty($row['categoris_id'])) {
+                $category = DB::table('categoris')
+                    ->where('id', $row['categoris_id'])
+                    ->where('user_id', auth()->id())
+                    ->first();
+                if ($category) {
+                    $row['categoris_uuid'] = $category->uuid;
                 }
+            }
+            unset($row['categoris_id']);
 
-                                // ---- معالجة جدول "products"
-                if ($table === 'sales') {
-                    // category
-                    if (!empty($row['product_id'])) {
-                        $category = DB::table('products')
-                            ->where('id', $row['product_id'])
-                            ->where('user_id', auth()->id())
-                            ->first();
-                        if ($category) {
-                            $row['product_uuid'] = $category->uuid;
-                        }
-                    }
-                    unset($row['product_id']);
-
-                    // invoice
-                    if (!empty($row['invoie_id'])) {
-                        $invoice = DB::table('invoies')
-                            ->where('id', $row['invoie_id'])
-                            ->where('user_id', auth()->id())
-                            ->first();
-                        if ($invoice) {
-                            $row['invoie_uuid'] = $invoice->uuid;
-                        }
-                    }
-                    unset($row['invoie_id']);
+            // invoice
+            if (!empty($row['invoies_id'])) {
+                $invoice = DB::table('invoies')
+                    ->where('id', $row['invoies_id'])
+                    ->where('user_id', auth()->id())
+                    ->first();
+                if ($invoice) {
+                    $row['invoies_uuid'] = $invoice->uuid;
                 }
+            }
+            unset($row['invoies_id']);
+        }
 
-                return $row;
-        });
+        // معالجة جدول "sales"
+        if ($table === 'sales') {
+            // product
+            if (!empty($row['product_id'])) {
+                $product = DB::table('products')
+                    ->where('id', $row['product_id'])
+                    ->where('user_id', auth()->id())
+                    ->first();
+                if ($product) {
+                    $row['product_uuid'] = $product->uuid;
                 }
+            }
+            unset($row['product_id']);
+
+            // invoice
+            if (!empty($row['invoie_id'])) {
+                $invoice = DB::table('invoies')
+                    ->where('id', $row['invoie_id'])
+                    ->where('user_id', auth()->id())
+                    ->first();
+                if ($invoice) {
+                    $row['invoie_uuid'] = $invoice->uuid;
+                }
+            }
+            unset($row['invoie_id']);
+        }
+
+        return $row;
+    });
 
     return response()->json($data);
 }
@@ -135,10 +139,10 @@ public function syncData(Request $request, $table)
     if (isset($payload['uuid'])) {
         $payload = [$payload];
     }
-
+    $batchSize = 50; // يمكن تعديل عدد السجلات في كل دفعة
     $results = [];
-
-    foreach ($payload as $data) {
+    foreach (array_chunk($payload, $batchSize) as $batch){
+     foreach ($batch as $data) {
         if (!isset($data['uuid'])) {
             $results[] = ['status' => 'error', 'error' => 'uuid required'];
             continue;
@@ -266,7 +270,7 @@ public function syncData(Request $request, $table)
             ? Carbon::parse($data['updated_at'])
             : Carbon::createFromTimestamp(0);
 
-    if ($table == "reports"){
+        if ($table == "reports"){
         $existing = DB::table($table)
             ->where('uuid', $uuid)
             ->where('report_id', auth()->id())
@@ -334,7 +338,12 @@ public function syncData(Request $request, $table)
                 $results[] = ['status' => 'skipped', 'uuid' => $uuid];
             }
         }
+
+
+
     }
+    }
+
 
     $hasError = collect($results)->contains(function ($r) {
     return isset($r['status']) && $r['status'] === 'error';
