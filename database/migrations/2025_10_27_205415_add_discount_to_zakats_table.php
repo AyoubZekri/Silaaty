@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('zakats', function (Blueprint $table) {
+        Schema::table('invoies', function (Blueprint $table) {
             $table->decimal('discount', 12, 2)->default(0);
         });
     }
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('zakats', function (Blueprint $table) {
+        Schema::table('invoies', function (Blueprint $table) {
              $table->dropColumn('discount');
         });
     }
