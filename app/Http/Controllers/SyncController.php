@@ -18,7 +18,6 @@ class SyncController extends Controller
         'transactions',
         'zakats',
         'sales',
-
     ];
 
     /**
@@ -135,11 +134,10 @@ public function syncData(Request $request, $table)
 
     $payload = $request->all();
 
-    // إذا جا سجل واحد فقط نخليه داخل array
     if (isset($payload['uuid'])) {
         $payload = [$payload];
     }
-    $batchSize = 50; // يمكن تعديل عدد السجلات في كل دفعة
+    $batchSize = 50;
     $results = [];
     foreach (array_chunk($payload, $batchSize) as $batch){
      foreach ($batch as $data) {
@@ -198,7 +196,7 @@ public function syncData(Request $request, $table)
             }
      }
 
-             if ($table === 'sales') {
+        if ($table === 'sales') {
             // جلب category_id من category_uuid
             if (isset($data['product_uuid'])) {
                 $category = DB::table('products')

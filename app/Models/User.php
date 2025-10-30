@@ -32,6 +32,8 @@ class User extends Authenticatable
         'user_role',
         'Status',
         "created_at",
+        "logo_stor",
+        "adresse",
         "date_experiment",
     ];
 
