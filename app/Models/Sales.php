@@ -18,6 +18,7 @@ class Sale extends Model
         'quantity',
         'unit_price',
         'subtotal',
+        "type_sales",
     ];
 
     public function invoice()
