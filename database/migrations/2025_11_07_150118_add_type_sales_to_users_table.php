@@ -15,13 +15,6 @@ return new class extends Migration
         Schema::table('sales', function (Blueprint $table) {
             $table->tinyInteger("type_sales")->nullable();
         });
-
-        DB::table('sales')
-            ->join('invoies', 'sales.invoie_id', '=', 'invoies.id')
-            ->join('Transactions', 'invoies.Transaction_id', '=', 'Transactions.id')
-            ->update([
-                'sales.type_sales' => DB::raw('Transactions.transactions')
-            ]);
     }
 
     /**

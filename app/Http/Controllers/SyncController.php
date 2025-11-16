@@ -366,7 +366,9 @@ public function syncDeleteData(Request $request, $table)
         'products',
         'reports',
         'transactions',
-        'zakats',];
+        'zakats',
+        'sales',
+    ];
     if (!in_array($table, $allowedTables)) {
         return response()->json(['status' => 0, 'message' => 'جدول غير مسموح'], 400);
     }
@@ -414,6 +416,15 @@ public function syncDeleteData(Request $request, $table)
                 ->where('user_id', auth()->id())
                 ->delete();
             }
+
+            if ($table === 'products' && !empty($record->product_image)) {
+                Storage::delete($record->product_image);
+            }
+
+            if ($table === 'categoris' && !empty($record->categoris_image)) {
+                Storage::delete($record->categoris_image);
+            }
+
 
 
             $results[] = ['uuid' => $uuid, 'status' => 'deleted'];
