@@ -26,6 +26,8 @@ class UserService
                 'password' => Hash::make($data['password']),
                 'user_role' => $roleName === 'admin' ? 1 : 2,
                 'email_verified' => $statusCode,
+                'Status' => 2,
+                'date_experiment' => now()->addMonth(),
             ]);
 
             $role = Role::where('role_name', $roleName)->first();
