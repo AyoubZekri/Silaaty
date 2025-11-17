@@ -418,11 +418,11 @@ public function syncDeleteData(Request $request, $table)
             }
 
             if ($table === 'products' && !empty($record->product_image)) {
-                Storage::delete($record->product_image);
+                Storage::disk('public')->delete($record->product_image);
             }
 
             if ($table === 'categoris' && !empty($record->categoris_image)) {
-                Storage::delete($record->categoris_image);
+                Storage::disk('public')->delete($record->categoris_image);
             }
 
 
