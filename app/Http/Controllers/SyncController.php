@@ -417,8 +417,8 @@ public function syncDeleteData(Request $request, $table)
                 ->delete();
             }
 
-            if ($table === 'products' && !empty($record->product_image)) {
-                Storage::disk('public')->delete($record->product_image);
+            if ($table === 'products' && !empty($record->Product_image)) {
+                Storage::disk('public')->delete($record->Product_image);
             }
 
             if ($table === 'categoris' && !empty($record->categoris_image)) {
