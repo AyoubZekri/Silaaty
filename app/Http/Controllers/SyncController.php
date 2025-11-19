@@ -31,8 +31,8 @@ public function getData(Request $request, $table)
     }
 
     $since = $request->query('since', "1970-01-01T00:00:00Z");
-    $limit = intval($request->query('limit', 50));   // عدد السجلات في كل دفعة
-    $offset = intval($request->query('offset', 0));  // بداية السجلات
+    $limit = intval($request->query('limit', 50));  
+    $offset = intval($request->query('offset', 0));  
 
     // اختيار بيانات التقرير بشكل خاص
     if ($table === "reports") {
