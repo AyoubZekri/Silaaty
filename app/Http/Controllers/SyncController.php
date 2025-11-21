@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Exception;
 
 class SyncController extends Controller
 {
@@ -20,8 +21,116 @@ class SyncController extends Controller
         'sales',
     ];
 
+    // ===============================================
+    //               ⚙️ دوال مساعدة (Helper Methods)
+    // ===============================================
+
     /**
-     * ✅ Pull: جلب البيانات المحدثة منذ آخر تزامن
+     * يحول ID محلي (Foreign Key) إلى UUID المقابل في جدول آخر (لعملية Pull).
+     *
+     * @param array $row مصفوفة البيانات التي يتم جلبها
+     * @param string $sourceTable الجدول الذي يحتوي على ID (مثلاً products)
+     * @param string $fkIdName اسم عمود الـ ID في $row (مثلاً categoris_id)
+     * @param string $fkUuidName اسم العمود الجديد للـ UUID (مثلاً categoris_uuid)
+     * @param string $targetTable اسم الجدول المراد البحث فيه (مثلاً categoris)
+     * @return array مصفوفة البيانات بعد إضافة الـ UUID وإزالة الـ ID
+     */
+    private function mapIdToUuid(array $row, string $sourceTable, string $fkIdName, string $fkUuidName, string $targetTable): array
+    {
+        // 1. التحقق من وجود وقيمة الـ ID
+        if (!empty($row[$fkIdName])) {
+            $record = DB::table($targetTable)
+                ->where('id', $row[$fkIdName])
+                // التحقق من الملكية بناءً على 'user_id' باستثناء جدول 'reports'
+                ->where('user_id', auth()->id())
+                ->first();
+
+            if ($record) {
+                // 2. إضافة الـ UUID
+                $row[$fkUuidName] = $record->uuid;
+            }
+        }
+        // 3. إزالة الـ ID المحلي
+        unset($row[$fkIdName]);
+        
+        return $row;
+    }
+
+    /**
+     * يحول UUID إلى ID محلي (Foreign Key) في جدول آخر (لعملية Push).
+     *
+     * @param array $data مصفوفة البيانات التي يتم إرسالها
+     * @param string $uuidName اسم عمود الـ UUID في $data (مثلاً categoris_uuid)
+     * @param string $idName اسم العمود الجديد للـ ID (مثلاً categoris_id)
+     * @param string $targetTable اسم الجدول المراد البحث فيه (مثلاً categoris)
+     * @return array مصفوفة البيانات بعد إضافة الـ ID وإزالة الـ UUID
+     */
+    private function mapUuidToId(array $data, string $uuidName, string $idName, string $targetTable): array
+    {
+        // 1. التحقق من وجود وقيمة الـ UUID
+        if (isset($data[$uuidName]) && !empty($data[$uuidName])) {
+            $record = DB::table($targetTable)
+                ->where('uuid', $data[$uuidName])
+                // التحقق من الملكية
+                ->where('user_id', auth()->id())
+                ->first();
+
+            if ($record) {
+                // 2. إضافة الـ ID المحلي
+                $data[$idName] = $record->id;
+            }
+        }
+        // 3. إزالة الـ UUID
+        unset($data[$uuidName]);
+        
+        return $data;
+    }
+
+    /**
+     * معالجة تخزين صورة Base64 أو ملف مرفوع وإرجاع المسار.
+     *
+     * @param Request $request طلب HTTP
+     * @param array $data مصفوفة البيانات
+     * @param string $fieldName اسم حقل الصورة (مثلاً Product_image)
+     * @param string $storageFolder اسم مجلد التخزين (مثلاً products)
+     * @return array مصفوفة البيانات بعد تحديث حقل الصورة بمسار التخزين
+     */
+    private function processAndStoreImage(Request $request, array $data, string $fieldName, string $storageFolder): array
+    {
+        // 1. معالجة ملف مرفوع
+        if ($request->hasFile($fieldName)) {
+            try {
+                $file = $request->file($fieldName);
+                $path = $file->store($storageFolder, 'public');
+                $data[$fieldName] = $path;
+            } catch (Exception $e) {
+                // في حال فشل التخزين، نتجاهل الصورة
+                unset($data[$fieldName]);
+            }
+        } 
+        // 2. معالجة بيانات Base64
+        elseif (!empty($data[$fieldName]) && str_starts_with($data[$fieldName], "data:image")) {
+            try {
+                $imageName = $storageFolder . '_' . uniqid() . '.png';
+                $imagePath = $storageFolder . '/' . $imageName;
+                $base64 = explode(',', $data[$fieldName])[1];
+                Storage::disk('public')->put($imagePath, base64_decode($base64));
+                $data[$fieldName] = $imagePath;
+            } catch (Exception $e) {
+                // في حال فشل معالجة Base64، نتجاهل الصورة
+                unset($data[$fieldName]);
+            }
+        }
+        
+        return $data;
+    }
+
+    // ===============================================
+    //                  ✅ Pull (getData)
+    // ===============================================
+    
+    /**
+     * جلب البيانات المحدثة منذ آخر تزامن
      */
 public function getData(Request $request, $table)
 {
@@ -48,72 +157,19 @@ public function getData(Request $request, $table)
     $data = $query->skip($offset)->take($limit)->get()->map(function ($row) use ($table) {
         $row = (array) $row;
 
-        // معالجة جدول "invoies"
+        // 🚀 استخدام الدوال المساعدة لعملية Pull (تحويل ID -> UUID)
         if ($table === 'invoies') {
-            if (!empty($row['Transaction_id'])) {
-                $transaction = DB::table('transactions')
-                    ->where('id', $row['Transaction_id'])
-                    ->where('user_id', auth()->id())
-                    ->first();
-                if ($transaction) {
-                    $row['Transaction_uuid'] = $transaction->uuid;
-                }
-            }
-            unset($row['Transaction_id']);
+            $row = $this->mapIdToUuid($row, $table, 'Transaction_id', 'Transaction_uuid', 'transactions');
         }
 
-        // معالجة جدول "products"
         if ($table === 'products') {
-            // category
-            if (!empty($row['categoris_id'])) {
-                $category = DB::table('categoris')
-                    ->where('id', $row['categoris_id'])
-                    ->where('user_id', auth()->id())
-                    ->first();
-                if ($category) {
-                    $row['categoris_uuid'] = $category->uuid;
-                }
-            }
-            unset($row['categoris_id']);
-
-            // invoice
-            if (!empty($row['invoies_id'])) {
-                $invoice = DB::table('invoies')
-                    ->where('id', $row['invoies_id'])
-                    ->where('user_id', auth()->id())
-                    ->first();
-                if ($invoice) {
-                    $row['invoies_uuid'] = $invoice->uuid;
-                }
-            }
-            unset($row['invoies_id']);
+            $row = $this->mapIdToUuid($row, $table, 'categoris_id', 'categoris_uuid', 'categoris');
+            $row = $this->mapIdToUuid($row, $table, 'invoies_id', 'invoies_uuid', 'invoies');
         }
 
-        // معالجة جدول "sales"
         if ($table === 'sales') {
-            // product
-            if (!empty($row['product_id'])) {
-                $product = DB::table('products')
-                    ->where('id', $row['product_id'])
-                    ->where('user_id', auth()->id())
-                    ->first();
-                if ($product) {
-                    $row['product_uuid'] = $product->uuid;
-                }
-            }
-            unset($row['product_id']);
-
-            // invoice
-            if (!empty($row['invoie_id'])) {
-                $invoice = DB::table('invoies')
-                    ->where('id', $row['invoie_id'])
-                    ->where('user_id', auth()->id())
-                    ->first();
-                if ($invoice) {
-                    $row['invoie_uuid'] = $invoice->uuid;
-                }
-            }
-            unset($row['invoie_id']);
+            $row = $this->mapIdToUuid($row, $table, 'product_id', 'product_uuid', 'products');
+            $row = $this->mapIdToUuid($row, $table, 'invoie_id', 'invoie_uuid', 'invoies');
         }
 
         return $row;
@@ -122,8 +178,12 @@ public function getData(Request $request, $table)
     return response()->json($data);
 }
 
+    // ===============================================
+    //                  ✅ Push (syncData)
+    // ===============================================
+
     /**
-     * ✅ Push: إدخال أو تحديث البيانات مع حل التعارض
+     * إدخال أو تحديث البيانات مع حل التعارض
      */
 public function syncData(Request $request, $table)
 {
@@ -139,131 +199,44 @@ public function syncData(Request $request, $table)
     $batchSize = 50;
     $results = [];
     foreach (array_chunk($payload, $batchSize) as $batch){
-     foreach ($batch as $data) {
+      foreach ($batch as $data) {
         if (!isset($data['uuid'])) {
             $results[] = ['status' => 'error', 'error' => 'uuid required'];
             continue;
         }
 
         // ----------------------
-        // معالجة العلاقات
+        // 🚀 معالجة العلاقات والملفات (Push)
         // ----------------------
         if ($table === 'products') {
-            // جلب category_id من category_uuid
-            if (isset($data['categoris_uuid'])) {
-                $category = DB::table('categoris')
-                    ->where('uuid', $data['categoris_uuid'])
-                    ->where('user_id', auth()->id())
-                    ->first();
-                if ($category) {
-                    $data['categoris_id'] = $category->id;
-                }
-                unset($data['categoris_uuid']);
-            }
-
-            unset($data['categoris_uuid']);
-
-            // جلب invoice_id من invoice_uuid
-            if (isset($data['invoies_uuid'])) {
-                $invoice = DB::table('invoies')
-                    ->where('uuid', $data['invoies_uuid'])
-                    ->where('user_id', auth()->id())
-                    ->first();
-                if ($invoice) {
-                    $data['invoies_id'] = $invoice->id;
-                }
-                unset($data['invoies_uuid']);
-            }
-             unset($data['invoies_uuid']);
-
-
-                    // معالجة صورة المنتج (Base64 فقط)
-            if ($request->hasFile("Product_image")) {
-                $file = $request->file("Product_image");
-                $path = $file->store('products', 'public');
-                $data['Product_image'] = $path;
-            } elseif (!empty($data['Product_image']) && str_starts_with($data['Product_image'], "data:image")) {
-                try {
-                    $imageName = 'product_' . uniqid() . '.png';
-                    $imagePath = 'products/' . $imageName;
-                    $base64 = explode(',', $data['Product_image'])[1];
-                    Storage::disk('public')->put($imagePath, base64_decode($base64));
-                    $data['Product_image'] = $imagePath;
-                } catch (\Exception $e) {
-                    unset($data['Product_image']);
-                }
-            }
-     }
+            // تحويل UUIDs إلى IDs محلية
+            $data = $this->mapUuidToId($data, 'categoris_uuid', 'categoris_id', 'categoris');
+            $data = $this->mapUuidToId($data, 'invoies_uuid', 'invoies_id', 'invoies');
+            
+            // معالجة صورة المنتج
+            $data = $this->processAndStoreImage($request, $data, 'Product_image', 'products');
+        }
 
         if ($table === 'sales') {
-            if (isset($data['product_uuid'])) {
-                $category = DB::table('products')
-                    ->where('uuid', $data['product_uuid'])
-                    ->where('user_id', auth()->id())
-                    ->first();
-                if ($category) {
-                    $data['product_id'] = $category->id;
-                }
-                unset($data['product_uuid']);
-            }
+            // تحويل UUIDs إلى IDs محلية
+            $data = $this->mapUuidToId($data, 'product_uuid', 'product_id', 'products');
+            $data = $this->mapUuidToId($data, 'invoie_uuid', 'invoie_id', 'invoies');
+        }
 
-            unset($data['product_uuid']);
-
-            // جلب invoice_id من invoice_uuid
-            if (isset($data['invoie_uuid'])) {
-                $invoice = DB::table('invoies')
-                    ->where('uuid', $data['invoie_uuid'])
-                    ->where('user_id', auth()->id())
-                    ->first();
-                if ($invoice) {
-                    $data['invoie_id'] = $invoice->id;
-                }
-                unset($data['invoie_uuid']);
-            }
-             unset($data['invoie_uuid']);
-
-     }
-
-    if ($table === 'invoies') {
-            if (isset($data['Transaction_uuid'])) {
-                
-                if (!empty($data['Transaction_uuid'])) { 
-                    
-                    $transaction = DB::table('transactions')
-                        ->where('uuid', $data['Transaction_uuid'])
-                        ->where('user_id', auth()->id())
-                        ->first();
-                        
-                    if ($transaction) {
-                        $data['Transaction_id'] = $transaction->id;
-                    }
-                }
-                unset($data['Transaction_uuid']);
-            }
+        if ($table === 'invoies') {
+             // تحويل Transaction_uuid إلى Transaction_id
+             // لا حاجة لـ !empty() هنا لأنها مدمجة في mapUuidToId
+             $data = $this->mapUuidToId($data, 'Transaction_uuid', 'Transaction_id', 'transactions');
         }
 
         if ($table === 'categoris') {
-            // 🖼️ معالجة صورة التصنيف (ملف مرفوع أو Base64)
-            if ($request->hasFile("categoris_image")) {
-                $file = $request->file("categoris_image");
-                $path = $file->store('categoris', 'public');
-                $data['categoris_image'] = $path;
-            } elseif (!empty($data['categoris_image']) && str_starts_with($data['categoris_image'], "data:image")) {
-                try {
-                    $imageName = 'category_' . uniqid() . '.png';
-                    $imagePath = 'categoris/' . $imageName;
-                    $base64 = explode(',', $data['categoris_image'])[1];
-                    Storage::disk('public')->put($imagePath, base64_decode($base64));
-                    $data['categoris_image'] = $imagePath;
-                } catch (\Exception $e) {
-                    unset($data['categoris_image']);
-                }
-            }
+            // معالجة صورة التصنيف
+            $data = $this->processAndStoreImage($request, $data, 'categoris_image', 'categoris');
         }
 
 
         // ----------------------
-        // معالجة المزامنة
+        // معالجة المزامنة Core Sync Logic
         // ----------------------
         $uuid = $data['uuid'];
         $localUpdatedAt = isset($data['updated_at'])
@@ -276,7 +249,7 @@ public function syncData(Request $request, $table)
             ->where('report_id', auth()->id())
             ->first();
         }else{
-                    $existing = DB::table($table)
+            $existing = DB::table($table)
             ->where('uuid', $uuid)
             ->where('user_id', auth()->id())
             ->first();
@@ -301,7 +274,7 @@ public function syncData(Request $request, $table)
             try {
                 DB::table($table)->insert($data);
                 $results[] = ['status' => 'inserted', 'uuid' => $uuid];
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $results[] = [
                     'status' => 'error',
                     'uuid' => $uuid,
@@ -327,7 +300,7 @@ public function syncData(Request $request, $table)
                         ->update($data);
                 }
                     $results[] = ['status' => 'updated', 'uuid' => $uuid];
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $results[] = [
                         'status' => 'error',
                         'uuid' => $uuid,
@@ -338,9 +311,6 @@ public function syncData(Request $request, $table)
                 $results[] = ['status' => 'skipped', 'uuid' => $uuid];
             }
         }
-
-
-
     }
     }
 
@@ -352,12 +322,11 @@ public function syncData(Request $request, $table)
     $statusCode = $hasError ? 500 : 200;
 
     return response()->json($results, $statusCode);
-
-    return response()->json($results);
 }
 
-
-
+    // ===============================================
+    //                  ✅ Delete (syncDeleteData)
+    // ===============================================
 
 public function syncDeleteData(Request $request, $table)
 {
@@ -418,6 +387,7 @@ public function syncDeleteData(Request $request, $table)
                 ->delete();
             }
 
+            // حذف الملفات المرتبطة عند الحذف
             if ($table === 'products' && !empty($record->Product_image)) {
                 Storage::disk('public')->delete($record->Product_image);
             }
@@ -429,7 +399,7 @@ public function syncDeleteData(Request $request, $table)
 
 
             $results[] = ['uuid' => $uuid, 'status' => 'deleted'];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $results[] = ['uuid' => $uuid, 'status' => 'error', 'message' => $e->getMessage()];
         }
     }
