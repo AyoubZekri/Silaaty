@@ -34,7 +34,6 @@ public function getData(Request $request, $table)
     $limit = intval($request->query('limit', 50));  
     $offset = intval($request->query('offset', 0));  
 
-    // اختيار بيانات التقرير بشكل خاص
     if ($table === "reports") {
         $query = DB::table($table)
             ->where('updated_at', '>', $since)
@@ -197,7 +196,6 @@ public function syncData(Request $request, $table)
      }
 
         if ($table === 'sales') {
-            // جلب category_id من category_uuid
             if (isset($data['product_uuid'])) {
                 $category = DB::table('products')
                     ->where('uuid', $data['product_uuid'])
@@ -226,15 +224,19 @@ public function syncData(Request $request, $table)
 
      }
 
-        if ($table === 'invoies') {
-            // جلب transaction_id من Transaction_uuid
+    if ($table === 'invoies') {
             if (isset($data['Transaction_uuid'])) {
-                $transaction = DB::table('transactions')
-                    ->where('uuid', $data['Transaction_uuid'])
-                    ->where('user_id', auth()->id())
-                    ->first();
-                if ($transaction) {
-                    $data['Transaction_id'] = $transaction->id;
+                
+                if (!empty($data['Transaction_uuid'])) { 
+                    
+                    $transaction = DB::table('transactions')
+                        ->where('uuid', $data['Transaction_uuid'])
+                        ->where('user_id', auth()->id())
+                        ->first();
+                        
+                    if ($transaction) {
+                        $data['Transaction_id'] = $transaction->id;
+                    }
                 }
                 unset($data['Transaction_uuid']);
             }
@@ -380,7 +382,6 @@ public function syncDeleteData(Request $request, $table)
         return response()->json(['status' => 0, 'message' => 'uuid مطلوب'], 422);
     }
 
-    // 3️⃣ إذا جاء واحد فقط حوّله لمصفوفة لتوحيد المعالجة
     if (!is_array($uuids)) {
         $uuids = [$uuids];
     }
