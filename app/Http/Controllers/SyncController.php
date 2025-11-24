@@ -242,7 +242,7 @@ public function syncData(Request $request, $table)
         $localUpdatedAt = isset($data['updated_at'])
             ? Carbon::parse($data['updated_at'])
             : Carbon::createFromTimestamp(0);
-        $localUpdatedAt = $localUpdatedAt->addMinutes(60);    
+        $localUpdatedAt = $localUpdatedAt->addMinutes(70);    
 
         if ($table == "reports"){
         $existing = DB::table($table)
@@ -257,14 +257,14 @@ public function syncData(Request $request, $table)
         }
 
         if (!$existing) {
-            $now = now()->addMinutes(60);
+            $now = now()->addMinutes(70);
             $data['created_at'] = isset($data['created_at'])
                 ? Carbon::parse($data['created_at'])->format('Y-m-d H:i:s')
                 : $now->format('Y-m-d H:i:s');
 
             $data['updated_at'] = isset($data['updated_at'])
-                ? Carbon::parse($data['updated_at'])->addMinutes(60)->format('Y-m-d H:i:s')
-                : $now->addMinutes(60)->format('Y-m-d H:i:s');
+                ? Carbon::parse($data['updated_at'])->addMinutes(70)->format('Y-m-d H:i:s')
+                : $now->addMinutes(70)->format('Y-m-d H:i:s');
 
                 if ($table == "reports") {
                     $data['report_id'] = auth()->id();
@@ -287,7 +287,7 @@ public function syncData(Request $request, $table)
             $serverUpdatedAt = Carbon::parse($existing->updated_at);
 
             if ($localUpdatedAt->gt($serverUpdatedAt)) {
-                $data['updated_at'] = now()->addMinutes(60)->format('Y-m-d H:i:s');
+                $data['updated_at'] = now()->addMinutes(70)->format('Y-m-d H:i:s');
                 try {
 
                 if ($table == "reports") {
