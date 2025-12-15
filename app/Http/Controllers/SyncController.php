@@ -138,24 +138,26 @@ public function getData(Request $request, $table)
         return response()->json(['error' => 'Invalid table'], 400);
     }
 
-    $since = $request->query('since', "1970-01-01T00:00:00Z");
-    $limit = intval($request->query('limit', 50));
+    $since  = $request->query('since', '1970-01-01T00:00:00Z');
+    $limit  = (int) $request->query('limit', 50);
+    $offset = (int) $request->query('offset', 0);
 
-    $allData = collect();
-    $offset = 0;
+    if ($table === 'reports') {
+        $query = DB::table($table)
+            ->where('updated_at', '>', $since)
+            ->where('report_id', auth()->id());
+    } else {
+        $query = DB::table($table)
+            ->where('updated_at', '>', $since)
+            ->where('user_id', auth()->id());
+    }
 
-    do {
-        if ($table === "reports") {
-            $query = DB::table($table)
-                ->where('updated_at', '>', $since)
-                ->where("report_id", auth()->id());
-        } else {
-            $query = DB::table($table)
-                ->where('updated_at', '>', $since)
-                ->where("user_id", auth()->id());
-        }
-
-        $dataBatch = $query->skip($offset)->take($limit)->get()->map(function ($row) use ($table) {
+    $data = $query
+        ->orderBy('updated_at')
+        ->offset($offset)
+        ->limit($limit)
+        ->get()
+        ->map(function ($row) use ($table) {
             $row = (array) $row;
 
             if ($table === 'invoies') {
@@ -175,13 +177,9 @@ public function getData(Request $request, $table)
             return $row;
         });
 
-        $count = $dataBatch->count();
-        $allData = $allData->merge($dataBatch);
-        $offset += $limit;
-    } while ($count === $limit); // إذا وصلنا أقل من limit، معناها خلصنا البيانات
-
-    return response()->json($allData);
+    return response()->json($data);
 }
+
 
     // ===============================================
     //                  ✅ Push (syncData)
