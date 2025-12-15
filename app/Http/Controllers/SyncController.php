@@ -52,7 +52,7 @@ class SyncController extends Controller
         }
         // 3. إزالة الـ ID المحلي
         unset($row[$fkIdName]);
-        
+
         return $row;
     }
 
@@ -82,7 +82,7 @@ class SyncController extends Controller
         }
         // 3. إزالة الـ UUID
         unset($data[$uuidName]);
-        
+
         return $data;
     }
 
@@ -107,7 +107,7 @@ class SyncController extends Controller
                 // في حال فشل التخزين، نتجاهل الصورة
                 unset($data[$fieldName]);
             }
-        } 
+        }
         // 2. معالجة بيانات Base64
         elseif (!empty($data[$fieldName]) && str_starts_with($data[$fieldName], "data:image")) {
             try {
@@ -121,61 +121,66 @@ class SyncController extends Controller
                 unset($data[$fieldName]);
             }
         }
-        
+
         return $data;
     }
 
     // ===============================================
     //                  ✅ Pull (getData)
     // ===============================================
-    
+
     /**
      * جلب البيانات المحدثة منذ آخر تزامن
      */
 public function getData(Request $request, $table)
 {
-    // التحقق من صحة الجدول
     if (!in_array($table, $this->allowedTables)) {
         return response()->json(['error' => 'Invalid table'], 400);
     }
 
     $since = $request->query('since', "1970-01-01T00:00:00Z");
-    $limit = intval($request->query('limit', 50));  
-    $offset = intval($request->query('offset', 0));  
+    $limit = intval($request->query('limit', 50));
 
-    if ($table === "reports") {
-        $query = DB::table($table)
-            ->where('updated_at', '>', $since)
-            ->where("report_id", auth()->id());
-    } else {
-        $query = DB::table($table)
-            ->where('updated_at', '>', $since)
-            ->where("user_id", auth()->id());
-    }
+    $allData = collect();
+    $offset = 0;
 
-    // تطبيق limit و offset
-    $data = $query->skip($offset)->take($limit)->get()->map(function ($row) use ($table) {
-        $row = (array) $row;
-
-        // 🚀 استخدام الدوال المساعدة لعملية Pull (تحويل ID -> UUID)
-        if ($table === 'invoies') {
-            $row = $this->mapIdToUuid($row, $table, 'Transaction_id', 'Transaction_uuid', 'transactions');
+    do {
+        if ($table === "reports") {
+            $query = DB::table($table)
+                ->where('updated_at', '>', $since)
+                ->where("report_id", auth()->id());
+        } else {
+            $query = DB::table($table)
+                ->where('updated_at', '>', $since)
+                ->where("user_id", auth()->id());
         }
 
-        if ($table === 'products') {
-            $row = $this->mapIdToUuid($row, $table, 'categoris_id', 'categoris_uuid', 'categoris');
-            $row = $this->mapIdToUuid($row, $table, 'invoies_id', 'invoies_uuid', 'invoies');
-        }
+        $dataBatch = $query->skip($offset)->take($limit)->get()->map(function ($row) use ($table) {
+            $row = (array) $row;
 
-        if ($table === 'sales') {
-            $row = $this->mapIdToUuid($row, $table, 'product_id', 'product_uuid', 'products');
-            $row = $this->mapIdToUuid($row, $table, 'invoie_id', 'invoie_uuid', 'invoies');
-        }
+            if ($table === 'invoies') {
+                $row = $this->mapIdToUuid($row, $table, 'Transaction_id', 'Transaction_uuid', 'transactions');
+            }
 
-        return $row;
-    });
+            if ($table === 'products') {
+                $row = $this->mapIdToUuid($row, $table, 'categoris_id', 'categoris_uuid', 'categoris');
+                $row = $this->mapIdToUuid($row, $table, 'invoies_id', 'invoies_uuid', 'invoies');
+            }
 
-    return response()->json($data);
+            if ($table === 'sales') {
+                $row = $this->mapIdToUuid($row, $table, 'product_id', 'product_uuid', 'products');
+                $row = $this->mapIdToUuid($row, $table, 'invoie_id', 'invoie_uuid', 'invoies');
+            }
+
+            return $row;
+        });
+
+        $count = $dataBatch->count();
+        $allData = $allData->merge($dataBatch);
+        $offset += $limit;
+    } while ($count === $limit); // إذا وصلنا أقل من limit، معناها خلصنا البيانات
+
+    return response()->json($allData);
 }
 
     // ===============================================
@@ -212,7 +217,7 @@ public function syncData(Request $request, $table)
             // تحويل UUIDs إلى IDs محلية
             $data = $this->mapUuidToId($data, 'categoris_uuid', 'categoris_id', 'categoris');
             $data = $this->mapUuidToId($data, 'invoies_uuid', 'invoies_id', 'invoies');
-            
+
             // معالجة صورة المنتج
             $data = $this->processAndStoreImage($request, $data, 'Product_image', 'products');
         }
@@ -242,7 +247,7 @@ public function syncData(Request $request, $table)
         $localUpdatedAt = isset($data['updated_at'])
             ? Carbon::parse($data['updated_at'])
             : Carbon::createFromTimestamp(0);
-        $localUpdatedAt = $localUpdatedAt->addMinutes(70);    
+        $localUpdatedAt = $localUpdatedAt->addMinutes(70);
 
         if ($table == "reports"){
         $existing = DB::table($table)
