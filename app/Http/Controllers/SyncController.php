@@ -95,35 +95,56 @@ class SyncController extends Controller
      * @param string $storageFolder اسم مجلد التخزين (مثلاً products)
      * @return array مصفوفة البيانات بعد تحديث حقل الصورة بمسار التخزين
      */
-    private function processAndStoreImage(Request $request, array $data, string $fieldName, string $storageFolder): array
-    {
-        // 1. معالجة ملف مرفوع
-        if ($request->hasFile($fieldName)) {
-            try {
-                $file = $request->file($fieldName);
-                $path = $file->store($storageFolder, 'public');
-                $data[$fieldName] = $path;
-            } catch (Exception $e) {
-                // في حال فشل التخزين، نتجاهل الصورة
-                unset($data[$fieldName]);
-            }
+private function processAndStoreImage(Request $request, array $data, string $fieldName, string $storageFolder): array
+{
+    // 1️⃣ معالجة ملف مرفوع من الفورم
+    if ($request->hasFile($fieldName)) {
+        try {
+            $file = $request->file($fieldName);
+            $path = $file->store($storageFolder, 'public');
+            $data[$fieldName] = $path;
+        } catch (Exception $e) {
+            unset($data[$fieldName]);
         }
-        // 2. معالجة بيانات Base64
-        elseif (!empty($data[$fieldName]) && str_starts_with($data[$fieldName], "data:image")) {
-            try {
+    }
+    // 2️⃣ معالجة بيانات Base64
+    elseif (!empty($data[$fieldName]) && str_starts_with($data[$fieldName], "data:image")) {
+        try {
+            $imageName = $storageFolder . '_' . uniqid() . '.png';
+            $imagePath = $storageFolder . '/' . $imageName;
+            $base64 = explode(',', $data[$fieldName])[1];
+            Storage::disk('public')->put($imagePath, base64_decode($base64));
+            $data[$fieldName] = $imagePath;
+        } catch (Exception $e) {
+            unset($data[$fieldName]);
+        }
+    }
+    // 3️⃣ معالجة مسار محلي أو اسم فقط (من جهاز Flutter)
+    elseif (!empty($data[$fieldName])) {
+        try {
+            // افترض أن $data[$fieldName] مسار محلي على الجهاز (client)
+            $clientFilePath = $data[$fieldName]; // /data/user/0/...
+            if (file_exists($clientFilePath)) {
                 $imageName = $storageFolder . '_' . uniqid() . '.png';
                 $imagePath = $storageFolder . '/' . $imageName;
-                $base64 = explode(',', $data[$fieldName])[1];
-                Storage::disk('public')->put($imagePath, base64_decode($base64));
+
+                // اقرأ الملف من الجهاز وانشئ نسخة على السيرفر
+                $contents = file_get_contents($clientFilePath);
+                Storage::disk('public')->put($imagePath, $contents);
+
                 $data[$fieldName] = $imagePath;
-            } catch (Exception $e) {
-                // في حال فشل معالجة Base64، نتجاهل الصورة
+            } else {
+                // الملف غير موجود في جهاز العميل، تجاهله
                 unset($data[$fieldName]);
             }
+        } catch (Exception $e) {
+            unset($data[$fieldName]);
         }
-
-        return $data;
     }
+
+    return $data;
+}
+
 
     // ===============================================
     //                  ✅ Pull (getData)

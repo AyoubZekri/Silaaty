@@ -15,6 +15,8 @@ class Sale extends Model
         "user_id",
         'invoie_id',
         'product_id',
+        "product_price_purchase",
+        'product_name',
         'quantity',
         'unit_price',
         'subtotal',

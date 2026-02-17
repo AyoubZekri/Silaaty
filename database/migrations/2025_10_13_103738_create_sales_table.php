@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('invoie_id')->constrained('invoies')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('restrict');
             $table->integer('quantity')->default(1);
+            $table->string("product_name");
+            $table->decimal("product_price_purchase",13,2)->default(0.00);
             $table->decimal('unit_price', 12, 2);
             $table->decimal('subtotal', 12, 2);
             $table->timestamps();
