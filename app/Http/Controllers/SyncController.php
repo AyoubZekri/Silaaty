@@ -119,24 +119,17 @@ private function processAndStoreImage(Request $request, array $data, string $fie
             unset($data[$fieldName]);
         }
     }
-    // 3️⃣ معالجة مسار محلي أو اسم فقط (من جهاز Flutter)
-    elseif (!empty($data[$fieldName])) {
+    // 3️⃣ معالجة مسار محلي من Flutter (/data/user/...)
+    elseif (!empty($data[$fieldName]) && file_exists($data[$fieldName])) {
         try {
-            // افترض أن $data[$fieldName] مسار محلي على الجهاز (client)
-            $clientFilePath = $data[$fieldName]; // /data/user/0/...
-            if (file_exists($clientFilePath)) {
-                $imageName = $storageFolder . '_' . uniqid() . '.png';
-                $imagePath = $storageFolder . '/' . $imageName;
+            $clientFilePath = $data[$fieldName];
+            $imageName = $storageFolder . '_' . uniqid() . '.' . pathinfo($clientFilePath, PATHINFO_EXTENSION);
+            $imagePath = $storageFolder . '/' . $imageName;
 
-                // اقرأ الملف من الجهاز وانشئ نسخة على السيرفر
-                $contents = file_get_contents($clientFilePath);
-                Storage::disk('public')->put($imagePath, $contents);
+            $contents = file_get_contents($clientFilePath);
+            Storage::disk('public')->put($imagePath, $contents);
 
-                $data[$fieldName] = $imagePath;
-            } else {
-                // الملف غير موجود في جهاز العميل، تجاهله
-                unset($data[$fieldName]);
-            }
+            $data[$fieldName] = $imagePath;
         } catch (Exception $e) {
             unset($data[$fieldName]);
         }
@@ -144,6 +137,7 @@ private function processAndStoreImage(Request $request, array $data, string $fie
 
     return $data;
 }
+
 
 
     // ===============================================
