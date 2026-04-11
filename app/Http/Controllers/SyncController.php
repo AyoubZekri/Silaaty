@@ -19,6 +19,8 @@ class SyncController extends Controller
         'transactions',
         'zakats',
         'sales',
+        'sellers',
+
     ];
 
     // ===============================================

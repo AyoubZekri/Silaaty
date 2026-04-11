@@ -21,6 +21,7 @@ class Sale extends Model
         'unit_price',
         'subtotal',
         "type_sales",
+        'seller_id',
     ];
 
     public function invoice()
@@ -32,6 +33,8 @@ class Sale extends Model
     {
         return $this->belongsTo(Product::class);
     }
-
-
+    public function seller()
+    {
+        return $this->belongsTo(Seller::class);
+    }
 }

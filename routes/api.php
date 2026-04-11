@@ -34,7 +34,10 @@ use App\Http\Controllers\User\Transaction\DeleteTransactionController;
 use App\Http\Controllers\User\Transaction\EditTransactionController;
 use App\Http\Controllers\User\Zakat\ShwoZakatController;
 use App\Http\Controllers\SyncController;
-
+use App\Http\Controllers\User\Saller\AddSallerController;
+use App\Http\Controllers\User\Saller\UpdateSallerController;
+use App\Http\Controllers\User\Saller\DeleteSallerController;
+use App\Http\Controllers\User\Saller\LoginSallerController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -108,6 +111,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/Zakat/addCashliquidity', [ShwoZakatController::class, 'addCashliquidity']);
     Route::get('/Zakat', [ShwoZakatController::class, 'index']);
 
+    // Sallers
+    Route::post('/sallers/add', [AddSallerController::class, 'add']);
+    Route::post('/sallers/update', [UpdateSallerController::class, 'update']);
+    Route::post('/sallers/delete', [DeleteSallerController::class, 'delete']);
 
     Route::get('/sync/{table}', [SyncController::class, 'getData']);
     Route::post('/sync/{table}', [SyncController::class, 'syncData']);
@@ -119,6 +126,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('/User/create', [\App\Http\Controllers\User\Auth\RegisterController::class, "RegisterUser"]);
 Route::post('/User/Login', [\App\Http\Controllers\User\Auth\LoginUserController::class, "login"]);
+Route::post('/sallers/login', [LoginSallerController::class, 'login']);
 
 
 Route::post('/User/sendCode', [sendemaileController::class, 'sendCode']);
