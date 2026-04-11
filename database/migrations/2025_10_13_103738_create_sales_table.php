@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal("product_price_purchase",13,2)->default(0.00);
             $table->decimal('unit_price', 12, 2);
             $table->decimal('subtotal', 12, 2);
+            $table->tinyInteger("type_sales")->nullable();
             $table->timestamps();
         });
     }
