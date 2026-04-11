@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مرحباً بك - التحقق من البريد</title>
+    <title>قالب بريد إلكتروني</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -33,6 +33,10 @@
             padding: 40px 20px;
             text-align: center;
         }
+        .header img {
+            max-width: 120px;
+            margin-bottom: 20px;
+        }
         .header h1 {
             color: #ffffff !important;
             margin: 0;
@@ -53,19 +57,19 @@
             font-size: 16px;
             line-height: 1.6;
             color: #475569;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
-        .verification-code {
+        .btn {
             display: inline-block;
-            background-color: #f8fafc;
-            border: 2px dashed #4F46E5;
-            color: #4F46E5;
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: 4px;
-            padding: 15px 40px;
-            border-radius: 10px;
-            margin: 20px 0 30px 0;
+            background-color: #4F46E5;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+            transition: all 0.3s ease;
         }
         .footer {
             background-color: #f8fafc;
@@ -74,6 +78,12 @@
             color: #64748b;
             font-size: 14px;
             border-top: 1px solid #e2e8f0;
+        }
+        .social-icons a {
+            display: inline-block;
+            margin: 0 8px;
+            color: #94a3b8;
+            text-decoration: none;
         }
         @media only screen and (max-width: 600px) {
             .container {
@@ -94,32 +104,30 @@
                     <!-- Header -->
                     <tr>
                         <td class="header" style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);">
-                            <h1 style="color: #ffffff; margin: 0;">منصة Silaaty</h1>
+                            <!-- ويمكنك إضافة الشعار هنا -->
+                            <!-- <img src="https://via.placeholder.com/120x40/ffffff/4F46E5?text=LOGO" alt="شعار الشركة"> -->
+                            <h1 style="color: #ffffff; margin: 0;">أهلاً بك في منصتنا!</h1>
                         </td>
                     </tr>
                     
                     <!-- Body -->
                     <tr>
                         <td class="content" style="padding: 40px 30px; text-align: center;">
-                            <h2 style="color: #0f172a; margin-top: 0;">مرحباً بك {{ $codeverfy['name'] ?? '' }}! 👋</h2>
+                            <h2 style="color: #0f172a; margin-top: 0;">سعداء جداً بانضمامك إلينا</h2>
                             <p style="color: #475569; font-size: 16px; line-height: 1.6;">
-                                شكرًا لتسجيلك في تطبيقنا. نحن سعداء جداً بانضمامك إلينا! 😊<br>
-                                لإكمال عملية التسجيل وتفعيل حسابك، يرجى استخدام رمز التحقق أدناه:
+                                مرحباً بك! نحن نسعى لتقديم أفضل تجربة ممكنة لك. يمكنك الآن البدء في استكشاف كافة الميزات والخدمات التي نقدمها لك عبر حسابك الجديد.
                             </p>
                             
-                            <!-- Verification Code Container -->
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
-                                    <td align="center" style="padding: 10px 0;">
-                                        <div class="verification-code" style="background-color: #f8fafc; border: 2px dashed #4F46E5; color: #4F46E5; font-size: 32px; font-weight: bold; letter-spacing: 4px; padding: 15px 40px; border-radius: 10px; display: inline-block;">
-                                            {{ $codeverfy["email_verified"] ?? '0000' }}
-                                        </div>
+                                    <td align="center" style="padding: 20px 0;">
+                                        <a href="#" class="btn" style="background-color: #4F46E5; color: #ffffff; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">ابدأ الآن</a>
                                     </td>
                                 </tr>
                             </table>
                             
-                            <p style="margin-top: 20px; font-size: 14px; color: #94a3b8;">
-                                هذا الرمز صالح لفترة محدودة. إذا لم تطلب هذا الرمز، يمكنك تجاهل هذه الرسالة بأمان.
+                            <p style="margin-top: 30px; font-size: 14px; color: #94a3b8;">
+                                إذا كان لديك أي استفسار، فريق الدعم لدينا دائماً في خدمتك.
                             </p>
                         </td>
                     </tr>
@@ -127,11 +135,15 @@
                     <!-- Footer -->
                     <tr>
                         <td class="footer" style="background-color: #f8fafc; padding: 30px 20px; text-align: center; border-top: 1px solid #e2e8f0;">
-                            <p style="margin: 0 0 10px 0; color: #64748b;">أطيب التحيات،</p>
-                            <p style="margin: 0 0 15px 0; color: #0f172a; font-weight: bold;">فريق الدعم</p>
-                            
+                            <p style="margin: 0 0 15px 0; color: #64748b;">تابعنا على الشبكات الاجتماعية</p>
+                            <div class="social-icons">
+                                <a href="#" style="color: #4F46E5; text-decoration: none; margin: 0 10px;">Twitter</a>
+                                <a href="#" style="color: #4F46E5; text-decoration: none; margin: 0 10px;">Facebook</a>
+                                <a href="#" style="color: #4F46E5; text-decoration: none; margin: 0 10px;">Instagram</a>
+                            </div>
                             <p style="margin: 15px 0 0 0; font-size: 12px; color: #94a3b8;">
-                                © {{ date('Y') }} جميع الحقوق محفوظة.
+                                © 2026 جميع الحقوق محفوظة.<br><br>
+                                لم تعد ترغب في تلقي هذه الرسائل؟ <a href="#" style="color: #4F46E5; text-decoration: underline;">إلغاء الاشتراك</a>
                             </p>
                         </td>
                     </tr>
