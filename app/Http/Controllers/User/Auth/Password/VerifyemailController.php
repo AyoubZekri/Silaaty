@@ -35,6 +35,8 @@ class VerifyemailController extends Controller
         $user->email_verified = null;
         $user->save();
 
-        return Respons::success('تم التحقق بنجاح');
+        $token = $user->createToken('api_token')->plainTextToken;
+
+        return Respons::success(['user' => $user, 'token' => $token], 'تم التحقق بنجاح');
     }
 }
