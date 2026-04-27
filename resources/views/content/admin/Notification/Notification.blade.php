@@ -106,7 +106,17 @@
                         }
                     },
                     error: function (xhr) {
-                        Swal.fire("{{ __('Error') }}", xhr.responseJSON?.message || 'خطأ غير متوقع', 'error');
+                        let errorMessage = 'خطأ غير متوقع';
+                        if (xhr.responseJSON) {
+                            if (xhr.responseJSON.errors) {
+                                errorMessage = Object.values(xhr.responseJSON.errors).map(err => err.join(' ')).join('\\n');
+                            } else if (xhr.responseJSON.error) {
+                                errorMessage = xhr.responseJSON.error;
+                            } else if (xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            }
+                        }
+                        Swal.fire("{{ __('Error') }}", errorMessage, 'error');
                     }
                 });
             });
