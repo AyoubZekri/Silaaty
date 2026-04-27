@@ -18,6 +18,17 @@ class Notifications extends Model
         'updated_at',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) \Illuminate\Support\Str::uuid();
+            }
+        });
+    }
+
     public function users()
     {
         return $this->belongsTo(User::class, "user_id");

@@ -68,15 +68,15 @@ class NotificationController extends Controller
 
         try {
 
-            Notifications::create([
-                'uuid' => \Illuminate\Support\Str::uuid(),
-                'title' => $request->Title,
-                'content' => $request->body,
-                'is_read' => false,
-                'user_id' => auth()->user()->id,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            $notification = new Notifications();
+            $notification->uuid = \Illuminate\Support\Str::uuid()->toString();
+            $notification->title = $request->Title;
+            $notification->content = $request->body;
+            $notification->is_read = false;
+            $notification->user_id = auth()->user()->id;
+            $notification->created_at = now();
+            $notification->updated_at = now();
+            $notification->save();
 
             return response()->json([
                 'status' => true,
