@@ -82,7 +82,8 @@ class NotificationController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'حدث خطأ أثناء الإنشاء.' . $e->getMessage(),
+                'message' => $e->getMessage(),
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
