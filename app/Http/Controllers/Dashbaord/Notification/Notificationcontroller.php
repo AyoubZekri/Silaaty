@@ -69,10 +69,13 @@ class NotificationController extends Controller
         try {
 
             Notifications::create([
+                'uuid' => \Illuminate\Support\Str::uuid(),
                 'title' => $request->Title,
                 'content' => $request->body,
                 'is_read' => false,
                 'user_id' => auth()->user()->id,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             return response()->json([
@@ -82,7 +85,7 @@ class NotificationController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => $e->getMessage(),
+                'message' => 'حدث خطأ أثناء الإنشاء.',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -113,6 +116,7 @@ class NotificationController extends Controller
         $notification = Notifications::find($request->id);
         $notification->title = $request->title;
         $notification->content = $request->content;
+        $notification->updated_at = now();
         $notification->save();
 
         return response()->json(['status' => true, 'message' => 'تم تعديل الإشعار بنجاح']);

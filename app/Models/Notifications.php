@@ -14,6 +14,8 @@ class Notifications extends Model
         'content',
         'is_read',
         'user_id',
+        'created_at',
+        'updated_at',
     ];
 
     public function users()
