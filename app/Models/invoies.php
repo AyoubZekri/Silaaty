@@ -17,6 +17,7 @@ class invoies extends Model
         'invoies_date',
         'invoies_payment_date',
         'Payment_price',
+        'seller_id',
     ];
 
     public function products()
@@ -28,6 +29,11 @@ class invoies extends Model
     public function transaction()
     {
         return $this->belongsTo(Transactions::class, 'Transaction_id');
+    }
+
+    public function seller()
+    {
+        return $this->belongsTo(Seller::class);
     }
 }
 

@@ -56,28 +56,28 @@ class Switchcontroller extends Controller
         ]);
 
         $user = User::findOrFail($id);
-        $user->date_experiment = $request->expires_at;
-        if ($user->Status == 1) {
-            $user->Status = 2;
-            $user->save();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'تم تفعيل الحساب .',
-            ]);
-        }
-
         if ($user->Status == 0) {
             return response()->json([
                 'status' => false,
                 'message' => 'يجب تاكيد الحساب اولا',
             ]);
         }
+        $user->date_experiment = $request->expires_at;
+        $user->Status = 2;
+        $user->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم تفعيل الحساب .',
+        ]);
+
+
+
 
         if ($user->Status == 2) {
             return response()->json([
                 'status' => false,
-                'message' => 'تم تحويل لتجريبي بالفعل',
+                'message' => "تم تفعيل فترة الاشتراك",
             ]);
         }
 
