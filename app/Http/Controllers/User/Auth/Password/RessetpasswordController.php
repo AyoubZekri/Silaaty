@@ -32,7 +32,7 @@ class RessetpasswordController extends Controller
                 return Respons::error('كلمة المرور القديمة غير صحيحة', 401);
             }
 
-            $user->password = Hash::make($request->new_password);
+            $user->password = Hash::make($request->password);
             $user->save();
 
             return Respons::success();
