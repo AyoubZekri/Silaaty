@@ -13,6 +13,7 @@ class Product extends Model
 
     protected $fillable = [
         'categorie_id',  // النوع 1 البضائع العادية 2البضائع الضرورية 4 الديون لك وعليك
+        'type',
         'categoris_id',  // الفئة يتم انشائها بواسطة المستخدم
         'user_id',
         'uuid',
