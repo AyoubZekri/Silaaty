@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChargilyPayController;
 use App\Http\Controllers\Dashbaord\Admin\Admincontroller;
 use App\Http\Controllers\Dashbaord\authentications\LoginBasic;
 use App\Http\Controllers\Dashbaord\authentications\LogoutBasic;
@@ -65,13 +66,16 @@ Route::group(['middleware' => ['auth']], function () {
 
 });
 
-
+Route::post('/payments/chargily/webhook', [
+    ChargilyPayController::class,
+    'webhook'
+])->name('chargily.webhook');
 
 Route::get('/payment/success', function () {
-    return 'payment-success';
+    return view("Success");
 })->name('payment.success');
 Route::get('/payment/failure', function () {
-    return'payment-failure';
+    return view('failure');
 })->name('payment.failure');
 
 // authentication
