@@ -58,7 +58,11 @@ class ChargilyPayController extends Controller
 
             'payment_id' => $payment->id,
 
-            'checkout_url' => $checkout->getUrl(),
+            'checkout_url' => str_replace(
+                'http://',
+                'https://',
+                $checkout->getUrl()
+            ),
         ]);
     }
 
