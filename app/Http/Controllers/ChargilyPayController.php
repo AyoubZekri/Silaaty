@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ChargilyPayController extends Controller
 {
@@ -87,7 +88,7 @@ class ChargilyPayController extends Controller
 
             $payment = \App\Models\ChargilyPayment::where('user_id', auth()->id())
                 ->latest()
-                ->firstOrFail();
+                ->first();
             $user = \App\Models\User::where('id', auth()->id())->first();
 
             return response()->json([
