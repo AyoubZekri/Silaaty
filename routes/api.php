@@ -161,3 +161,5 @@ Route::post('/payments/chargily/webhook', [
     ChargilyPayController::class,
     'webhook'
 ])->name('chargily.webhook');
+
+Route::get('chargilypay/back', [ChargilyPayController::class, "back"])->name("chargilypay.back");

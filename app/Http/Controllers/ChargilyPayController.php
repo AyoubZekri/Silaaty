@@ -47,9 +47,8 @@ class ChargilyPayController extends Controller
                 'description' => "Payment #{$payment->id}",
 
                 // deep link optional
-                'success_url' => 'myapp://payment-success',
-
-                'failure_url' => 'myapp://payment-failed',
+                "success_url" => route("payment.success"),
+                "failure_url" => route("payment.failure"),
 
                 'webhook_endpoint' => route('chargily.webhook'),
             ]);
@@ -65,21 +64,11 @@ class ChargilyPayController extends Controller
 
     public function paymentStatus($id)
     {
-        try {
+        $payment = \App\Models\ChargilyPayment::findOrFail($id);
 
-            $payment = \App\Models\ChargilyPayment::findOrFail($id);
-
-            return response()->json([
-                'status' => 1,
-                'data' => $payment,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 0,
-                'message' => $e->getMessage(),
-            ]);
-        }
-
+        return response()->json([
+            "status" => $payment->status,
+        ]);
     }
 
     public function paymentInvoice()

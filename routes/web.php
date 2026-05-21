@@ -67,6 +67,12 @@ Route::group(['middleware' => ['auth']], function () {
 
 
 
+Route::get('/payment/success', function () {
+    return 'payment-success';
+})->name('payment.success');
+Route::get('/payment/failure', function () {
+    return'payment-failure';
+})->name('payment.failure');
 
 // authentication
 Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('login');
