@@ -71,6 +71,7 @@ Route::post('/payments/chargily/webhook', [
     'webhook'
 ])->name('chargily.webhook');
 
+
 Route::get('/payment/success', function () {
     return view("Success");
 })->name('payment.success');

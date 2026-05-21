@@ -142,7 +142,7 @@ class ChargilyPayController extends Controller
 
                 $payment->status = 'paid';
 
-                // confirm order here
+                
 
                 break;
 
