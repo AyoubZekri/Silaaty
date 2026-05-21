@@ -38,13 +38,29 @@ use App\Http\Controllers\User\Saller\AddSallerController;
 use App\Http\Controllers\User\Saller\UpdateSallerController;
 use App\Http\Controllers\User\Saller\DeleteSallerController;
 use App\Http\Controllers\User\Saller\LoginSallerController;
-
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChargilyPayController;
 
 
 
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/payments/chargily/create', [
+        ChargilyPayController::class,
+        'createPayment'
+    ]);
+
+    Route::get('/payments/{id}/status', [
+        ChargilyPayController::class,
+        'paymentStatus'
+    ]);
+
+    Route::get('/payments/invoice', [
+        ChargilyPayController::class,
+        'paymentInvoice'
+    ]);
+
     Route::post('/User/logout', [LogoutUserController::class, 'logout']);
     Route::post('/User/update', [UpdateUserController::class, 'UpdateUser']);
 
@@ -139,3 +155,9 @@ Route::post('/User/newpassword', [NewPasswordController::class, 'newpassword']);
 //     $messaging = app('firebase.messaging');
 //     dd($messaging);
 // });
+
+
+Route::post('/payments/chargily/webhook', [
+    ChargilyPayController::class,
+    'webhook'
+])->name('chargily.webhook');
