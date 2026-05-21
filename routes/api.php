@@ -150,10 +150,7 @@ Route::post('/User/verifyCode', [VerifyemailController::class, 'verifyCode']);
 Route::post('/User/newpassword', [NewPasswordController::class, 'newpassword']);
 
 
-Route::post('/payments/chargily/webhook', [
-    ChargilyPayController::class,
-    'webhook'
-])->name('chargily.webhook');
+Route::post('/chargily/webhook', [ChargilyPayController::class, 'webhook']);
 
 // Route::get('/test-firebase', function () {
 //     $messaging = app('firebase.messaging');

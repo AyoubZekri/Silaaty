@@ -50,7 +50,7 @@ class ChargilyPayController extends Controller
                 "success_url" => route("payment.success"),
                 "failure_url" => route("payment.failure"),
 
-                'webhook_endpoint' => route('chargily.webhook'),
+                'webhook_endpoint' => "https://silaaty.codedev.id/api/chargily/webhook",
             ]);
 
         return response()->json([
@@ -142,7 +142,7 @@ class ChargilyPayController extends Controller
 
                 $payment->status = 'paid';
 
-                
+
 
                 break;
 
