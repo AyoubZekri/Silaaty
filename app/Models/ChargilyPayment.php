@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ChargilyPayment extends Model
 {
     use HasFactory;
-    protected $fillable = ["user_id", "status", "currency", "amount"];
+    protected $fillable = ["user_id", "status","type", "currency", "amount"];
 }
