@@ -47,6 +47,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/user/list', [Usercontroller::class, "list"])->name('user-list');
     Route::post('/user/Activation/{id}', [Switchcontroller::class, 'Activation']);
     Route::post('/users/{id}/make-experiment', [Switchcontroller::class, 'makeExperiment'])->name('users.make-experiment');
+    Route::post('/users/{id}/experiment', [Switchcontroller::class, 'Experiment'])->name('users.experiment');
+
     Route::post('/user/delete', [UserController::class, 'delete']);
     Route::get('/admin/index', [Admincontroller::class, "index"])->name('admin-index');
     Route::get('/admin/list', [Admincontroller::class, "list"])->name('admin-list');

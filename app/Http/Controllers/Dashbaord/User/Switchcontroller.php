@@ -13,8 +13,8 @@ class Switchcontroller extends Controller
         try {
             $user = User::findOrFail($id);
 
-            if ($user->Status == 1 || $user->Status == 2) {
-                $user->Status = 3;
+            if ($user->Status == 2 || $user->Status == 3 || $user->Status == 1) {
+                $user->Status = 4;
                 $user->save();
 
                 return response()->json([
@@ -30,7 +30,7 @@ class Switchcontroller extends Controller
                 ]);
             }
 
-            if ($user->Status == 3) {
+            if ($user->Status == 4) {
                 return response()->json([
                     'status' => false,
                     'message' => 'تم تفعيل الحساب بالفعل',
@@ -48,8 +48,7 @@ class Switchcontroller extends Controller
         }
     }
 
-
-    public function makeExperiment(Request $request, $id)
+    public function Experiment(Request $request, $id)
     {
         $request->validate([
             'expires_at' => 'required|date|after_or_equal:today'
@@ -75,6 +74,45 @@ class Switchcontroller extends Controller
 
 
         if ($user->Status == 2) {
+            return response()->json([
+                'status' => false,
+                'message' => "تم تفعيل فترة تجريبية",
+            ]);
+        }
+
+
+        $user->save();
+
+        return response()->json(['status' => true, 'message' => 'تم التفعيل']);
+    }
+
+
+    public function makeExperiment(Request $request, $id)
+    {
+        $request->validate([
+            'expires_at' => 'required|date|after_or_equal:today'
+        ]);
+
+        $user = User::findOrFail($id);
+        if ($user->Status == 0) {
+            return response()->json([
+                'status' => false,
+                'message' => 'يجب تاكيد الحساب اولا',
+            ]);
+        }
+        $user->date_experiment = $request->expires_at;
+        $user->Status = 3;
+        $user->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم تفعيل الحساب .',
+        ]);
+
+
+
+
+        if ($user->Status == 3) {
             return response()->json([
                 'status' => false,
                 'message' => "تم تفعيل فترة الاشتراك",

@@ -105,6 +105,41 @@
                 });
             });
 
+
+            $(document).on('click', '.experiment', function () {
+                const userId = $(this).data('id');
+                $('#experiment_user_id').val(userId);
+                $('#expires_at').val('');
+                $('#experimentModal').modal('show');
+            });
+
+            // حفظ مدة التجريبي
+            $('#experimentForm').submit(function (e) {
+                e.preventDefault();
+                const userId = $('#experiment_user_id').val();
+                const expiresAt = $('#expires_at').val();
+                if (!expiresAt) { alert('يرجى اختيار تاريخ نهاية المدة'); return; }
+
+                $.ajax({
+                    url: '/users/' + userId + '/experiment',
+                    method: 'POST',
+                    data: {
+                        expires_at: expiresAt,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (res) {
+                        $('#experimentModal').modal('hide');
+                        alert('تم تحويل المستخدم لحساب الفعلي حتى ' + expiresAt);
+                        $('#laravel_datatable').DataTable().ajax.reload(null, false);
+                    },
+                    error: function (err) {
+                        alert('فشل التفعيل');
+                        console.error(err);
+                    }
+                });
+            });
+
+
             // تفعيل/إيقاف
             $(document.body).on('click', '.update', function () {
                 let id = $(this).data('id');

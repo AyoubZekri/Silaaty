@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -100,67 +101,108 @@ class ChargilyPayController extends Controller
         }
     }
 
-    public function webhook()
-    {
-        $webhook = $this->chargilyPayInstance()
-            ->webhook()
-            ->get();
+public function webhook()
+{
+    $webhook = $this->chargilyPayInstance()
+        ->webhook()
+        ->get();
 
-        if (
-            ! $webhook
-        ) {
-            return response()->json([
-                'status' => 0,
-            ], 403);
-        }
-
-        $checkout = $webhook->getData();
-
-        if (
-            ! $checkout instanceof \Chargily\ChargilyPay\Elements\CheckoutElement
-        ) {
-            return response()->json([
-                'status' => 0,
-            ], 403);
-        }
-
-        $metadata = $checkout->getMetadata();
-
-        $payment = \App\Models\ChargilyPayment::find(
-            $metadata['payment_id']
-        );
-
-        if (! $payment) {
-            return response()->json([
-                'status' => 0,
-            ], 404);
-        }
-
-        switch ($checkout->getStatus()) {
-
-            case 'paid':
-
-                $payment->status = 'paid';
-
-
-
-                break;
-
-            case 'failed':
-
-            case 'canceled':
-
-                $payment->status = 'failed';
-
-                break;
-        }
-
-        $payment->save();
-
+    if (!$webhook) {
         return response()->json([
-            'status' => true,
-        ]);
+            'status' => 0,
+        ], 403);
     }
+
+    $checkout = $webhook->getData();
+
+    if (
+        !$checkout instanceof \Chargily\ChargilyPay\Elements\CheckoutElement
+    ) {
+        return response()->json([
+            'status' => 0,
+        ], 403);
+    }
+
+    $metadata = $checkout->getMetadata();
+
+    $payment = \App\Models\ChargilyPayment::find(
+        $metadata['payment_id']
+    );
+
+    if (!$payment) {
+        return response()->json([
+            'status' => 0,
+        ], 404);
+    }
+
+    switch ($checkout->getStatus()) {
+
+        case 'paid':
+
+            $payment->status = 'paid';
+
+            $user = User::find($payment->user_id);
+
+            if ($user) {
+
+                // إذا التاريخ القديم مازال صالح نكمل عليه
+                $baseDate = $user->date_experiment &&
+                    \Carbon\Carbon::parse($user->date_experiment)->isFuture()
+                    ? \Carbon\Carbon::parse($user->date_experiment)
+                    : now();
+
+                switch ($payment->type) {
+
+                    // شهر
+                    case 0:
+
+                        $user->status = 3;
+
+                        $user->date_experiment = $baseDate
+                            ->copy()
+                            ->addMonth();
+
+                        break;
+
+                    // سنة
+                    case 1:
+
+                        $user->status = 3;
+
+                        $user->date_experiment = $baseDate
+                            ->copy()
+                            ->addYear();
+
+                        break;
+
+                    // مدى الحياة مثلا
+                    case 2:
+
+                        $user->status = 4;
+
+                        break;
+                }
+
+                $user->save();
+            }
+
+            break;
+
+        case 'failed':
+
+        case 'canceled':
+
+            $payment->status = 'failed';
+
+            break;
+    }
+
+    $payment->save();
+
+    return response()->json([
+        'status' => true,
+    ]);
+}
 
     protected function chargilyPayInstance()
     {
