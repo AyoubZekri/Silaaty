@@ -50,79 +50,88 @@ class Switchcontroller extends Controller
 
     public function Experiment(Request $request, $id)
     {
-        $request->validate([
-            'expires_at' => 'required|date|after_or_equal:today'
-        ]);
+        try {
+            $request->validate([
+                'expires_at' => 'required|date|after_or_equal:today'
+            ]);
 
-        $user = User::findOrFail($id);
-        if ($user->Status == 0) {
+            $user = User::findOrFail($id);
+
+            if ($user->Status == 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'يجب تاكيد الحساب اولا',
+                ]);
+            }
+
+            if ($user->Status == 2) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'تم تفعيل فترة تجريبية بالفعل',
+                ]);
+            }
+
+            $user->date_experiment = $request->expires_at;
+            $user->Status = 2;
+            $user->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'تم تفعيل فترة تجريبية بنجاح',
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Experiment error: ' . $e->getMessage());
+
             return response()->json([
                 'status' => false,
-                'message' => 'يجب تاكيد الحساب اولا',
-            ]);
+                'message' => 'فشل في التفعيل.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        $user->date_experiment = $request->expires_at;
-        $user->Status = 2;
-        $user->save();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'تم تفعيل الحساب .',
-        ]);
-
-
-
-
-        if ($user->Status == 2) {
-            return response()->json([
-                'status' => false,
-                'message' => "تم تفعيل فترة تجريبية",
-            ]);
-        }
-
-
-        $user->save();
-
-        return response()->json(['status' => true, 'message' => 'تم التفعيل']);
     }
-
 
     public function makeExperiment(Request $request, $id)
     {
-        $request->validate([
-            'expires_at' => 'required|date|after_or_equal:today'
-        ]);
+        try {
+            $request->validate([
+                'expires_at' => 'required|date|after_or_equal:today'
+            ]);
 
-        $user = User::findOrFail($id);
-        if ($user->Status == 0) {
+            $user = User::findOrFail($id);
+
+            if ($user->Status == 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'يجب تاكيد الحساب اولا',
+                ]);
+            }
+
+            if ($user->Status == 3) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'تم تفعيل فترة الاشتراك بالفعل',
+                ]);
+            }
+
+            $user->date_experiment = $request->expires_at;
+            $user->Status = 3;
+            $user->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'تم تفعيل فترة الاشتراك بنجاح',
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('makeExperiment error: ' . $e->getMessage());
+
             return response()->json([
                 'status' => false,
-                'message' => 'يجب تاكيد الحساب اولا',
-            ]);
+                'message' => 'فشل في التفعيل.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        $user->date_experiment = $request->expires_at;
-        $user->Status = 3;
-        $user->save();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'تم تفعيل الحساب .',
-        ]);
-
-
-
-
-        if ($user->Status == 3) {
-            return response()->json([
-                'status' => false,
-                'message' => "تم تفعيل فترة الاشتراك",
-            ]);
-        }
-
-
-        $user->save();
-
-        return response()->json(['status' => true, 'message' => 'تم التفعيل']);
     }
 
 

@@ -114,7 +114,7 @@
             });
 
             // حفظ مدة التجريبي
-            $('#experimentForm').submit(function (e) {
+            $('#experiment').submit(function (e) {
                 e.preventDefault();
                 const userId = $('#experiment_user_id').val();
                 const expiresAt = $('#expires_at').val();
