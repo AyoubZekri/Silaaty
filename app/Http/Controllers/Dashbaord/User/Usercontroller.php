@@ -37,10 +37,13 @@ class Usercontroller extends Controller
                         return \Carbon\Carbon::parse($row->created_at)->format('Y-m-d');
                     })
                     ->addColumn('action', function ($row) {
-                        $btn = '<button class="btn btn-sm btn-primary update me-2" data-id="' . $row->id . '"><i class="bx  bx-check-circle"></i></button>';
-                        $btn .= ' <button class="btn btn-sm btn-danger delete me-2" data-id="' . $row->id . '"><i class="bx bx-trash"></i></button>';
-                        $btn .= '<button class="btn btn-sm btn-success make-experiment" data-id="' . $row->id . '"><i class="bx bx-bolt-circle"></i></button>';
-                        $btn .= '<button class="btn btn-sm btn-warning experiment" data-id="' . $row->id . '"><i class="bx bx-time-five"></i></button>';                        return $btn;
+                        $btn = '<div class="d-flex flex-wrap gap-2">';
+                        $btn .= '<button class="btn btn-sm btn-primary update" data-id="' . $row->id . '" title="تفعيل / إيقاف"><i class="bx bx-check-circle me-1"></i> تفعيل</button>';
+                        $btn .= '<button class="btn btn-sm btn-success make-experiment" data-id="' . $row->id . '" title="اشتراك"><i class="bx bx-bolt-circle me-1"></i> اشتراك</button>';
+                        $btn .= '<button class="btn btn-sm btn-warning experiment" data-id="' . $row->id . '" title="تجريبي"><i class="bx bx-time-five me-1"></i> تجريبي</button>';
+                        $btn .= '<button class="btn btn-sm btn-danger delete" data-id="' . $row->id . '" title="حذف"><i class="bx bx-trash me-1"></i> حذف</button>';
+                        $btn .= '</div>';
+                        return $btn;
                     })
 
                     ->rawColumns(['action'])
