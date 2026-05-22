@@ -40,8 +40,7 @@ class Usercontroller extends Controller
                         $btn = '<button class="btn btn-sm btn-primary update me-2" data-id="' . $row->id . '"><i class="bx  bx-check-circle"></i></button>';
                         $btn .= ' <button class="btn btn-sm btn-danger delete me-2" data-id="' . $row->id . '"><i class="bx bx-trash"></i></button>';
                         $btn .= '<button class="btn btn-sm btn-success make-experiment" data-id="' . $row->id . '"><i class="bx bx-bolt-circle"></i></button>';
-                        $btn .= '<button class="btn btn-sm btn-success experiment" data-id="' . $row->id . '"><i class="bx bx-bolt-circle"></i></button>';
-
+                        $btn .= '<button class="btn btn-sm btn-info experiment" data-id="' . $row->id . '"><i class="bx bx-flask"></i></button>';
                         return $btn;
                     })
 
