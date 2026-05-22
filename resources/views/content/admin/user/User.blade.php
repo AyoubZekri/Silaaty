@@ -74,17 +74,17 @@
 
             $(document).on('click', '.make-experiment', function () {
                 const userId = $(this).data('id');
-                $('#experiment_user_id').val(userId);
-                $('#expires_at').val('');
-                $('#experimentModal').modal('show');
+                $('#make_experiment_user_id').val(userId);
+                $('#make_expires_at').val('');
+                $('#makeExperimentModal').modal('show');
             });
 
-            // حفظ مدة التجريبي
-            $('#experimentForm').submit(function (e) {
+            // حفظ مدة الاشتراك
+            $('#makeExperimentForm').submit(function (e) {
                 e.preventDefault();
-                const userId = $('#experiment_user_id').val();
-                const expiresAt = $('#expires_at').val();
-                if (!expiresAt) { alert('يرجى اختيار تاريخ نهاية المدة'); return; }
+                const userId = $('#make_experiment_user_id').val();
+                const expiresAt = $('#make_expires_at').val();
+                if (!expiresAt) { alert('يرجى اختيار تاريخ نهاية الاشتراك'); return; }
 
                 $.ajax({
                     url: '/users/' + userId + '/make-experiment',
@@ -94,8 +94,12 @@
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function (res) {
-                        $('#experimentModal').modal('hide');
-                        alert('تم تحويل المستخدم لحساب تجريبي حتى ' + expiresAt);
+                        $('#makeExperimentModal').modal('hide');
+                        if(res.status) {
+                            alert(res.message);
+                        } else {
+                            alert(res.message);
+                        }
                         $('#laravel_datatable').DataTable().ajax.reload(null, false);
                     },
                     error: function (err) {
@@ -114,11 +118,11 @@
             });
 
             // حفظ مدة التجريبي
-            $('#experiment').submit(function (e) {
+            $('#experimentForm').submit(function (e) {
                 e.preventDefault();
                 const userId = $('#experiment_user_id').val();
                 const expiresAt = $('#expires_at').val();
-                if (!expiresAt) { alert('يرجى اختيار تاريخ نهاية المدة'); return; }
+                if (!expiresAt) { alert('يرجى اختيار تاريخ نهاية التجربة'); return; }
 
                 $.ajax({
                     url: '/users/' + userId + '/experiment',
@@ -129,7 +133,11 @@
                     },
                     success: function (res) {
                         $('#experimentModal').modal('hide');
-                        alert('تم تحويل المستخدم لحساب الفعلي حتى ' + expiresAt);
+                        if(res.status) {
+                            alert(res.message);
+                        } else {
+                            alert(res.message);
+                        }
                         $('#laravel_datatable').DataTable().ajax.reload(null, false);
                     },
                     error: function (err) {
