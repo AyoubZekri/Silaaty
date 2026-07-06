@@ -44,7 +44,7 @@ class SyncController extends Controller
             $record = DB::table($targetTable)
                 ->where('id', $row[$fkIdName])
                 // التحقق من الملكية بناءً على 'user_id' باستثناء جدول 'reports'
-                ->where('user_id', auth()->id())
+                ->where('user_id', auth()->user()->user_id ?? auth()->id())
                 ->first();
 
             if ($record) {
@@ -74,7 +74,7 @@ class SyncController extends Controller
             $record = DB::table($targetTable)
                 ->where('uuid', $data[$uuidName])
                 // التحقق من الملكية
-                ->where('user_id', auth()->id())
+                ->where('user_id', auth()->user()->user_id ?? auth()->id())
                 ->first();
 
             if ($record) {
@@ -162,11 +162,11 @@ public function getData(Request $request, $table)
     if ($table === 'reports') {
         $query = DB::table($table)
             ->where('updated_at', '>', $since)
-            ->where('report_id', auth()->id());
+            ->where('report_id', auth()->user()->user_id ?? auth()->id());
     } else {
         $query = DB::table($table)
             ->where('updated_at', '>', $since)
-            ->where('user_id', auth()->id());
+            ->where('user_id', auth()->user()->user_id ?? auth()->id());
     }
 
     $data = $query
@@ -267,12 +267,12 @@ public function syncData(Request $request, $table)
         if ($table == "reports"){
         $existing = DB::table($table)
             ->where('uuid', $uuid)
-            ->where('report_id', auth()->id())
+            ->where('report_id', auth()->user()->user_id ?? auth()->id())
             ->first();
         }else{
             $existing = DB::table($table)
             ->where('uuid', $uuid)
-            ->where('user_id', auth()->id())
+            ->where('user_id', auth()->user()->user_id ?? auth()->id())
             ->first();
         }
 
@@ -287,9 +287,9 @@ public function syncData(Request $request, $table)
                 : $now->addMinutes(70)->format('Y-m-d H:i:s');
 
                 if ($table == "reports") {
-                    $data['report_id'] = auth()->id();
+                    $data['report_id'] = auth()->user()->user_id ?? auth()->id();
                 }else{
-                    $data['user_id'] = auth()->id();
+                    $data['user_id'] = auth()->user()->user_id ?? auth()->id();
 
                 }
 
@@ -313,12 +313,12 @@ public function syncData(Request $request, $table)
                 if ($table == "reports") {
                     DB::table($table)
                         ->where('uuid', $uuid)
-                        ->where('report_id', auth()->id())
+                        ->where('report_id', auth()->user()->user_id ?? auth()->id())
                         ->update($data);
                 }else{
                     DB::table($table)
                         ->where('uuid', $uuid)
-                        ->where('user_id', auth()->id())
+                        ->where('user_id', auth()->user()->user_id ?? auth()->id())
                         ->update($data);
                 }
                     $results[] = ['status' => 'updated', 'uuid' => $uuid];
@@ -384,12 +384,12 @@ public function syncDeleteData(Request $request, $table)
             if($table == "reports"){
             $record = DB::table($table)
                 ->where('uuid', $uuid)
-                ->where('report_id', auth()->id())
+                ->where('report_id', auth()->user()->user_id ?? auth()->id())
                 ->first();
             }else{
              $record = DB::table($table)
                 ->where('uuid', $uuid)
-                ->where('user_id', auth()->id())
+                ->where('user_id', auth()->user()->user_id ?? auth()->id())
                 ->first();
             }
             if (!$record) {
@@ -400,12 +400,12 @@ public function syncDeleteData(Request $request, $table)
             if($table == "reports"){
              DB::table($table)
                 ->where('uuid', $uuid)
-                ->where('report_id', auth()->id())
+                ->where('report_id', auth()->user()->user_id ?? auth()->id())
                 ->delete();
             }else{
             DB::table($table)
                 ->where('uuid', $uuid)
-                ->where('user_id', auth()->id())
+                ->where('user_id', auth()->user()->user_id ?? auth()->id())
                 ->delete();
             }
 

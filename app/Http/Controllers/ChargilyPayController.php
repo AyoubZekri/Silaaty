@@ -21,6 +21,11 @@ class ChargilyPayController extends Controller
         }
         $user = auth()->user();
         $amounts = [
+            0 => 8500,
+            1 => 12000,
+            2 => 25000,
+        ];
+        $amounts = [
             0 => 1500,
             1 => 5000,
             2 => 25000,
@@ -101,108 +106,108 @@ class ChargilyPayController extends Controller
         }
     }
 
-public function webhook()
-{
-    $webhook = $this->chargilyPayInstance()
-        ->webhook()
-        ->get();
+    public function webhook()
+    {
+        $webhook = $this->chargilyPayInstance()
+            ->webhook()
+            ->get();
 
-    if (!$webhook) {
-        return response()->json([
-            'status' => 0,
-        ], 403);
-    }
+        if (!$webhook) {
+            return response()->json([
+                'status' => 0,
+            ], 403);
+        }
 
-    $checkout = $webhook->getData();
+        $checkout = $webhook->getData();
 
-    if (
-        !$checkout instanceof \Chargily\ChargilyPay\Elements\CheckoutElement
-    ) {
-        return response()->json([
-            'status' => 0,
-        ], 403);
-    }
+        if (
+            !$checkout instanceof \Chargily\ChargilyPay\Elements\CheckoutElement
+        ) {
+            return response()->json([
+                'status' => 0,
+            ], 403);
+        }
 
-    $metadata = $checkout->getMetadata();
+        $metadata = $checkout->getMetadata();
 
-    $payment = \App\Models\ChargilyPayment::find(
-        $metadata['payment_id']
-    );
+        $payment = \App\Models\ChargilyPayment::find(
+            $metadata['payment_id']
+        );
 
-    if (!$payment) {
-        return response()->json([
-            'status' => 0,
-        ], 404);
-    }
+        if (!$payment) {
+            return response()->json([
+                'status' => 0,
+            ], 404);
+        }
 
-    switch ($checkout->getStatus()) {
+        switch ($checkout->getStatus()) {
 
-        case 'paid':
+            case 'paid':
 
-            $payment->status = 'paid';
+                $payment->status = 'paid';
 
-            $user = User::find($payment->user_id);
+                $user = User::find($payment->user_id);
 
-            if ($user) {
+                if ($user) {
 
-                // إذا التاريخ القديم مازال صالح نكمل عليه
-                $baseDate = $user->date_experiment &&
-                    \Carbon\Carbon::parse($user->date_experiment)->isFuture()
-                    ? \Carbon\Carbon::parse($user->date_experiment)
-                    : now();
+                    // إذا التاريخ القديم مازال صالح نكمل عليه
+                    $baseDate = $user->date_experiment &&
+                        \Carbon\Carbon::parse($user->date_experiment)->isFuture()
+                        ? \Carbon\Carbon::parse($user->date_experiment)
+                        : now();
 
-                switch ($payment->type) {
+                    switch ($payment->type) {
 
-                    // شهر
-                    case 0:
+                        // شهر
+                        case 0:
 
-                        $user->status = 3;
+                            $user->status = 3;
 
-                        $user->date_experiment = $baseDate
-                            ->copy()
-                            ->addMonth();
+                            $user->date_experiment = $baseDate
+                                ->copy()
+                                ->addMonth();
 
-                        break;
+                            break;
 
-                    // سنة
-                    case 1:
+                        // سنة
+                        case 1:
 
-                        $user->status = 3;
+                            $user->status = 3;
 
-                        $user->date_experiment = $baseDate
-                            ->copy()
-                            ->addYear();
+                            $user->date_experiment = $baseDate
+                                ->copy()
+                                ->addYear();
 
-                        break;
+                            break;
 
-                    // مدى الحياة مثلا
-                    case 2:
+                        // مدى الحياة مثلا
+                        case 2:
 
-                        $user->status = 4;
+                            $user->status = 4;
 
-                        break;
+                            break;
+                    }
+
+                    $user->save();
                 }
 
-                $user->save();
-            }
+                break;
 
-            break;
+            case 'failed':
 
-        case 'failed':
+            case 'canceled':
 
-        case 'canceled':
+                $payment->status = 'failed';
 
-            $payment->status = 'failed';
+                break;
+        }
 
-            break;
+        $payment->save();
+
+        return response()->json([
+            'status' => true,
+        ]);
     }
-
-    $payment->save();
-
-    return response()->json([
-        'status' => true,
-    ]);
-}
 
     protected function chargilyPayInstance()
     {

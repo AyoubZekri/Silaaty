@@ -25,7 +25,9 @@ class Product extends Model
         'product_price',
         'product_price_purchase',
         'product_price_total',
-        "product_price_total_purchase"
+        "product_price_total_purchase",
+        'product_price_half_wholesale',
+        'product_price_wholesale'
     ];
 
 

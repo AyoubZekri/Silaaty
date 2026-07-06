@@ -140,9 +140,20 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
+use App\Http\Controllers\User\Saller\SellerUserController;
+
 Route::post('/User/create', [\App\Http\Controllers\User\Auth\RegisterController::class, "RegisterUser"]);
 Route::post('/User/Login', [\App\Http\Controllers\User\Auth\LoginUserController::class, "login"]);
 Route::post('/sallers/login', [LoginSallerController::class, 'login']);
+
+// Seller Users routes
+Route::post('/seller-user/login', [SellerUserController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/seller-user/add', [SellerUserController::class, 'add']);
+    Route::post('/seller-user/update', [SellerUserController::class, 'update']);
+    Route::post('/seller-user/delete', [SellerUserController::class, 'delete']);
+});
 
 
 Route::post('/User/sendCode', [sendemaileController::class, 'sendCode']);

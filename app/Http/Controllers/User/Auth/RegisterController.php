@@ -50,7 +50,7 @@ class RegisterController extends Controller
             Zakat::create([
                 "user_id" => $result["user"]->id,
                 "zakat_nisab" => $nisab,
-                "uuid"        => Str::uuid(),
+                "uuid" => Str::uuid(),
             ]);
 
 
@@ -65,14 +65,16 @@ class RegisterController extends Controller
 
     public function getuser()
     {
-
         try {
-            $user = User::where("id", auth()->id())->get();
+            $user = User::with('parent')->where("id", auth()->id())->first();
+
+            if ($user && $user->user_id == null) {
+                $user->setRelation('parent', $user);
+            }
             return Respons::success(['data' => $user]);
         } catch (\Exception $th) {
-            return Respons::error('المستخدم غير موجودة', 404);
+            return Respons::error('المستخدم غير موجود', 404);
         }
-
     }
 
 

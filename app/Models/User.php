@@ -35,6 +35,7 @@ class User extends Authenticatable
         "logo_stor",
         "adresse",
         "date_experiment",
+        "parent_id",
     ];
 
     /**
@@ -102,4 +103,8 @@ class User extends Authenticatable
         return $this->user_roles()->where('role_name', 'Convicts')->exists();
     }
 
+    public function parent()
+    {
+        return $this->belongsTo(User::class, 'parent_id');
+    }
 }

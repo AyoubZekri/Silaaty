@@ -18,6 +18,7 @@ class invoies extends Model
         'invoies_payment_date',
         'Payment_price',
         'seller_id',
+        'sale_type',
     ];
 
     public function products()
