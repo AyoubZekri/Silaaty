@@ -150,6 +150,7 @@ Route::post('/sallers/login', [LoginSallerController::class, 'login']);
 Route::post('/seller-user/login', [SellerUserController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/seller-user', [SellerUserController::class, 'index']);
     Route::post('/seller-user/add', [SellerUserController::class, 'add']);
     Route::post('/seller-user/update', [SellerUserController::class, 'update']);
     Route::post('/seller-user/delete', [SellerUserController::class, 'delete']);
