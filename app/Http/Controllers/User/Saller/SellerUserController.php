@@ -40,6 +40,8 @@ class SellerUserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'user_role' => 3, // نوع بائع
+                'family_name' => '',
+                'phone_number' => '',
             ]);
 
             return Respons::success(['sellerData' => $seller]);

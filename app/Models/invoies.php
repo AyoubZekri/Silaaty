@@ -34,7 +34,7 @@ class invoies extends Model
 
     public function seller()
     {
-        return $this->belongsTo(Seller::class);
+        return $this->belongsTo(User::class,"seller_id");
     }
 }
 
