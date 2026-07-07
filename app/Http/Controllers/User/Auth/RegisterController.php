@@ -68,7 +68,7 @@ class RegisterController extends Controller
         try {
             $user = User::with('parent')->where("id", auth()->id())->first();
 
-            if ($user && $user->user_id == null) {
+            if ($user && $user->parent_id == null) {
                 $user->setRelation('parent', $user);
             }
             return Respons::success(['data' => $user]);
