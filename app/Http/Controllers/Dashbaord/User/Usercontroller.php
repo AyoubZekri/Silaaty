@@ -38,9 +38,17 @@ class Usercontroller extends Controller
                     })
                     ->addColumn('action', function ($row) {
                         $btn = '<div class="d-flex flex-wrap gap-2">';
-                        $btn .= '<button class="btn btn-sm btn-primary update" data-id="' . $row->id . '" title="تفعيل / إيقاف"><i class="bx bx-check-circle me-1"></i> تفعيل</button>';
-                        $btn .= '<button class="btn btn-sm btn-success make-experiment" data-id="' . $row->id . '" title="اشتراك"><i class="bx bx-bolt-circle me-1"></i> اشتراك</button>';
-                        $btn .= '<button class="btn btn-sm btn-warning experiment" data-id="' . $row->id . '" title="تجريبي"><i class="bx bx-time-five me-1"></i> تجريبي</button>';
+                        $btn .= '<div class="btn-group">';
+                        $btn .= '<button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">تفعيل / اشتراك</button>';
+                        $btn .= '<ul class="dropdown-menu">';
+                        $btn .= '<li><a class="dropdown-item experiment" href="javascript:void(0);" data-id="' . $row->id . '">فترة تجريبية</a></li>';
+                        $btn .= '<li><a class="dropdown-item make-experiment" href="javascript:void(0);" data-id="' . $row->id . '">فترة اشتراك (مشرف)</a></li>';
+                        $btn .= '<li><a class="dropdown-item update" href="javascript:void(0);" data-id="' . $row->id . '">فترة تفعيل (مشرف وبائع)</a></li>';
+                        $btn .= '<li><hr class="dropdown-divider"></li>';
+                        $btn .= '<li><a class="dropdown-item permanent-supervisor" href="javascript:void(0);" data-id="' . $row->id . '">تفعيل دائم (مشرف)</a></li>';
+                        $btn .= '<li><a class="dropdown-item permanent-seller-supervisor" href="javascript:void(0);" data-id="' . $row->id . '">تفعيل دائم (مشرف وبائع)</a></li>';
+                        $btn .= '</ul>';
+                        $btn .= '</div>';
                         $btn .= '<button class="btn btn-sm btn-danger delete" data-id="' . $row->id . '" title="حذف"><i class="bx bx-trash me-1"></i> حذف</button>';
                         $btn .= '</div>';
                         return $btn;

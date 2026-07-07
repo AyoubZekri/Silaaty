@@ -8,46 +8,7 @@ use Illuminate\Http\Request;
 
 class Switchcontroller extends Controller
 {
-    public function Activation($id)
-    {
-        try {
-            $user = User::findOrFail($id);
-
-            if ($user->Status == 2 || $user->Status == 3 || $user->Status == 1) {
-                $user->Status = 4;
-                $user->save();
-
-                return response()->json([
-                    'status' => true,
-                    'message' => 'تم تفعيل الحساب .',
-                ]);
-            }
-
-            if ($user->Status == 0) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'يجب تاكيد الحساب اولا',
-                ]);
-            }
-
-            if ($user->Status == 4) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'تم تفعيل الحساب بالفعل',
-                ]);
-            }
-
-        } catch (\Exception $e) {
-            \Log::error('Activation error: ' . $e->getMessage());
-
-            return response()->json([
-                'status' => false,
-                'message' => 'فشل في تحديث الحالة.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
+    // 2 فترة تجريبية مع تاريخ النهاية
     public function Experiment(Request $request, $id)
     {
         try {
@@ -91,6 +52,7 @@ class Switchcontroller extends Controller
         }
     }
 
+    // 3 فترت تفعيل مع التاريخ لاكن في التطبيق مشرف فقط
     public function makeExperiment(Request $request, $id)
     {
         try {
@@ -134,5 +96,127 @@ class Switchcontroller extends Controller
         }
     }
 
+    // 4 فترة تفعيلية مع تاريخ النهاية في التطبيق مشرف والبائع
+    public function Activation(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'expires_at' => 'required|date|after_or_equal:today'
+            ]);
 
+            $user = User::findOrFail($id);
+
+            if ($user->Status == 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'يجب تاكيد الحساب اولا',
+                ]);
+            }
+
+            if ($user->Status == 4) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'تم تفعيل الحساب بالفعل',
+                ]);
+            }
+
+            $user->date_experiment = $request->expires_at;
+            $user->Status = 4;
+            $user->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'تم تفعيل الحساب بنجاح .',
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Activation error: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'فشل في تحديث الحالة.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // 5 فترة دائمة لي تطبيق مشرف فقط
+    public function permanentSupervisor($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+
+            if ($user->Status == 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'يجب تاكيد الحساب اولا',
+                ]);
+            }
+
+            if ($user->Status == 5) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'الحساب مفعل دائم للمشرف بالفعل',
+                ]);
+            }
+
+            $user->date_experiment = null; // لا يوجد تاريخ نهاية
+            $user->Status = 5;
+            $user->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'تم التفعيل الدائم للمشرف بنجاح',
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('permanentSupervisor error: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'فشل في التفعيل.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // 6 فترة دائمة لي تطبيق البائع والمشرف
+    public function permanentSellerSupervisor($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+
+            if ($user->Status == 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'يجب تاكيد الحساب اولا',
+                ]);
+            }
+
+            if ($user->Status == 6) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'الحساب مفعل دائم للمشرف والبائع بالفعل',
+                ]);
+            }
+
+            $user->date_experiment = null; // لا يوجد تاريخ نهاية
+            $user->Status = 6;
+            $user->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'تم التفعيل الدائم للمشرف والبائع بنجاح',
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('permanentSellerSupervisor error: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'فشل في التفعيل.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

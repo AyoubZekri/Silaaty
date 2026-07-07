@@ -148,11 +148,60 @@
             });
 
 
-            // تفعيل/إيقاف
+            // تفعيل (مشرف وبائع)
             $(document.body).on('click', '.update', function () {
+                const userId = $(this).data('id');
+                $('#activation_user_id').val(userId);
+                $('#activation_expires_at').val('');
+                $('#activationModal').modal('show');
+            });
+
+            // حفظ تفعيل (مشرف وبائع)
+            $('#activationForm').submit(function (e) {
+                e.preventDefault();
+                const userId = $('#activation_user_id').val();
+                const expiresAt = $('#activation_expires_at').val();
+                if (!expiresAt) { alert('يرجى اختيار تاريخ نهاية التفعيل'); return; }
+
+                $.ajax({
+                    url: '/user/Activation/' + userId,
+                    method: 'POST',
+                    data: {
+                        expires_at: expiresAt,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (res) {
+                        $('#activationModal').modal('hide');
+                        alert(res.message);
+                        $('#laravel_datatable').DataTable().ajax.reload(null, false);
+                    },
+                    error: function (err) {
+                        alert('فشل التفعيل');
+                        console.error(err);
+                    }
+                });
+            });
+
+            // تفعيل دائم للمشرف
+            $(document.body).on('click', '.permanent-supervisor', function () {
                 let id = $(this).data('id');
                 $.ajax({
-                    url: '/user/Activation/' + id,
+                    url: '/users/' + id + '/permanent-supervisor',
+                    type: 'POST',
+                    data: { _token: $('meta[name="csrf-token"]').attr('content') },
+                    success: function (response) {
+                        alert(response.message);
+                        if (response.status) $('#laravel_datatable').DataTable().ajax.reload(null, false);
+                    },
+                    error: function () { alert('خطأ في الاتصال بالسيرفر'); }
+                });
+            });
+
+            // تفعيل دائم للمشرف والبائع
+            $(document.body).on('click', '.permanent-seller-supervisor', function () {
+                let id = $(this).data('id');
+                $.ajax({
+                    url: '/users/' + id + '/permanent-seller-supervisor',
                     type: 'POST',
                     data: { _token: $('meta[name="csrf-token"]').attr('content') },
                     success: function (response) {
