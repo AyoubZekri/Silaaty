@@ -276,6 +276,22 @@ public function syncData(Request $request, $table)
             ->first();
         }
 
+        // --- Delta Sync Logic for Products ---
+        if ($table === 'products' && isset($data['quantity_delta'])) {
+            $delta = (float) $data['quantity_delta'];
+            
+            if ($existing) {
+                $data['product_quantity'] = (float)$existing->product_quantity + $delta;
+                // Force update by making local time newer than server time
+                $localUpdatedAt = Carbon::parse($existing->updated_at)->addSeconds(1);
+                $data['updated_at'] = $localUpdatedAt->format('Y-m-d H:i:s');
+            } else {
+                $data['product_quantity'] = (isset($data['product_quantity']) ? (float)$data['product_quantity'] : 0) + $delta;
+            }
+            unset($data['quantity_delta']);
+        }
+
+
         if (!$existing) {
             $now = now()->addMinutes(70);
             $data['created_at'] = isset($data['created_at'])
