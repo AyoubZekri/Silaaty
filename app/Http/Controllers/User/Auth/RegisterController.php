@@ -66,6 +66,16 @@ class RegisterController extends Controller
     public function getuser()
     {
         try {
+            $user = User::where("id", auth()->id())->first();
+            return Respons::success(['data' => $user]);
+        } catch (\Exception $th) {
+            return Respons::error('المستخدم غير موجود', 404);
+        }
+    }
+
+    public function getsaller()
+    {
+        try {
             $user = User::with('parent')->where("id", auth()->id())->first();
 
             if ($user && $user->parent_id == null) {

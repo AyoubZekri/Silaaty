@@ -66,6 +66,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/User/resetpassword', [RessetpasswordController::class, 'reset']);
     Route::get('/User/get', [\App\Http\Controllers\User\Auth\RegisterController::class, "getuser"]);
+    Route::get('/Saller/get', [\App\Http\Controllers\User\Auth\RegisterController::class, "getsaller"]);
+
 
 
     Route::get('/Notification', [ShwoNotification::class, 'index']);
