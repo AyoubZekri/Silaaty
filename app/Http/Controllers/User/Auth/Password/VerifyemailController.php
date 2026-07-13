@@ -30,8 +30,10 @@ class VerifyemailController extends Controller
         if ($user->email_verified != $request->code) {
             return Respons::error('رمز التحقق غير صحيح', 401);
         }
-
-        $user->Status =2;
+        
+        if ($user->Status == 1 ) {
+            $user->Status = 2;
+        }
         $user->email_verified = null;
         $user->save();
 
