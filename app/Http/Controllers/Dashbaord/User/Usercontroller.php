@@ -47,6 +47,8 @@ class Usercontroller extends Controller
                         $btn .= '<li><hr class="dropdown-divider"></li>';
                         $btn .= '<li><a class="dropdown-item permanent-supervisor" href="javascript:void(0);" data-id="' . $row->id . '">تفعيل دائم (مشرف)</a></li>';
                         $btn .= '<li><a class="dropdown-item permanent-seller-supervisor" href="javascript:void(0);" data-id="' . $row->id . '">تفعيل دائم (مشرف وبائع)</a></li>';
+                        $btn .= '<li><hr class="dropdown-divider"></li>';
+                        $btn .= '<li><a class="dropdown-item edit-sell-settings" href="javascript:void(0);" data-id="' . $row->id . '" data-sell_type="' . $row->sell_type . '" data-max_sellers="' . $row->max_sellers . '">إعدادات البيع</a></li>';
                         $btn .= '</ul>';
                         $btn .= '</div>';
                         $btn .= '<button class="btn btn-sm btn-danger delete" data-id="' . $row->id . '" title="حذف"><i class="bx bx-trash me-1"></i> حذف</button>';

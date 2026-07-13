@@ -219,4 +219,31 @@ class Switchcontroller extends Controller
             ], 500);
         }
     }
+    public function updateSellSettings(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'sell_type' => 'required|in:1,2,3',
+                'max_sellers' => 'required|integer|min:0'
+            ]);
+
+            $user = User::findOrFail($id);
+            $user->sell_type = $request->sell_type;
+            $user->max_sellers = $request->max_sellers;
+            $user->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'تم تحديث إعدادات البيع بنجاح',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('updateSellSettings error: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'فشل في تحديث إعدادات البيع.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

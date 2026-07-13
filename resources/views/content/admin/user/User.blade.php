@@ -246,6 +246,47 @@
                     }
                 });
             });
+            // إعدادات البيع
+            $(document.body).on('click', '.edit-sell-settings', function () {
+                const userId = $(this).data('id');
+                const sellType = $(this).data('sell_type') || 1;
+                const maxSellers = $(this).data('max_sellers') || 2;
+                
+                $('#sell_settings_user_id').val(userId);
+                $('#sell_type').val(sellType);
+                $('#max_sellers').val(maxSellers);
+                $('#editSellSettingsModal').modal('show');
+            });
+
+            // حفظ إعدادات البيع
+            $('#editSellSettingsForm').submit(function (e) {
+                e.preventDefault();
+                const userId = $('#sell_settings_user_id').val();
+                
+                $.ajax({
+                    url: '/users/' + userId + '/update-sell-settings',
+                    method: 'POST',
+                    data: {
+                        sell_type: $('#sell_type').val(),
+                        max_sellers: $('#max_sellers').val(),
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (res) {
+                        $('#editSellSettingsModal').modal('hide');
+                        if (res.status) {
+                            alert(res.message);
+                            $('#laravel_datatable').DataTable().ajax.reload(null, false);
+                        } else {
+                            alert(res.message || 'فشل التحديث');
+                        }
+                    },
+                    error: function (err) {
+                        alert('حدث خطأ أثناء التحديث');
+                        console.error(err);
+                    }
+                });
+            });
+
         });
     </script>
 @endsection

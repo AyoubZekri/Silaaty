@@ -36,6 +36,8 @@ class User extends Authenticatable
         "adresse",
         "date_experiment",
         "parent_id",
+        "sell_type",
+        "max_sellers",
     ];
 
     /**

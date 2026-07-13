@@ -51,6 +51,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/users/{id}/permanent-supervisor', [Switchcontroller::class, 'permanentSupervisor'])->name('users.permanent-supervisor');
     Route::post('/users/{id}/permanent-seller-supervisor', [Switchcontroller::class, 'permanentSellerSupervisor'])->name('users.permanent-seller-supervisor');
 
+    Route::post('/users/{id}/update-sell-settings', [Switchcontroller::class, 'updateSellSettings'])->name('users.update-sell-settings');
     Route::post('/user/delete', [UserController::class, 'delete']);
     Route::get('/admin/index', [Admincontroller::class, "index"])->name('admin-index');
     Route::get('/admin/list', [Admincontroller::class, "list"])->name('admin-list');
