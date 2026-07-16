@@ -48,6 +48,16 @@ class Usercontroller extends Controller
                         $btn .= '<li><a class="dropdown-item permanent-supervisor" href="javascript:void(0);" data-id="' . $row->id . '">تفعيل دائم (مشرف)</a></li>';
                         $btn .= '<li><a class="dropdown-item permanent-seller-supervisor" href="javascript:void(0);" data-id="' . $row->id . '">تفعيل دائم (مشرف وبائع)</a></li>';
                         $btn .= '<li><hr class="dropdown-divider"></li>';
+                        $btn .= '<li><a class="dropdown-item desktop-admin-experiment" href="javascript:void(0);" data-id="' . $row->id . '">تطبيق سطح المكتب مشرف فقط فترة اشتراك</a></li>';
+                        $btn .= '<li><a class="dropdown-item desktop-seller-admin-experiment" href="javascript:void(0);" data-id="' . $row->id . '">تطبيق سطح المكتب مشرف وبائع فترة اشتراك</a></li>';
+                        $btn .= '<li><a class="dropdown-item desktop-admin-permanent" href="javascript:void(0);" data-id="' . $row->id . '">تفعيل دائم تطبيق سطح المكتب مشرف</a></li>';
+                        $btn .= '<li><a class="dropdown-item desktop-seller-admin-permanent" href="javascript:void(0);" data-id="' . $row->id . '">تفعيل دائم تطبيق سطح المكتب بائع ومشرف</a></li>';
+                        $btn .= '<li><hr class="dropdown-divider"></li>';
+                        $btn .= '<li><a class="dropdown-item mobile-pc-admin-experiment" href="javascript:void(0);" data-id="' . $row->id . '">مشرف في الهاتف والكمبيوتر تفعيل فترة</a></li>';
+                        $btn .= '<li><a class="dropdown-item mobile-pc-seller-admin-experiment" href="javascript:void(0);" data-id="' . $row->id . '">مشرف وبائع من الهاتف والكمبيوتر تفعيل فترة</a></li>';
+                        $btn .= '<li><a class="dropdown-item mobile-pc-admin-permanent" href="javascript:void(0);" data-id="' . $row->id . '">مشرف من الهاتف والكمبيتر تفعيل دائم</a></li>';
+                        $btn .= '<li><a class="dropdown-item mobile-pc-seller-admin-permanent" href="javascript:void(0);" data-id="' . $row->id . '">مشرف وبائع من الهاتف والكمبيتر تفعيل دائم</a></li>';
+                        $btn .= '<li><hr class="dropdown-divider"></li>';
                         $btn .= '<li><a class="dropdown-item edit-sell-settings" href="javascript:void(0);" data-id="' . $row->id . '" data-sell_type="' . $row->sell_type . '" data-max_sellers="' . $row->max_sellers . '">إعدادات البيع</a></li>';
                         $btn .= '</ul>';
                         $btn .= '</div>';

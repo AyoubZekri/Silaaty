@@ -219,6 +219,146 @@ class Switchcontroller extends Controller
             ], 500);
         }
     }
+    // 7 تطبيق سطح المكتب مشرف فقط فترة اشتراك فقط
+    public function desktopAdminExperiment(Request $request, $id)
+    {
+        try {
+            $request->validate(['expires_at' => 'required|date|after_or_equal:today']);
+            $user = User::findOrFail($id);
+            if ($user->Status == 0) return response()->json(['status' => false, 'message' => 'يجب تاكيد الحساب اولا']);
+            if ($user->Status == 7) return response()->json(['status' => false, 'message' => 'تم تفعيل فترة الاشتراك بالفعل']);
+            
+            $user->date_experiment = $request->expires_at;
+            $user->Status = 7;
+            $user->save();
+            return response()->json(['status' => true, 'message' => 'تم تفعيل فترة الاشتراك بنجاح']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'فشل في التفعيل.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // 8 تطبيق سطح المكتب مشرف و بائع فترة اشتراك فقط
+    public function desktopSellerAdminExperiment(Request $request, $id)
+    {
+        try {
+            $request->validate(['expires_at' => 'required|date|after_or_equal:today']);
+            $user = User::findOrFail($id);
+            if ($user->Status == 0) return response()->json(['status' => false, 'message' => 'يجب تاكيد الحساب اولا']);
+            if ($user->Status == 8) return response()->json(['status' => false, 'message' => 'تم تفعيل فترة الاشتراك بالفعل']);
+            
+            $user->date_experiment = $request->expires_at;
+            $user->Status = 8;
+            $user->save();
+            return response()->json(['status' => true, 'message' => 'تم تفعيل فترة الاشتراك بنجاح']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'فشل في التفعيل.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // 9 تفعيل دائم تطبيق سطح المكتب مشرف
+    public function desktopAdminPermanent($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            if ($user->Status == 0) return response()->json(['status' => false, 'message' => 'يجب تاكيد الحساب اولا']);
+            if ($user->Status == 9) return response()->json(['status' => false, 'message' => 'الحساب مفعل دائم للمشرف بالفعل']);
+            
+            $user->date_experiment = null;
+            $user->Status = 9;
+            $user->save();
+            return response()->json(['status' => true, 'message' => 'تم التفعيل الدائم للمشرف بنجاح']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'فشل في التفعيل.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // 10 تفعيل دائم تطبيق بائع ومشرف
+    public function desktopSellerAdminPermanent($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            if ($user->Status == 0) return response()->json(['status' => false, 'message' => 'يجب تاكيد الحساب اولا']);
+            if ($user->Status == 10) return response()->json(['status' => false, 'message' => 'الحساب مفعل دائم للبائع والمشرف بالفعل']);
+            
+            $user->date_experiment = null;
+            $user->Status = 10;
+            $user->save();
+            return response()->json(['status' => true, 'message' => 'تم التفعيل الدائم بنجاح']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'فشل في التفعيل.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // 11 مشرف في الهاتف والكمبيوتر تفعيل فترة
+    public function mobilePcAdminExperiment(Request $request, $id)
+    {
+        try {
+            $request->validate(['expires_at' => 'required|date|after_or_equal:today']);
+            $user = User::findOrFail($id);
+            if ($user->Status == 0) return response()->json(['status' => false, 'message' => 'يجب تاكيد الحساب اولا']);
+            if ($user->Status == 11) return response()->json(['status' => false, 'message' => 'تم تفعيل فترة الاشتراك بالفعل']);
+            
+            $user->date_experiment = $request->expires_at;
+            $user->Status = 11;
+            $user->save();
+            return response()->json(['status' => true, 'message' => 'تم تفعيل فترة الاشتراك بنجاح']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'فشل في التفعيل.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // 12 مشرف وبائع من الهاتف والكمبيوتر تفعيل فترة
+    public function mobilePcSellerAdminExperiment(Request $request, $id)
+    {
+        try {
+            $request->validate(['expires_at' => 'required|date|after_or_equal:today']);
+            $user = User::findOrFail($id);
+            if ($user->Status == 0) return response()->json(['status' => false, 'message' => 'يجب تاكيد الحساب اولا']);
+            if ($user->Status == 12) return response()->json(['status' => false, 'message' => 'تم تفعيل فترة الاشتراك بالفعل']);
+            
+            $user->date_experiment = $request->expires_at;
+            $user->Status = 12;
+            $user->save();
+            return response()->json(['status' => true, 'message' => 'تم تفعيل فترة الاشتراك بنجاح']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'فشل في التفعيل.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // 13 مشرف من الهاتف والكمبيتر تفعيل دائم
+    public function mobilePcAdminPermanent($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            if ($user->Status == 0) return response()->json(['status' => false, 'message' => 'يجب تاكيد الحساب اولا']);
+            if ($user->Status == 13) return response()->json(['status' => false, 'message' => 'الحساب مفعل دائم للمشرف بالفعل']);
+            
+            $user->date_experiment = null;
+            $user->Status = 13;
+            $user->save();
+            return response()->json(['status' => true, 'message' => 'تم التفعيل الدائم للمشرف بنجاح']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'فشل في التفعيل.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // 14 مشرف وبائع من الهاتف والكمبيتر تفعيل دائم
+    public function mobilePcSellerAdminPermanent($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            if ($user->Status == 0) return response()->json(['status' => false, 'message' => 'يجب تاكيد الحساب اولا']);
+            if ($user->Status == 14) return response()->json(['status' => false, 'message' => 'الحساب مفعل دائم للبائع والمشرف بالفعل']);
+            
+            $user->date_experiment = null;
+            $user->Status = 14;
+            $user->save();
+            return response()->json(['status' => true, 'message' => 'تم التفعيل الدائم بنجاح']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'فشل في التفعيل.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
     public function updateSellSettings(Request $request, $id)
     {
         try {

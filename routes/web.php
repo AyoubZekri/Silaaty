@@ -50,6 +50,16 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/users/{id}/experiment', [Switchcontroller::class, 'Experiment'])->name('users.experiment');
     Route::post('/users/{id}/permanent-supervisor', [Switchcontroller::class, 'permanentSupervisor'])->name('users.permanent-supervisor');
     Route::post('/users/{id}/permanent-seller-supervisor', [Switchcontroller::class, 'permanentSellerSupervisor'])->name('users.permanent-seller-supervisor');
+    
+    // New routes for status 7-14
+    Route::post('/users/{id}/desktop-admin-experiment', [Switchcontroller::class, 'desktopAdminExperiment'])->name('users.desktop-admin-experiment');
+    Route::post('/users/{id}/desktop-seller-admin-experiment', [Switchcontroller::class, 'desktopSellerAdminExperiment'])->name('users.desktop-seller-admin-experiment');
+    Route::post('/users/{id}/desktop-admin-permanent', [Switchcontroller::class, 'desktopAdminPermanent'])->name('users.desktop-admin-permanent');
+    Route::post('/users/{id}/desktop-seller-admin-permanent', [Switchcontroller::class, 'desktopSellerAdminPermanent'])->name('users.desktop-seller-admin-permanent');
+    Route::post('/users/{id}/mobile-pc-admin-experiment', [Switchcontroller::class, 'mobilePcAdminExperiment'])->name('users.mobile-pc-admin-experiment');
+    Route::post('/users/{id}/mobile-pc-seller-admin-experiment', [Switchcontroller::class, 'mobilePcSellerAdminExperiment'])->name('users.mobile-pc-seller-admin-experiment');
+    Route::post('/users/{id}/mobile-pc-admin-permanent', [Switchcontroller::class, 'mobilePcAdminPermanent'])->name('users.mobile-pc-admin-permanent');
+    Route::post('/users/{id}/mobile-pc-seller-admin-permanent', [Switchcontroller::class, 'mobilePcSellerAdminPermanent'])->name('users.mobile-pc-seller-admin-permanent');
 
     Route::post('/users/{id}/update-sell-settings', [Switchcontroller::class, 'updateSellSettings'])->name('users.update-sell-settings');
     Route::post('/user/delete', [UserController::class, 'delete']);

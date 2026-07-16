@@ -148,23 +148,50 @@
             });
 
 
+            let currentExperimentUrl = '';
+            
+            function openGenericExperimentModal(userId, url, title) {
+                $('#activation_user_id').val(userId);
+                $('#activation_expires_at').val('');
+                $('#activationModal .modal-title').text(title);
+                currentExperimentUrl = url;
+                $('#activationModal').modal('show');
+            }
+
+            $(document.body).on('click', '.desktop-admin-experiment', function () {
+                openGenericExperimentModal($(this).data('id'), '/users/' + $(this).data('id') + '/desktop-admin-experiment', 'تفعيل فترة اشتراك (سطح المكتب مشرف)');
+            });
+            $(document.body).on('click', '.desktop-seller-admin-experiment', function () {
+                openGenericExperimentModal($(this).data('id'), '/users/' + $(this).data('id') + '/desktop-seller-admin-experiment', 'تفعيل فترة اشتراك (سطح المكتب مشرف وبائع)');
+            });
+            $(document.body).on('click', '.mobile-pc-admin-experiment', function () {
+                openGenericExperimentModal($(this).data('id'), '/users/' + $(this).data('id') + '/mobile-pc-admin-experiment', 'تفعيل فترة (هاتف وكمبيوتر مشرف)');
+            });
+            $(document.body).on('click', '.mobile-pc-seller-admin-experiment', function () {
+                openGenericExperimentModal($(this).data('id'), '/users/' + $(this).data('id') + '/mobile-pc-seller-admin-experiment', 'تفعيل فترة (هاتف وكمبيوتر مشرف وبائع)');
+            });
+
             // تفعيل (مشرف وبائع)
             $(document.body).on('click', '.update', function () {
                 const userId = $(this).data('id');
                 $('#activation_user_id').val(userId);
                 $('#activation_expires_at').val('');
+                $('#activationModal .modal-title').text('تفعيل فترة (مشرف وبائع)');
+                currentExperimentUrl = '';
                 $('#activationModal').modal('show');
             });
 
-            // حفظ تفعيل (مشرف وبائع)
+            // حفظ تفعيل (مشرف وبائع) أو الفترات الجديدة
             $('#activationForm').submit(function (e) {
                 e.preventDefault();
                 const userId = $('#activation_user_id').val();
                 const expiresAt = $('#activation_expires_at').val();
                 if (!expiresAt) { alert('يرجى اختيار تاريخ نهاية التفعيل'); return; }
 
+                const submitUrl = currentExperimentUrl ? currentExperimentUrl : '/user/Activation/' + userId;
+
                 $.ajax({
-                    url: '/user/Activation/' + userId,
+                    url: submitUrl,
                     method: 'POST',
                     data: {
                         expires_at: expiresAt,
@@ -180,6 +207,32 @@
                         console.error(err);
                     }
                 });
+            });
+
+            function sendPermanentRequest(url) {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: { _token: $('meta[name="csrf-token"]').attr('content') },
+                    success: function (response) {
+                        alert(response.message);
+                        if (response.status) $('#laravel_datatable').DataTable().ajax.reload(null, false);
+                    },
+                    error: function () { alert('خطأ في الاتصال بالسيرفر'); }
+                });
+            }
+
+            $(document.body).on('click', '.desktop-admin-permanent', function () {
+                sendPermanentRequest('/users/' + $(this).data('id') + '/desktop-admin-permanent');
+            });
+            $(document.body).on('click', '.desktop-seller-admin-permanent', function () {
+                sendPermanentRequest('/users/' + $(this).data('id') + '/desktop-seller-admin-permanent');
+            });
+            $(document.body).on('click', '.mobile-pc-admin-permanent', function () {
+                sendPermanentRequest('/users/' + $(this).data('id') + '/mobile-pc-admin-permanent');
+            });
+            $(document.body).on('click', '.mobile-pc-seller-admin-permanent', function () {
+                sendPermanentRequest('/users/' + $(this).data('id') + '/mobile-pc-seller-admin-permanent');
             });
 
             // تفعيل دائم للمشرف
