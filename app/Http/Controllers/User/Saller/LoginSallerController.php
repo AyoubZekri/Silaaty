@@ -23,13 +23,10 @@ class LoginSallerController extends Controller
                 return Respons::error('بيانات غير صحيحة', 422, $validator->errors());
             }
 
-            $userCheck = \App\Models\User::where('email', $request->email)->first();
-            if ($userCheck && $userCheck->user_role != 3) {
+            $seller = Seller::with('user')->where('email', $request->email)->first();
+            if ($seller && $seller["user_role"] != 3) {
                 return Respons::error('حسابك ليس بائع', 403);
             }
-
-            $seller = Seller::with('user')->where('email', $request->email)->first();
-
             if (!$seller || !Hash::check($request->password, $seller->password)) {
                 return Respons::error('البريد الإلكتروني أو كلمة المرور غير صحيحة', 401);
             }
