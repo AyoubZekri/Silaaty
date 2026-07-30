@@ -63,6 +63,10 @@ class SellerUserController extends Controller
             }
 
             $seller = User::with('parent')->where('email', $request->email)->first();
+            
+            if ($seller && $seller->user_role != 3) {
+                return Respons::error('حسابك ليس بائع', 403);
+            }
 
             if (!$seller || !Hash::check($request->password, $seller->password)) {
                 return Respons::error('البريد الإلكتروني أو كلمة المرور غير صحيحة', 401);
