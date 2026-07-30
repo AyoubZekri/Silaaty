@@ -22,6 +22,11 @@ class LoginUserController extends Controller
                 'fcm_token' => 'nullable|string',
             ]);
 
+            $userCheck = User::where('email', $request->email)->first();
+            if ($userCheck && $userCheck->user_role != 2) {
+                return Respons::error('حسابك ليس مشرف', 403);
+            }
+
             $data = Login::loginUser($request->email, $request->password, 2);
 
             $user = User::where('email', $request->email)->first();
