@@ -20,7 +20,8 @@ class SyncController extends Controller
         'zakats',
         'sales',
         'sellers',
-
+        'seller_stocks',
+        'stock_transfers',
     ];
 
     // ===============================================
@@ -191,6 +192,10 @@ public function getData(Request $request, $table)
                 $row = $this->mapIdToUuid($row, $table, 'invoie_id', 'invoie_uuid', 'invoies');
             }
 
+            if (in_array($table, ['seller_stocks', 'stock_transfers'])) {
+                $row = $this->mapIdToUuid($row, $table, 'product_id', 'product_uuid', 'products');
+            }
+
             return $row;
         });
 
@@ -241,6 +246,10 @@ public function syncData(Request $request, $table)
             // تحويل UUIDs إلى IDs محلية
             $data = $this->mapUuidToId($data, 'product_uuid', 'product_id', 'products');
             $data = $this->mapUuidToId($data, 'invoie_uuid', 'invoie_id', 'invoies');
+        }
+
+        if (in_array($table, ['seller_stocks', 'stock_transfers'])) {
+            $data = $this->mapUuidToId($data, 'product_uuid', 'product_id', 'products');
         }
 
         if ($table === 'invoies') {
@@ -377,6 +386,8 @@ public function syncDeleteData(Request $request, $table)
         'transactions',
         'zakats',
         'sales',
+        'seller_stocks',
+        'stock_transfers',
     ];
     if (!in_array($table, $allowedTables)) {
         return response()->json(['status' => 0, 'message' => 'جدول غير مسموح'], 400);
