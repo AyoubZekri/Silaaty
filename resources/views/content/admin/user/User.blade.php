@@ -340,6 +340,35 @@
                 });
             });
 
+            // تغيير نوع الحساب
+            $(document.body).on('click', '.change-account-type', function () {
+                const userId = $(this).data('id');
+                const accountType = $(this).data('type');
+                
+                if (confirm('هل أنت متأكد من تغيير نوع الحساب؟')) {
+                    $.ajax({
+                        url: '/users/' + userId + '/change-account-type',
+                        method: 'POST',
+                        data: {
+                            account_type: accountType,
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function (res) {
+                            if (res.status) {
+                                alert(res.message);
+                                $('#laravel_datatable').DataTable().ajax.reload(null, false);
+                            } else {
+                                alert(res.message || 'فشل التحديث');
+                            }
+                        },
+                        error: function (err) {
+                            alert('حدث خطأ أثناء التحديث');
+                            console.error(err);
+                        }
+                    });
+                }
+            });
+
         });
     </script>
 @endsection

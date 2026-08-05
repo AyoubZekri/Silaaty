@@ -59,6 +59,9 @@ class Usercontroller extends Controller
                         $btn .= '<li><a class="dropdown-item mobile-pc-seller-admin-permanent" href="javascript:void(0);" data-id="' . $row->id . '">مشرف وبائع من الهاتف والكمبيتر تفعيل دائم</a></li>';
                         $btn .= '<li><hr class="dropdown-divider"></li>';
                         $btn .= '<li><a class="dropdown-item edit-sell-settings" href="javascript:void(0);" data-id="' . $row->id . '" data-sell_type="' . $row->sell_type . '" data-max_sellers="' . $row->max_sellers . '">إعدادات البيع</a></li>';
+                        $btn .= '<li><hr class="dropdown-divider"></li>';
+                        $btn .= '<li><a class="dropdown-item change-account-type" href="javascript:void(0);" data-id="' . $row->id . '" data-type="1">تحويل إلى محل</a></li>';
+                        $btn .= '<li><a class="dropdown-item change-account-type" href="javascript:void(0);" data-id="' . $row->id . '" data-type="2">تحويل إلى موزع</a></li>';
                         $btn .= '</ul>';
                         $btn .= '</div>';
                         $btn .= '<button class="btn btn-sm btn-danger delete" data-id="' . $row->id . '" title="حذف"><i class="bx bx-trash me-1"></i> حذف</button>';
@@ -106,5 +109,25 @@ class Usercontroller extends Controller
         }
     }
 
+
+    public function changeAccountType(Request $request, $id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->account_type = $request->account_type;
+            $user->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'تم تغيير نوع الحساب بنجاح'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'حدث خطأ أثناء التغيير',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
 }

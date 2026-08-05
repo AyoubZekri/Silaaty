@@ -62,6 +62,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/users/{id}/mobile-pc-seller-admin-permanent', [Switchcontroller::class, 'mobilePcSellerAdminPermanent'])->name('users.mobile-pc-seller-admin-permanent');
 
     Route::post('/users/{id}/update-sell-settings', [Switchcontroller::class, 'updateSellSettings'])->name('users.update-sell-settings');
+    Route::post('/users/{id}/change-account-type', [Usercontroller::class, 'changeAccountType'])->name('users.change-account-type');
     Route::post('/user/delete', [UserController::class, 'delete']);
     Route::get('/admin/index', [Admincontroller::class, "index"])->name('admin-index');
     Route::get('/admin/list', [Admincontroller::class, "list"])->name('admin-list');
