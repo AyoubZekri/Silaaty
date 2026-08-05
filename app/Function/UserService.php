@@ -20,13 +20,14 @@ class UserService
             $statusCode = random_int(10000, 99999);
             $user = User::create([
                 'name' => $data['name'],
-                'phone_number' => $data['phone_number'],
-                'family_name' => $data['family_name'],
+                'phone_number' => $data['phone_number'] ?? null,
+                'family_name' => $data['family_name'] ?? $data['name'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
                 'user_role' => $roleName === 'admin' ? 1 : 2,
                 'email_verified' => $statusCode,
                 'date_experiment' => now()->addMonths(2),
+                'account_type' => $data['account_type'] ?? 1,
             ]);
 
             $role = Role::where('role_name', $roleName)->first();

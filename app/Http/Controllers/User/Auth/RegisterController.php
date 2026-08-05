@@ -23,6 +23,7 @@ class RegisterController extends Controller
                 'phone_number' => 'required|string|max:12',
                 'email' => 'required|email',
                 'password' => 'required|string|min:6|confirmed',
+                'account_type' => 'nullable|in:1,2',
             ]);
 
             if ($validator->fails()) {
@@ -41,7 +42,7 @@ class RegisterController extends Controller
             }
 
             $result = UserService::createUserWithRole(
-                $request->only(['name', 'email', 'password', 'phone_number', 'family_name']),
+                $request->only(['name', 'email', 'password', 'phone_number', 'family_name', 'account_type']),
                 "User"
             );
             $nisab = Zakat::first()?->zakat_nisab;

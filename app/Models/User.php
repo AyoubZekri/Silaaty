@@ -38,6 +38,7 @@ class User extends Authenticatable
         "parent_id",
         "sell_type",
         "max_sellers",
+        "account_type",
     ];
 
     /**

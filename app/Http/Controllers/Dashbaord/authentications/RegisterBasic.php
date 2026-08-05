@@ -28,6 +28,7 @@ class RegisterBasic extends Controller
             'name' => 'required|unique:users',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
+            'account_type' => 'required|in:1,2',
         ]);
 
         try {
@@ -38,6 +39,7 @@ class RegisterBasic extends Controller
                 'family_name' => $request->name,
                 'password' => $request->password,
                 'user_role' => 1,
+                'account_type' => $request->account_type,
             ]);
 
 

@@ -47,6 +47,13 @@
                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                   </div>
                 </div>
+                <div class="mb-3">
+                  <label for="account_type" class="form-label">نوع الحساب</label>
+                  <select class="form-select" id="account_type" name="account_type">
+                    <option value="1">محل</option>
+                    <option value="2">موزع</option>
+                  </select>
+                </div>
 
                 <div class="mb-3">
                   <div class="form-check">
