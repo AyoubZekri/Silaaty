@@ -30,6 +30,7 @@
                         <th>{{ __('Name') }}</th>
                         <th>{{ __('Email') }}</th>
                         <th>{{ __('Created at') }}</th>
+                        <th>نوع الحساب</th>
                         <th>{{ __('experiment_at') }}</th>
                         <th>{{ __('Status') }}</th>
                         <th>{{ __('Actions') }}</th>
@@ -62,6 +63,7 @@
                     { data: 'name', name: 'name' },
                     { data: 'email', name: 'email' },
                     { data: 'created_at', name: 'created_at' },
+                    { data: 'account_type_label', name: 'account_type_label' },
                     { data: 'date_experiment', name: 'date_experiment' },
                     { data: 'Status', name: 'Status' },
                     { data: 'action', name: 'action', orderable: false, searchable: false }

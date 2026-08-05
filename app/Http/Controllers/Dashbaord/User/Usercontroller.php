@@ -36,6 +36,9 @@ class Usercontroller extends Controller
                     ->editColumn('created_at', function ($row) {
                         return \Carbon\Carbon::parse($row->created_at)->format('Y-m-d');
                     })
+                    ->addColumn('account_type_label', function ($row) {
+                        return $row->account_type == 2 ? 'موزع' : 'محل';
+                    })
                     ->addColumn('action', function ($row) {
                         $btn = '<div class="d-flex flex-wrap gap-2">';
                         $btn .= '<div class="btn-group">';
