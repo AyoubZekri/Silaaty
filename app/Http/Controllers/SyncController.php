@@ -22,6 +22,7 @@ class SyncController extends Controller
         'sellers',
         'seller_stocks',
         'stock_transfers',
+        'expenses',
     ];
 
     // ===============================================
@@ -388,6 +389,7 @@ public function syncDeleteData(Request $request, $table)
         'sales',
         'seller_stocks',
         'stock_transfers',
+        'expenses',
     ];
     if (!in_array($table, $allowedTables)) {
         return response()->json(['status' => 0, 'message' => 'جدول غير مسموح'], 400);
