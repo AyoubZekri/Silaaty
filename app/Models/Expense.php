@@ -12,6 +12,7 @@ class Expense extends Model
         'price',
         'description',
         'user_id',
+        'is_delete',
     ];
 
     public function user()
