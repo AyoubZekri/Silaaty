@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
 use Exception;
 
 class SyncController extends Controller
@@ -265,6 +266,10 @@ public function syncData(Request $request, $table)
         }
 
 
+        // نوع العملية (insert/update) ليس عمود في الجدول
+        $operation = $data['operation'] ?? null;
+        unset($data['operation']);
+
         // ----------------------
         // معالجة المزامنة Core Sync Logic
         // ----------------------
@@ -284,6 +289,13 @@ public function syncData(Request $request, $table)
             ->where('uuid', $uuid)
             ->where('user_id', auth()->user()->parent_id ?? auth()->id())
             ->first();
+        }
+
+        // عملية تحديث لسجل محذوف من السيرفر: البيانات جزئية (الحقول المعدلة فقط)
+        // لا نضيفه هنا، نرجع not_found والتطبيق يعيد إرساله كإضافة بالسجل الكامل
+        if (!$existing && $operation === 'update') {
+            $results[] = ['status' => 'not_found', 'uuid' => $uuid];
+            continue;
         }
 
         // --- Delta Sync Logic for Products ---
@@ -318,6 +330,9 @@ public function syncData(Request $request, $table)
                     $data['user_id'] = auth()->user()->parent_id ?? auth()->id();
 
                 }
+
+            // السجل الكامل القادم من التطبيق قد يحتوي أعمدة محلية فقط (مثل categorie_id)
+            $data = array_intersect_key($data, array_flip(Schema::getColumnListing($table)));
 
             try {
                 DB::table($table)->insert($data);
